@@ -1,10 +1,10 @@
 {
-  "name": "web",
+  "name": "api",
   "version": "0.0.1",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --port 3000",
+    "dev": "next dev --turbopack --port 3002",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -12,17 +12,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@workspace/ui": "workspace:*",
-    "lucide-react": "^0.475.0",
     "next": "^15.4.5",
-    "next-themes": "^0.4.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@types/node": "^20.19.9",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
     "typescript": "^5.9.2"
