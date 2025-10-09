@@ -1,8 +1,11 @@
 import "@workspace/ui/globals.css";
+import { ClerkProvider } from "@workspace/auth/client";
+import { Providers } from "@/components/providers";
+import { Toaster } from "sonner";
 
 export const metadata = {
-  title: "App",
-  description: "Minimal Next app in Turborepo",
+  title: "Orion Kit",
+  description: "Dashboard for Orion Kit",
 };
 
 export default function RootLayout({
@@ -11,10 +14,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground">
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className="min-h-screen bg-background font-sans antialiased">
+          <Providers>{children}</Providers>
+          <Toaster richColors position="top-right" />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

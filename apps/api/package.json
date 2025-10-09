@@ -12,9 +12,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@workspace/auth": "workspace:*",
+    "@workspace/database": "workspace:*",
+    "@workspace/logger": "workspace:*",
+    "@workspace/types": "workspace:*",
     "next": "^15.4.5",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^20.19.9",

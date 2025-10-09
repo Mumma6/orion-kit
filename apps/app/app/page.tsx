@@ -1,10 +1,14 @@
-import { Button } from "@workspace/ui/components/button";
+import { auth } from "@workspace/auth/server";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  return (
-    <main className="min-h-screen flex items-center justify-center p-8">
-      <h1 className="text-2xl font-semibold">Hello World</h1>
-      <Button>Click me</Button>
-    </main>
-  );
+export default async function RootPage() {
+  const { userId } = await auth();
+
+  // If user is logged in, redirect to dashboard
+  if (userId) {
+    redirect("/dashboard");
+  }
+
+  // If not logged in, redirect to sign-in
+  redirect("/sign-in");
 }
