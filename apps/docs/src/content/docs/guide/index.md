@@ -12,6 +12,7 @@ Complete guides for working with Orion Kit.
 - **[Forms](/guide/forms)** - Building forms with React Hook Form and Zod
 - **[Zod Validation](/guide/zod)** - Runtime validation throughout the stack
 - **[Error Handling](/guide/error-handling)** - Comprehensive error handling strategies
+- **[Testing](/guide/testing)** - Unit testing with Vitest
 
 ## Core Concepts
 

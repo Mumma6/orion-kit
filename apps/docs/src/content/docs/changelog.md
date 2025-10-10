@@ -10,15 +10,18 @@ All notable changes to Orion Kit will be documented here.
 
 ### Added
 
-- 📚 **Documentation Site** - Nextra-powered docs on port 3004
+- 📚 **Documentation Site** - Starlight-powered docs on port 3004
+- 🧪 **Testing** - Vitest for unit tests with full coverage
+- 🤖 **CI/CD** - GitHub Actions workflow for automated testing
 - 🎨 **Error Handling** - Toast notifications with Sonner
-- 🔒 **Validation** - Zod schemas throughout the stack
+- 🔒 **Validation** - Zod schemas throughout the stack (including route params)
 - 📝 **Forms** - React Hook Form integration
 - 🗄️ **Database** - Drizzle ORM with Neon
-- 🔐 **Authentication** - Clerk integration
+- 🔐 **Authentication** - Clerk integration in all apps
 - 🎯 **Type System** - Centralized types package
 - 🚀 **Data Fetching** - TanStack Query
 - 🎨 **Studio App** - Drizzle Studio on port 3003
+- 🔌 **Complete API** - Full CRUD endpoints with PUT, PATCH, DELETE
 
 ### Infrastructure
 

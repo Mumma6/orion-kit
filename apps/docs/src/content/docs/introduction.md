@@ -44,6 +44,7 @@ New to Orion Kit? Check out the [Quick Start Guide](/quick-start) to get up and 
 - **React Hook Form** - Performant forms with validation
 - **Drizzle Studio** - Visual database management
 - **Error Handling** - Toast notifications and error boundaries
+- **Testing** - Vitest for unit tests with full coverage
 - **Hot Reload** - Fast development with Turbopack
 
 ## Apps & Packages

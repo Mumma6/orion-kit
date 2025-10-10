@@ -17,6 +17,7 @@ Complete architecture documentation for the Orion Kit monorepo.
 | **Forms**              | React Hook Form       | Form state management      |
 | **UI Components**      | shadcn/ui             | Accessible components      |
 | **Styling**            | Tailwind CSS          | Utility-first CSS          |
+| **Testing**            | Vitest                | Unit and integration tests |
 | **Monorepo**           | Turborepo             | Build orchestration        |
 | **Package Manager**    | pnpm                  | Fast, efficient installs   |
 
@@ -364,22 +365,22 @@ pnpm --filter api build
 
 ### Core Concepts
 
-- [Type System](./TYPE_SYSTEM.md) - How types flow through the stack
-- [Zod Validation](./ZOD_QUICK_REFERENCE.md) - Runtime validation
-- [TanStack Query](./TANSTACK_QUERY.md) - Data fetching
-- [Forms](./FORMS.md) - Form handling
+- [Type System](/architecture/type-system) - How types flow through the stack
+- [Type Flow](/architecture/type-flow) - Complete type flow diagram
+
+### Guides
+
+- [TanStack Query](/guide/tanstack-query) - Data fetching and caching
+- [Forms](/guide/forms) - React Hook Form with Zod
+- [Error Handling](/guide/error-handling) - Error handling strategies
+- [Testing](/guide/testing) - Unit testing with Vitest
 
 ### Package Docs
 
-- [Auth Package](./packages/auth/README.md)
-- [Database Package](./packages/database/README.md)
-- [Types Package](./packages/types/README.md)
-- [UI Package](./packages/ui/README.md)
-
-### App Docs
-
-- [API Documentation](./apps/api/README.md)
-- [Studio Info](./apps/studio/README.md)
+- [Auth Package](/packages/auth)
+- [Database Package](/packages/database)
+- [Types Package](/packages/types)
+- [UI Package](/packages/ui)
 
 ## Summary
 

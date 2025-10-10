@@ -130,6 +130,11 @@ pnpm db:seed             # Seed with example data
 pnpm db:studio           # Open Studio (or visit :3003)
 pnpm db:generate         # Generate migrations
 
+# Testing
+pnpm test                # Run all unit tests
+pnpm test:ui             # Run tests in UI mode
+pnpm test:coverage       # Generate coverage report
+
 # Code Quality
 pnpm lint                # Lint all apps
 pnpm format              # Format code with Prettier
@@ -220,5 +225,6 @@ Start building your SaaS product! All the foundation is set up:
 - ✅ **Dashboard** - Full-featured with navigation
 - ✅ **Landing Page** - Beautiful and responsive
 - ✅ **Studio** - Visual database management
+- ✅ **Testing** - Vitest with 16+ passing tests
 
 Happy coding! 🚀
