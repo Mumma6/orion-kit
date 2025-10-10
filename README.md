@@ -58,7 +58,7 @@ All apps will start:
 - **Data Fetching:** TanStack Query
 - **Forms:** React Hook Form
 - **UI:** shadcn/ui + Tailwind CSS
-- **Docs:** Nextra
+- **Docs:** Starlight (Astro)
 - **Monorepo:** Turborepo
 
 ## 📦 What's Inside?
@@ -71,7 +71,7 @@ All apps will start:
 | `app`    | 3001 | Dashboard application         |
 | `api`    | 3002 | API backend                   |
 | `studio` | 3003 | Database GUI (Drizzle Studio) |
-| `docs`   | 3004 | Documentation (Nextra)        |
+| `docs`   | 3004 | Documentation (Starlight)     |
 
 ### Packages
 
@@ -92,7 +92,7 @@ All apps will start:
 ✅ **Database** - Serverless Postgres with Drizzle  
 ✅ **Error handling** - Toast notifications + error boundaries  
 ✅ **Forms** - React Hook Form with Zod validation  
-✅ **Documentation** - Nextra docs site
+✅ **Documentation** - Starlight docs site
 
 ## 📖 Documentation
 

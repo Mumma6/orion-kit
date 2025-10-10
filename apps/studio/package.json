@@ -1,11 +1,11 @@
 {
     "name": "studio",
     "version": "0.0.0",
-    "scripts": {
-      "dev": "drizzle-kit studio --port 3005",
-      "clean": "git clean -xdf .cache .turbo dist node_modules",
-      "typecheck": "tsc --noEmit --emitDeclarationOnly false"
-    },
+  "scripts": {
+    "dev": "drizzle-kit studio --port 3003",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
     "dependencies": {
       "drizzle-orm": "^0.38.3"
     },
