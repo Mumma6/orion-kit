@@ -14,6 +14,7 @@ export default defineConfig({
 					items: [
 						{ label: 'Introduction', slug: 'introduction' },
 						{ label: 'Quick Start', slug: 'quick-start' },
+						{ label: 'Roadmap', slug: 'roadmap' },
 						{ label: 'Changelog', slug: 'changelog' },
 					],
 				},
