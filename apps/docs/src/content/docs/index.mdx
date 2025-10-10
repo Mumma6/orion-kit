@@ -1,0 +1,63 @@
+---
+title: Orion Kit
+description: A modern, production-ready SaaS starter kit with Next.js, TypeScript, Drizzle ORM, and more.
+template: splash
+hero:
+  tagline: Modern, type-safe SaaS starter kit. Built with Next.js 15, TypeScript, Drizzle ORM, Clerk, and TanStack Query.
+  image:
+    file: ../../assets/houston.webp
+  actions:
+    - text: Get Started
+      link: /introduction/
+      icon: right-arrow
+      variant: primary
+    - text: Quick Start
+      link: /quick-start/
+      icon: rocket
+    - text: View on GitHub
+      link: https://github.com/yourusername/orion-kit
+      icon: github
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## What's Included
+
+<CardGrid stagger>
+  <Card title="🔐 Authentication" icon="lock">
+    Ready-to-use Clerk integration with protected routes and middleware.
+  </Card>
+  <Card title="🗄️ Database" icon="setting">
+    Type-safe Drizzle ORM with Neon Postgres and automatic migrations.
+  </Card>
+  <Card title="✅ Validation" icon="approve-check">
+    Runtime validation with Zod on both frontend and backend.
+  </Card>
+  <Card title="🎨 UI Components" icon="star">
+    Beautiful shadcn/ui components with Tailwind CSS styling.
+  </Card>
+  <Card title="📊 Dashboard" icon="laptop">
+    Full-featured admin panel with navigation and user management.
+  </Card>
+  <Card title="🚀 Data Fetching" icon="rocket">
+    TanStack Query for automatic caching and state management.
+  </Card>
+</CardGrid>
+
+## Quick Links
+
+<CardGrid>
+  <Card title="Introduction" icon="open-book">
+    Learn about Orion Kit and its features. [Read more →](/introduction/)
+  </Card>
+  <Card title="Quick Start" icon="rocket">
+    Get up and running in 5 minutes. [Get started →](/quick-start/)
+  </Card>
+  <Card title="Architecture" icon="puzzle">
+    Understand the system design. [Learn more →](/architecture/overview/)
+  </Card>
+  <Card title="Guides" icon="document">
+    Learn best practices and patterns. [View guides →](/guide/)
+  </Card>
+</CardGrid>

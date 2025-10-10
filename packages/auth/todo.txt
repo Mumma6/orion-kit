@@ -1,3 +1,0 @@
-https://github.com/vercel/next-forge/tree/main/packages/auth
-
-https://clerk.com/docs/nextjs/getting-started/quickstart

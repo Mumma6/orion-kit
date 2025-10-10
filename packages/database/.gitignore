@@ -1,0 +1,17 @@
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# TypeScript
+*.tsbuildinfo
+
+# Drizzle Kit
+.drizzle
+

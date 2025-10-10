@@ -1,0 +1,260 @@
+# Orion Kit - Cursor Rules
+
+## Code Style & Principles
+
+### Functional Programming First
+
+- **NEVER use `let`** - Always use `const`
+- Prefer immutable data structures
+- Use pure functions when possible
+- Avoid mutations - use spread operators, map, filter, reduce
+- Prefer function expressions over statements
+
+### TypeScript
+
+- Always define explicit types for function parameters and return values
+- Use `interface` for object shapes, `type` for unions/intersections
+- Prefer `type` imports with `import type { ... }`
+- Never use `any` - use `unknown` if type is truly unknown
+- Enable strict mode and fix all errors
+
+### React & Next.js
+
+- Prefer Server Components over Client Components
+- Use `"use client"` only when necessary (hooks, event handlers, browser APIs)
+- Prefer composition over prop drilling
+- Use custom hooks for reusable logic
+- Follow Next.js App Router conventions
+
+### Data Fetching
+
+- Use TanStack Query for all API calls
+- Never use `fetch` directly in components
+- Define query keys in hook files
+- Handle loading and error states
+- Use optimistic updates for better UX
+
+### Forms
+
+- Always use React Hook Form with Zod validation
+- Use shadcn/ui Form components
+- Validate on both client and server
+- Show inline validation errors
+- Never manually manage form state with useState
+
+### Validation
+
+- Use Zod schemas from @workspace/database
+- Validate all user input on server-side
+- Use same Zod schema on client and server
+- Never trust client-side validation alone
+- Return structured validation errors
+
+### Error Handling
+
+- Use toast notifications (Sonner) for user feedback
+- Wrap mutations with onSuccess/onError handlers
+- Log errors to console for debugging
+- Use Error Boundaries for React errors
+- Return structured error responses from API
+
+### Types & Schemas
+
+- Import all types from @workspace/types
+- Never define duplicate types
+- Use Drizzle-inferred types for entities (Task, User)
+- Use TypeScript Omit for input types (CreateTaskInput)
+- Export Zod schemas from @workspace/database
+
+### Database
+
+- Use Drizzle ORM for all database operations
+- Never write raw SQL unless absolutely necessary
+- Use prepared statements via Drizzle
+- Validate input with Zod before database operations
+- Use transactions for multi-step operations
+
+### API Routes
+
+- Always validate request body with Zod
+- Return consistent response format (success/error)
+- Use proper HTTP status codes
+- Log important operations
+- Handle errors gracefully
+
+### Code Organization
+
+- Keep files focused and small (<300 lines)
+- Extract reusable logic into utilities
+- Use barrel exports (index.ts) for clean imports
+- Group related files in directories
+- Follow monorepo workspace conventions
+
+## Examples
+
+### ❌ Bad (Imperative, let, mutations)
+
+```typescript
+let result = [];
+for (let i = 0; i < items.length; i++) {
+  result.push(transform(items[i]));
+}
+return result;
+```
+
+### ✅ Good (Functional, const, immutable)
+
+```typescript
+const result = items.map(transform);
+return result;
+```
+
+### ❌ Bad (Manual fetch)
+
+```typescript
+const [data, setData] = useState(null);
+useEffect(() => {
+  fetch("/api/tasks")
+    .then((r) => r.json())
+    .then(setData);
+}, []);
+```
+
+### ✅ Good (TanStack Query)
+
+```typescript
+const { data } = useTasks();
+```
+
+### ❌ Bad (Manual form state)
+
+```typescript
+const [title, setTitle] = useState("");
+const [error, setError] = useState("");
+```
+
+### ✅ Good (React Hook Form + Zod)
+
+```typescript
+const form = useForm({
+  resolver: zodResolver(schema),
+});
+```
+
+### ❌ Bad (No validation)
+
+```typescript
+const task = request.body;
+await db.insert(tasks).values(task);
+```
+
+### ✅ Good (Zod validation)
+
+```typescript
+const validated = createTaskInputSchema.parse(body);
+await db.insert(tasks).values(validated);
+```
+
+## Naming Conventions
+
+- **Components:** PascalCase (`TasksList`, `CreateTaskForm`)
+- **Files:** kebab-case (`use-tasks.ts`, `error-fallback.tsx`)
+- **Functions:** camelCase (`createTask`, `getUserPreferences`)
+- **Constants:** UPPER_SNAKE_CASE (`API_BASE_URL`, `MAX_RETRIES`)
+- **Types/Interfaces:** PascalCase (`Task`, `CreateTaskInput`)
+- **Zod Schemas:** camelCase with `Schema` suffix (`createTaskInputSchema`)
+
+## Import Order
+
+1. React/Next.js imports
+2. Third-party libraries
+3. @workspace/\* imports
+4. Local imports (components, utils, types)
+5. Styles
+
+## File Templates
+
+### API Route
+
+```typescript
+import { auth } from "@workspace/auth/server";
+import { db, resource, resourceSchema } from "@workspace/database";
+import type { ResourceResponse } from "@workspace/types";
+import { NextResponse } from "next/server";
+import { ZodError } from "zod";
+
+export async function GET() {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  const data = await db.select().from(resource);
+  return NextResponse.json({ success: true, data });
+}
+```
+
+### TanStack Query Hook
+
+```typescript
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getResource, createResource } from "@/lib/api/resource";
+import { showSuccessToast, showErrorToast } from "@/lib/errors";
+
+export const resourceKeys = {
+  all: ["resource"] as const,
+  lists: () => [...resourceKeys.all, "list"] as const,
+};
+
+export function useResources() {
+  return useQuery({
+    queryKey: resourceKeys.lists(),
+    queryFn: getResource,
+  });
+}
+
+export function useCreateResource() {
+  return useMutation({
+    mutationFn: createResource,
+    onSuccess: () => showSuccessToast("Created!"),
+    onError: (error) => showErrorToast(error),
+  });
+}
+```
+
+### Form Component
+
+```typescript
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@workspace/ui/components/form";
+import { schema } from "@workspace/types";
+import type { Input } from "@workspace/types";
+
+export function MyForm() {
+  const form = useForm<Input>({
+    resolver: zodResolver(schema),
+    defaultValues: { ... },
+  });
+
+  const onSubmit = async (data: Input) => {
+    await mutation.mutateAsync(data);
+    form.reset();
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField ... />
+      </form>
+    </Form>
+  );
+}
+```
+
+## Enforcement
+
+These rules should be followed by all code in the Orion Kit monorepo. Cursor AI should enforce these rules when generating or modifying code.

@@ -1,5 +1,0 @@
-https://www.next-forge.com/migrations/database/drizzle
-
-https://orm.drizzle.team/docs/get-started/neon-new
-
-drizzle och neon 
