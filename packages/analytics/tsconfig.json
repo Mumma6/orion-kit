@@ -1,13 +1,11 @@
 {
   "extends": "@workspace/typescript-config/react-library.json",
-  "noEmit": true,
-  // @ts-ignore
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@workspace/ui/*": ["./src/*"]
-    }
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": true
   },
-  "include": ["."],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
+

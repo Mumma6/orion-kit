@@ -12,10 +12,10 @@
     "moduleDetection": "force",
     "moduleResolution": "bundler",
     "noUncheckedIndexedAccess": true,
+    "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2022",
-    "allowImportingTsExtensions": true
+    "target": "ES2022"
   }
 }

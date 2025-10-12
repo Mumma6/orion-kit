@@ -6,10 +6,12 @@ A modern, production-ready SaaS starter kit built with Next.js, Clerk, Drizzle, 
 
 **Full documentation is available at http://localhost:3004** (when running `pnpm dev`)
 
-Konton på neon och clerk
+Konton på neon och clerk, posthog
 
 https://console.neon.tech/
 https://dashboard.clerk.com/
+https://eu.posthog.com/project/94036/web
+https://app.axiom.co/orion-kit-hpmc/query?did=orion-kit&qid=yPI8wn6jytv-t40s9r
 
 fixa astro
 https://starlight.astro.build/getting-started/

@@ -1,0 +1,26 @@
+{
+  "name": "@workspace/analytics",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@next/third-parties": "15.5.4",
+    "@t3-oss/env-nextjs": "^0.13.8",
+    "@vercel/analytics": "^1.5.0",
+    "posthog-js": "^1.272.0",
+    "posthog-node": "^5.9.2",
+    "react": "19.2.0",
+    "server-only": "^0.0.1",
+    "dotenv": "^16.4.7"
+ 
+  },
+  "devDependencies": {
+    "@workspace/typescript-config": "workspace:*",
+    "@types/node": "24.7.0",
+    "@types/react": "19.2.1",
+    "@types/react-dom": "19.2.0"
+  }
+}
