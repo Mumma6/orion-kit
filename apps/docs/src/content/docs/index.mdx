@@ -4,8 +4,6 @@ description: A modern, production-ready SaaS starter kit with Next.js, TypeScrip
 template: splash
 hero:
   tagline: Modern, type-safe SaaS starter kit. Built with Next.js 15, TypeScript, Drizzle ORM, Clerk, and TanStack Query.
-  image:
-    file: ../../assets/houston.webp
   actions:
     - text: Get Started
       link: /introduction/
@@ -21,6 +19,41 @@ hero:
 ---
 
 import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## 🚀 Running Apps
+
+**Development:**
+
+- 🌐 **Landing** → [localhost:3000](http://localhost:3000)
+- 📊 **Dashboard** → [localhost:3001](http://localhost:3001)
+- 🔌 **API** → [localhost:3002/health](http://localhost:3002/health)
+- 🎨 **Studio** → [https://local.drizzle.studio?port=3003](https://local.drizzle.studio?port=3003)
+- 📚 **Docs** → [localhost:3004](http://localhost:3004)
+
+**Production:**
+
+- 🌐 **Landing** → [orion-kit.vercel.app](https://orion-kit.vercel.app)
+- 📊 **Dashboard** → [app.orion-kit.vercel.app](https://app.orion-kit.vercel.app)
+- 🔌 **API** → [api.orion-kit.vercel.app/health](https://api.orion-kit.vercel.app/health)
+
+---
+
+## Quick Links
+
+<CardGrid>
+  <Card title="Introduction" icon="open-book">
+    Learn about Orion Kit and its features. [Read more →](/introduction/)
+  </Card>
+  <Card title="Quick Start" icon="rocket">
+    Get up and running in 5 minutes. [Get started →](/quick-start/)
+  </Card>
+  <Card title="Architecture" icon="puzzle">
+    Understand the system design. [Learn more →](/architecture/overview/)
+  </Card>
+  <Card title="Guides" icon="document">
+    Learn best practices and patterns. [View guides →](/guide/)
+  </Card>
+</CardGrid>
 
 ## What's Included
 
@@ -42,22 +75,5 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
   </Card>
   <Card title="🚀 Data Fetching" icon="rocket">
     TanStack Query for automatic caching and state management.
-  </Card>
-</CardGrid>
-
-## Quick Links
-
-<CardGrid>
-  <Card title="Introduction" icon="open-book">
-    Learn about Orion Kit and its features. [Read more →](/introduction/)
-  </Card>
-  <Card title="Quick Start" icon="rocket">
-    Get up and running in 5 minutes. [Get started →](/quick-start/)
-  </Card>
-  <Card title="Architecture" icon="puzzle">
-    Understand the system design. [Learn more →](/architecture/overview/)
-  </Card>
-  <Card title="Guides" icon="document">
-    Learn best practices and patterns. [View guides →](/guide/)
   </Card>
 </CardGrid>

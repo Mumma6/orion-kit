@@ -1,6 +1,5 @@
 import "@workspace/ui/globals.css";
-import { ClerkProvider } from "@workspace/auth/client";
-import { Providers } from "@/components/providers";
+import { Providers } from "@/app/providers";
 import { Toaster } from "sonner";
 
 export const metadata = {
@@ -14,13 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className="min-h-screen bg-background font-sans antialiased">
-          <Providers>{children}</Providers>
-          <Toaster richColors position="top-right" />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <Providers>{children}</Providers>
+        <Toaster richColors position="top-right" />
+      </body>
+    </html>
   );
 }

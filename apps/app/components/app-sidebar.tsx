@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { LayoutDashboard, Settings, ListTodo, Database } from "lucide-react";
+import { LayoutDashboard, Settings, ListTodo, BarChart3 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { NavMain } from "@/components/nav-main";
@@ -29,9 +29,9 @@ const navItems = [
     icon: ListTodo,
   },
   {
-    title: "Data",
-    url: "/dashboard/data",
-    icon: Database,
+    title: "Analytics",
+    url: "/dashboard/analytics",
+    icon: BarChart3,
   },
   {
     title: "Settings",

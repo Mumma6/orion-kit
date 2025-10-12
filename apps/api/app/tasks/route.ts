@@ -2,7 +2,7 @@ import { auth, currentUser } from "@workspace/auth/server";
 import { db, tasks, eq, desc } from "@workspace/database";
 import { createTaskInputSchema } from "@workspace/types";
 import type { TasksListResponse } from "@workspace/types";
-import { logger } from "@workspace/logger";
+import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
 
@@ -10,14 +10,14 @@ import { validationErrorResponse } from "@/lib/validation";
  * GET /tasks
  * Returns a list of tasks for the authenticated user
  */
-export async function GET() {
+export const GET = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      await logger.warn("Unauthorized access to GET /tasks");
+      logger.warn("Unauthorized access to GET /tasks");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -33,9 +33,10 @@ export async function GET() {
 
     // Log the request
     const duration = Date.now() - startTime;
-    await logger.request("GET", "/tasks", 200, duration, {
+    logger.info("Tasks fetched", {
       userId,
       tasksCount: userTasks.length,
+      duration,
     });
 
     const getStatusCount = (
@@ -57,38 +58,30 @@ export async function GET() {
 
     return NextResponse.json(response);
   } catch (error) {
-    await logger.error("Failed to fetch tasks", {
-      error: error instanceof Error ? error : new Error(String(error)),
-      path: "/tasks",
-      method: "GET",
-    });
-
-    return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 }
-    );
+    logger.error("Failed to fetch tasks", error as Error);
+    throw error; // withAxiom handles error responses
   }
-}
+});
 
 /**
  * POST /tasks
  * Create a new task
  */
-export async function POST(request: Request) {
+export const POST = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      await logger.warn("Unauthorized access to POST /tasks");
+      logger.warn("Unauthorized access to POST /tasks");
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    const body = await request.json();
+    const body = await req.json();
 
     // Validate request body with Zod
     const validation = createTaskInputSchema.safeParse(body);
@@ -114,7 +107,7 @@ export async function POST(request: Request) {
     }
 
     const duration = Date.now() - startTime;
-    await logger.info("Task created", {
+    logger.info("Task created", {
       userId,
       taskId: newTask.id,
       duration,
@@ -126,18 +119,7 @@ export async function POST(request: Request) {
       data: newTask,
     });
   } catch (error) {
-    const duration = Date.now() - startTime;
-    await logger.error("Failed to create task", {
-      error: error instanceof Error ? error : new Error(String(error)),
-      userId: (await auth()).userId || undefined,
-      path: "/tasks",
-      method: "POST",
-      duration,
-    });
-
-    return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 }
-    );
+    logger.error("Failed to create task", error as Error);
+    throw error; // withAxiom handles error responses
   }
-}
+});

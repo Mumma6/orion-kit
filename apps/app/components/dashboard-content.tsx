@@ -8,7 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { CheckCircle2, Circle, Clock, Loader2, Rocket } from "lucide-react";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import { AlertCircle, CheckCircle2, Circle, Clock, Rocket } from "lucide-react";
 import { useTasks } from "@/hooks/use-tasks";
 import type { Task } from "@workspace/types";
 
@@ -21,7 +22,6 @@ interface UserData {
 }
 
 export function DashboardContent({ user }: { user: UserData }) {
-  // Use TanStack Query hook - automatic loading, error, caching!
   const { data: tasks, isLoading, error, refetch } = useTasks();
 
   // Log to console when data changes
@@ -68,8 +68,46 @@ export function DashboardContent({ user }: { user: UserData }) {
         </div>
       </div>
 
+      {/* Error State */}
+      {error && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              <CardTitle className="text-base">Failed to load tasks</CardTitle>
+            </div>
+            <CardDescription>
+              {error instanceof Error
+                ? error.message
+                : "An error occurred while fetching your tasks. Please try again."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => refetch()} variant="outline" size="sm">
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Loading State - Stats Cards */}
+      {isLoading && (
+        <div className="grid gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="pb-3">
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-16" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
       {/* Stats Cards */}
-      {tasks && (
+      {!isLoading && !error && tasks && (
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
             <CardHeader className="pb-3">
@@ -112,56 +150,34 @@ export function DashboardContent({ user }: { user: UserData }) {
         </div>
       )}
 
-      {/* API Demo Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>API Integration with TanStack Query</CardTitle>
-          <CardDescription>
-            Tasks are automatically fetched from the API using TanStack Query.
-            Click to refetch or they'll auto-refresh on window focus.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button onClick={() => refetch()} disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Loading...
-              </>
-            ) : (
-              <>
-                <Rocket className="mr-2 h-4 w-4" />
-                Refetch Tasks
-              </>
-            )}
-          </Button>
-
-          {error && (
-            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
-              <strong>Error:</strong>{" "}
-              {error instanceof Error ? error.message : "Failed to fetch tasks"}
+      {/* Loading State - Tasks List */}
+      {isLoading && (
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-48" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 rounded-lg border p-4"
+                >
+                  <Skeleton className="mt-0.5 h-5 w-5 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-
-          {tasks && (
-            <div className="space-y-4">
-              <div className="rounded-lg border bg-muted/50 p-4">
-                <p className="text-sm font-medium">
-                  ✅ Successfully fetched {tasks.total} tasks for{" "}
-                  {tasks.userName}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Check the browser console for the full response. Data is
-                  cached and automatically refetches on window focus.
-                </p>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tasks List */}
-      {tasks && tasks.data.length > 0 && (
+      {!isLoading && !error && tasks && tasks.data.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Your Tasks</CardTitle>
@@ -195,14 +211,14 @@ export function DashboardContent({ user }: { user: UserData }) {
         </Card>
       )}
 
-      {/* Info Card - Only show when no tasks loaded */}
-      {!tasks && (
+      {/* Empty State - No tasks yet */}
+      {!isLoading && !error && tasks && tasks.data.length === 0 && (
         <Card className="border-dashed">
           <CardHeader>
-            <CardTitle className="text-base">Ready to explore?</CardTitle>
+            <CardTitle className="text-base">No tasks yet</CardTitle>
             <CardDescription>
-              Click the button above to test the API integration and see how
-              data flows between your dashboard and backend.
+              You haven&apos;t created any tasks yet. Get started by creating
+              your first task.
             </CardDescription>
           </CardHeader>
         </Card>

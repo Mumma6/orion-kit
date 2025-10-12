@@ -2,7 +2,7 @@ import { createAuthMiddleware } from "@workspace/auth/middleware";
 
 export default createAuthMiddleware({
   protectedRoutes: ["/dashboard(.*)"],
-  publicRoutes: ["/"],
+  publicRoutes: ["/", "/sign-in(.*)", "/sign-up(.*)"],
 });
 
 export const config = {

@@ -24,21 +24,16 @@ export default function SignUpPage() {
             card: "shadow-lg",
           },
         }}
-        path="/sign-up"
-        routing="path"
-        signInUrl="/sign-in"
         forceRedirectUrl="/dashboard"
       />
 
       <div className="mt-6 text-center text-sm text-muted-foreground">
-        Learn more about{" "}
-        <Link
-          href="http://localhost:3000"
-          className="text-primary hover:underline"
-        >
-          Orion Kit
+        Already have an account?{" "}
+        <Link href="/sign-in" className="text-primary hover:underline">
+          Sign in
         </Link>
       </div>
     </div>
   );
 }
+

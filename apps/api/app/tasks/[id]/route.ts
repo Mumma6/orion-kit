@@ -1,7 +1,7 @@
 import { auth } from "@workspace/auth/server";
 import { db, tasks, eq } from "@workspace/database";
 import { updateTaskInputSchema } from "@workspace/types";
-import { logger } from "@workspace/logger";
+import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
 import { z } from "zod";
@@ -18,14 +18,15 @@ type RouteContext = {
  * PUT /tasks/:id
  * Update a task (full update)
  */
-export async function PUT(request: Request, context: RouteContext) {
+export const PUT = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
     const { userId } = await auth();
 
+    logger.warn("Unauthorized access to PUT /tasks/:id");
     if (!userId) {
-      await logger.warn("Unauthorized access to PUT /tasks/:id");
+      logger.warn("Unauthorized access to PUT /tasks/:id");
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }
@@ -45,7 +46,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
     const taskId = paramsValidation.data.id;
 
-    const body = await request.json();
+    const body = await req.json();
 
     // Validate request body with Zod
     const validation = updateTaskInputSchema.safeParse(body);
@@ -96,7 +97,7 @@ export async function PUT(request: Request, context: RouteContext) {
     }
 
     const duration = Date.now() - startTime;
-    await logger.info("Task updated", {
+    logger.info("Task updated", {
       userId,
       taskId,
       duration,
@@ -108,34 +109,23 @@ export async function PUT(request: Request, context: RouteContext) {
       data: updatedTask,
     });
   } catch (error) {
-    const duration = Date.now() - startTime;
-    await logger.error("Failed to update task", {
-      error: error instanceof Error ? error : new Error(String(error)),
-      userId: (await auth()).userId || undefined,
-      path: `/tasks/:id`,
-      method: "PUT",
-      duration,
-    });
-
-    return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 }
-    );
+    logger.error("Failed to update task", error as Error);
+    throw error; // withAxiom handles error responses
   }
-}
+});
 
 /**
  * PATCH /tasks/:id
  * Partial update of a task
  */
-export async function PATCH(request: Request, context: RouteContext) {
+export const PATCH = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      await logger.warn("Unauthorized access to PATCH /tasks/:id");
+      logger.warn("Unauthorized access to PATCH /tasks/:id");
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }
@@ -155,7 +145,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const taskId = paramsValidation.data.id;
 
-    const body = await request.json();
+    const body = await req.json();
 
     // Validate request body with Zod (partial schema)
     const validation = updateTaskInputSchema.safeParse(body);
@@ -206,7 +196,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
 
     const duration = Date.now() - startTime;
-    await logger.info("Task patched", {
+    logger.info("Task patched", {
       userId,
       taskId,
       fields: Object.keys(validatedData),
@@ -219,34 +209,23 @@ export async function PATCH(request: Request, context: RouteContext) {
       data: updatedTask,
     });
   } catch (error) {
-    const duration = Date.now() - startTime;
-    await logger.error("Failed to patch task", {
-      error: error instanceof Error ? error : new Error(String(error)),
-      userId: (await auth()).userId || undefined,
-      path: `/tasks/:id`,
-      method: "PATCH",
-      duration,
-    });
-
-    return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 }
-    );
+    logger.error("Failed to patch task", error as Error);
+    throw error; // withAxiom handles error responses
   }
-}
+});
 
 /**
  * DELETE /tasks/:id
  * Delete a task
  */
-export async function DELETE(_request: Request, context: RouteContext) {
+export const DELETE = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      await logger.warn("Unauthorized access to DELETE /tasks/:id");
+      logger.warn("Unauthorized access to DELETE /tasks/:id");
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }
@@ -293,7 +272,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await db.delete(tasks).where(eq(tasks.id, taskId));
 
     const duration = Date.now() - startTime;
-    await logger.info("Task deleted", {
+    logger.info("Task deleted", {
       userId,
       taskId,
       duration,
@@ -305,18 +284,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
       deletedId: taskId,
     });
   } catch (error) {
-    const duration = Date.now() - startTime;
-    await logger.error("Failed to delete task", {
-      error: error instanceof Error ? error : new Error(String(error)),
-      userId: (await auth()).userId || undefined,
-      path: `/tasks/:id`,
-      method: "DELETE",
-      duration,
-    });
-
-    return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 }
-    );
+    logger.error("Failed to delete task", error as Error);
+    throw error; // withAxiom handles error responses
   }
-}
+});

@@ -3,6 +3,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
+import { AnalyticsProvider } from "@workspace/analytics/src/provider";
+import { ClerkProvider } from "@workspace/auth";
+import { WebVitals } from "@workspace/observability/client";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Create a client instance per request
@@ -26,10 +29,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {children}
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ClerkProvider>
+      <QueryClientProvider client={queryClient}>
+        <AnalyticsProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <WebVitals />
+            {children}
+          </ThemeProvider>
+        </AnalyticsProvider>
+      </QueryClientProvider>
+    </ClerkProvider>
   );
 }
