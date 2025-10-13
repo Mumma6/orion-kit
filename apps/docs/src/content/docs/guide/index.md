@@ -10,9 +10,10 @@ Complete guides for working with Orion Kit.
 
 ### Getting Started
 
-- **[Accounts Setup](/guide/accounts-setup)** - Set up all required cloud services (Clerk, Neon, Axiom, PostHog, Trigger.dev)
+- **[Accounts Setup](/guide/accounts-setup)** - Set up all required cloud services (Clerk, Neon, Stripe, Axiom, PostHog, Trigger.dev)
 - **[Environment Variables](/guide/environment-variables)** - Complete reference for all environment variables
 - **[Cloud Services](/guide/cloud-services)** - Overview of all integrated services and why we use them
+- **[Deployment](/guide/deployment)** - Deploy to Vercel production
 
 ### Development
 
@@ -21,6 +22,11 @@ Complete guides for working with Orion Kit.
 - **[Zod Validation](/guide/zod)** - Runtime validation throughout the stack
 - **[Error Handling](/guide/error-handling)** - Comprehensive error handling strategies
 - **[Testing](/guide/testing)** - Unit testing with Vitest
+- **[E2E Testing](/guide/e2e-testing)** - End-to-end testing with Playwright
+
+### Payments
+
+- **[Stripe Payments](/guide/stripe-payments)** - Complete Stripe integration guide
 
 ## Core Concepts
 

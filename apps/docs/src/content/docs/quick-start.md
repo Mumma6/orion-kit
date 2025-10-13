@@ -46,40 +46,46 @@ pnpm install
 
 Create these files:
 
-**`apps/web/.env.local`**
+**`apps/app/.env.local`** (Dashboard - Required)
 
 ```bash
+# Clerk Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
-```
 
-**`apps/app/.env.local`**
-
-```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
+# API URL
 NEXT_PUBLIC_API_URL=http://localhost:3002
+
+# Analytics (Optional)
 NEXT_PUBLIC_POSTHOG_KEY=phc_...
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
-**`apps/web/.env.local`**
+**`apps/api/.env.local`** (API - Required)
 
 ```bash
+# Clerk Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-```
 
-**`apps/api/.env.local`**
-
-```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
+# Database (will add in next step)
 DATABASE_URL=postgresql://...
+
+# Logging (Optional)
 AXIOM_TOKEN=xaat-...
 AXIOM_DATASET=orion-logs
+```
+
+**`apps/web/.env.local`** (Landing - Optional)
+
+```bash
+# Clerk (optional for landing page)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# Analytics (Optional)
+NEXT_PUBLIC_POSTHOG_KEY=phc_...
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
 ## 3️⃣ Set Up Database
@@ -125,23 +131,24 @@ pnpm db:seed
 pnpm dev
 ```
 
-This starts **all 4 apps**:
+This starts **all 5 apps**:
 
-| App           | Port | URL                   | Description  |
-| ------------- | ---- | --------------------- | ------------ |
-| 🌐 **Web**    | 3000 | http://localhost:3000 | Landing page |
-| 📊 **App**    | 3001 | http://localhost:3001 | Dashboard    |
-| 🔌 **API**    | 3002 | http://localhost:3002 | API backend  |
-| 🎨 **Studio** | 3003 | http://localhost:3003 | Database GUI |
+| App           | Port | URL                   | Description   |
+| ------------- | ---- | --------------------- | ------------- |
+| 🌐 **Web**    | 3000 | http://localhost:3000 | Landing page  |
+| 📊 **App**    | 3001 | http://localhost:3001 | Dashboard     |
+| 🔌 **API**    | 3002 | http://localhost:3002 | API backend   |
+| 🎨 **Studio** | 3003 | http://localhost:3003 | Database GUI  |
+| 📚 **Docs**   | 3004 | http://localhost:3004 | Documentation |
 
 ## 6️⃣ Test It Out
 
 1. Open http://localhost:3000 - See the landing page
-2. Click "Dashboard" or go to http://localhost:3001
-3. Sign up with Clerk
-4. Explore the dashboard
-5. Click "Fetch Tasks" to test the API
-6. Visit http://localhost:3003 to see Studio
+2. Open http://localhost:3004 - Browse this documentation locally!
+3. Go to http://localhost:3001 - Dashboard
+4. Sign up with Clerk
+5. Explore the dashboard and create tasks
+6. Visit http://localhost:3003 - Database GUI (Drizzle Studio)
 
 ## 🎯 Common Commands
 
@@ -234,10 +241,10 @@ pnpm build               # Build all apps for production
 
 ## 📚 Next Steps
 
-- Read [README.md](./README.md) for full documentation
-- Check [packages/auth/README.md](./packages/auth/README.md) for auth details
-- Review [packages/database/README.md](./packages/database/README.md) for database info
-- Explore [apps/studio/README.md](./apps/studio/README.md) for Studio features
+- Read the [Architecture Overview](/architecture/overview) to understand the system
+- Check the [Auth Package](/packages/auth) documentation
+- Review the [Database Package](/packages/database) documentation
+- Explore the [Guide](/guide) section for best practices
 
 ## 🎉 You're Ready!
 

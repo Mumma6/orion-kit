@@ -25,36 +25,42 @@ This package is already included in the workspace. To use it in your app:
 
 ## Available Components
 
-### Layout Components
+All components from [shadcn/ui](https://ui.shadcn.com/) with Radix UI primitives.
 
-- `Sidebar` - Application sidebar with collapsible sections
-- `Card` - Flexible card container
-- `Separator` - Visual divider
+### Layout
+
+- **Sidebar** - Application sidebar with collapsible sections, menu items, and groups
+- **Card** - Flexible card container with header, content, and footer sections
+- **Separator** - Visual divider (horizontal or vertical)
+- **Sheet** - Slide-out panels from any side
 
 ### Form Components
 
-- `Button` - Primary action button
-- `Input` - Text input field
-- `Textarea` - Multi-line text input
-- `Form` - Form wrapper with validation support
-- `Label` - Accessible form labels
+- **Button** - Primary action button with variants (default, destructive, outline, ghost)
+- **Button Group** - Grouped buttons with separators
+- **Input** - Text input field with proper styling
+- **Textarea** - Multi-line text input
+- **Form** - Form wrapper with validation support (React Hook Form + Zod)
+- **Label** - Accessible form labels
 
 ### Data Display
 
-- `Table` - Data tables
-- `Badge` - Status badges
-- `Avatar` - User avatars
-- `Tooltip` - Contextual help
+- **Table** - Responsive data tables with header, body, and footer
+- **Badge** - Status badges with variants
+- **Avatar** - User avatars with fallback
+- **Skeleton** - Loading placeholders
+
+### Overlays
+
+- **Dialog** - Modal dialogs with overlay
+- **Dropdown Menu** - Contextual menus with items, groups, and separators
+- **Tooltip** - Contextual help on hover
+- **Collapsible** - Expandable/collapsible sections
 
 ### Navigation
 
-- `Breadcrumb` - Navigation breadcrumbs
-- `Dropdown Menu` - Contextual menus
-- `Sheet` - Slide-out panels
-
-### Feedback
-
-- `Skeleton` - Loading placeholders
+- **Breadcrumb** - Navigation breadcrumbs with separators
+- **Orion Logo** - Custom Orion Kit logo component
 
 ## Usage
 

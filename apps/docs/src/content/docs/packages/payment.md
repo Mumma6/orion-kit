@@ -74,24 +74,20 @@ Get your keys from [Stripe Dashboard → Developers → API Keys](https://dashbo
 - Pricing: `$99/month` recurring
 - Copy the **Price ID**
 
-### 3. Add Price IDs to Config
+### 3. Add Price IDs to Environment Variables
 
-Update `packages/payment/src/config.ts`:
+The price IDs are configured via environment variables in `packages/payment/src/config.ts`.
 
-```typescript
-{
-  id: "pro",
-  priceId: "price_1ABC123...",  // Your actual Price ID
-  // ...
-}
-```
+**Important:** Use `NEXT_PUBLIC_` prefix so they're available in client components!
 
-Or set as environment variables:
+Add to `apps/api/.env.local` and `apps/app/.env.local`:
 
 ```bash
-STRIPE_PRICE_ID_PRO=price_1ABC123...
-STRIPE_PRICE_ID_ENTERPRISE=price_1XYZ789...
+NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_1ABC123...
+NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_1XYZ789...
 ```
+
+These are automatically loaded into the `PLANS` configuration.
 
 ### 4. Set Up Webhooks
 
@@ -140,7 +136,7 @@ import {
   createCheckoutSession,
   createBillingPortalSession,
   getSubscription,
-} from "@workspace/payment/server";
+} from "@workspace/payment/server"; // Note: /server path
 
 // Create checkout session
 const session = await createCheckoutSession(userId, userEmail, priceId);
@@ -155,8 +151,8 @@ const portal = await createBillingPortalSession(customerId);
 ### Client-Side (React Components)
 
 ```typescript
-import { PLANS } from "@workspace/payment/config";
-import { PricingCard } from "@workspace/payment/client";
+import { PLANS } from "@workspace/payment"; // Config is exported from main
+import { PricingCard } from "@workspace/payment/client"; // Note: /client path
 import { useCheckout } from "@/hooks/use-billing";
 
 export function MyPricingPage() {

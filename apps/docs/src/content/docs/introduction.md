@@ -137,8 +137,9 @@ Neon Database
 
 ## Community
 
-- **GitHub:** [github.com/yourusername/orion-kit](https://github.com/yourusername/orion-kit)
-- **Issues:** [Report bugs or request features](https://github.com/yourusername/orion-kit/issues)
+- **GitHub:** [github.com/orion-kit/orion](https://github.com/orion-kit/orion)
+- **Issues:** [Report bugs or request features](https://github.com/orion-kit/orion/issues)
+- **Discussions:** [Ask questions and share ideas](https://github.com/orion-kit/orion/discussions)
 
 ---
 

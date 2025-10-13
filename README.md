@@ -113,13 +113,42 @@ All apps will start:
 | `@workspace/observability` | Axiom logging + Web Vitals       |
 | `@workspace/jobs`          | Trigger.dev background jobs      |
 
-### whats not insde (expand this)
+## 🚫 What's NOT Included (By Design)
 
-ai sdk
-resend
-i18n
+Orion Kit is a **focused starter kit** - not a kitchen sink. We intentionally excluded some popular features to keep the codebase clean and maintainable.
 
-lägg till dokumentation och förklaring till varför dessa inte finns med samt hur man fixar domgit
+### Not Included
+
+- **AI SDK** (Vercel AI SDK, OpenAI)
+- **Email** (Resend, Nodemailer)
+- **Internationalization** (i18n)
+- **CMS** (Sanity, Contentful)
+- **File Uploads** (UploadThing, S3)
+
+### Why Not?
+
+**Every project has different needs.** Including everything would:
+
+- 🔴 Bloat the codebase with unused features
+- 🔴 Add complexity you might not need
+- 🔴 Make it harder to understand and maintain
+- 🔴 Increase costs (more services = more bills)
+
+### How to Add Them
+
+We've written comprehensive guides for the most requested features:
+
+- **[AI Features](http://localhost:3004/reference/integrations/ai/)** - Vercel AI SDK, OpenAI, streaming
+- **[Email](http://localhost:3004/reference/integrations/email/)** - Resend, transactional emails, templates
+- **[i18n](http://localhost:3004/reference/integrations/i18n/)** - next-intl, translations, locale routing
+- **[File Uploads](http://localhost:3004/reference/integrations/file-uploads/)** - UploadThing, S3, image optimization
+- **[CMS](http://localhost:3004/reference/integrations/cms/)** - Sanity, Contentful, content management
+- **[Real-time](http://localhost:3004/reference/integrations/realtime/)** - Pusher, Ably, WebSockets
+- **[Search](http://localhost:3004/reference/integrations/search/)** - Algolia, Meilisearch, full-text search
+
+**[View All Integration Guides →](http://localhost:3004/reference/integrations/)**
+
+**Philosophy:** Start minimal, add only what you need.
 
 ## 🎯 Key Features
 
@@ -191,12 +220,13 @@ pnpm stripe:listen-dev
 
 Visit **http://localhost:3004** for complete documentation including:
 
-- 📘 Quick Start Guide
-- ☁️ Cloud Accounts Setup
-- 🔧 Environment Variables Reference
-- 🏗️ Architecture Overview
-- 📦 Package API References
-- 💡 Best Practices & Examples
+- 📘 **[Quick Start Guide](http://localhost:3004/quick-start)** - Get started in 5 minutes
+- ☁️ **[Cloud Accounts Setup](http://localhost:3004/guide/accounts-setup)** - Clerk, Neon, Stripe, etc.
+- 🔧 **[Environment Variables](http://localhost:3004/guide/environment-variables)** - All required env vars
+- 🚀 **[Deployment Guide](http://localhost:3004/guide/deployment)** - Deploy to Vercel
+- 🏗️ **[Architecture](http://localhost:3004/architecture/overview)** - System design
+- 📦 **[Packages](http://localhost:3004/packages)** - Package documentation
+- 🔌 **[Integrations](http://localhost:3004/reference/integrations)** - Add AI, Email, i18n, etc.
 
 All documentation is also available in `apps/docs/src/content/docs/`
 

@@ -5,6 +5,9 @@ import type {
   UpdatePreferencesInput,
 } from "@workspace/types";
 
+// Re-export types for convenience (though importing from @workspace/types is preferred)
+export type { UpdatePreferencesInput };
+
 export async function getPreferences(): Promise<PreferencesResponse> {
   return api.get<PreferencesResponse>("/preferences");
 }

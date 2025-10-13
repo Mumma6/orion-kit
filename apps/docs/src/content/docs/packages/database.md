@@ -82,7 +82,7 @@ await db.insert(tasks).values({
 });
 ```
 
-See [ZOD_VALIDATION.md](./ZOD_VALIDATION.md) for complete documentation.
+See the [Zod Validation Guide](/guide/zod) for complete documentation.
 
 ### 2. Generate and run migrations
 
@@ -153,11 +153,29 @@ pnpm db:check
 {
   id: number;
   clerkUserId: string;
-  theme: string | null;
-  language: string | null;
+
+  // UI Preferences
+  theme: string | null; // "light" | "dark" | "system"
+  language: string | null; // "en" | "sv" etc.
   timezone: string | null;
-  emailNotifications: string | null;
+
+  // Task Preferences
+  defaultTaskStatus: string | null; // Default status for new tasks
+
+  // Notification Settings
+  emailNotifications: string | null; // "enabled" | "disabled"
+  taskReminders: string | null;
+  weeklyDigest: string | null;
   pushNotifications: string | null;
+
+  // Stripe Billing
+  plan: string | null; // "free" | "pro" | "enterprise"
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  stripeSubscriptionStatus: string | null; // "active" | "canceled" etc.
+  stripePriceId: string | null;
+  stripeCurrentPeriodEnd: Date | null;
+
   createdAt: Date;
   updatedAt: Date;
 }

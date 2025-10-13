@@ -62,21 +62,23 @@ const { data, isLoading, error } = useTasks();
 
 ```
 apps/app/
-├── components/
+├── app/
 │   └── providers.tsx          # QueryClientProvider setup
 ├── lib/
 │   └── api/
 │       ├── client.ts          # Generic fetch wrapper
 │       ├── tasks.ts           # Task API functions
-│       └── README.md
+│       ├── billing.ts         # Billing API functions
+│       └── preferences.ts     # Preferences API functions
 └── hooks/
-    ├── use-tasks.ts           # TanStack Query hooks
-    └── README.md
+    ├── use-tasks.ts           # TanStack Query hooks for tasks
+    ├── use-billing.ts         # Billing hooks
+    └── use-settings.ts        # Settings hooks
 ```
 
 ### 1. Provider Setup
 
-`components/providers.tsx` sets up the QueryClient:
+`app/providers.tsx` sets up the QueryClient:
 
 ```typescript
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

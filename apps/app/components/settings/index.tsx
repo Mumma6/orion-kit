@@ -9,7 +9,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { SettingsProfile } from "./settings-profile";
 import { SettingsTaskPreferences } from "./settings-task-preferences";
 import { SettingsNotifications } from "./settings-notifications";
-import type { UpdatePreferencesInput } from "@/lib/api/preferences";
+import type { UpdatePreferencesInput } from "@workspace/types";
 
 export function SettingsContent() {
   const { user } = useUser();

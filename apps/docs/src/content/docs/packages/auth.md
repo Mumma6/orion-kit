@@ -161,12 +161,28 @@ export function Profile() {
 
 ### Client Components (`@workspace/auth/client`)
 
+**Components:**
+
 - `ClerkProvider` - Wrap your app with this
+- `SignIn`, `SignUp` - Full-page auth components
 - `SignInButton`, `SignUpButton`, `SignOutButton` - Pre-built auth buttons
 - `UserButton` - User profile dropdown
 - `SignedIn`, `SignedOut` - Conditional rendering components
+- `UserProfile`, `OrganizationProfile` - Profile management
+- `OrganizationSwitcher`, `OrganizationList` - Organization features
+
+**Hooks:**
+
 - `useUser()` - Hook to access user data
 - `useAuth()` - Hook to access auth methods
+- `useClerk()` - Hook to access Clerk instance
+- `useSignIn()`, `useSignUp()` - Auth flow hooks
+
+**Types:**
+
+- `UserResource` - User object type
+- `OrganizationResource` - Organization type
+- `SessionResource` - Session type
 
 ### Server Utilities (`@workspace/auth/server`)
 
