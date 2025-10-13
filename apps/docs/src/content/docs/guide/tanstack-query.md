@@ -1,324 +1,87 @@
 ---
-title: TanStack Query Integration
+title: TanStack Query
 ---
 
-# TanStack Query Integration
+# TanStack Query
 
-Orion Kit uses [TanStack Query](https://tanstack.com/query) (formerly React Query) for server state management. This provides a powerful, declarative API for fetching, caching, and updating data.
+Automatic caching, background refetching, and request deduplication for server state.
 
-## Why TanStack Query?
+## Why?
 
-### Problems with Manual Fetching
+**Without TanStack Query:**
 
-```typescript
-// ❌ Manual approach - lots of boilerplate
-const [data, setData] = useState(null);
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState(null);
+- Manual loading/error state
+- No caching (refetch on every mount)
+- Race conditions
+- Lots of boilerplate
 
-useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/tasks");
-      const data = await response.json();
-      setData(data);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchData();
-}, []);
-```
-
-**Issues:**
-
-- 🔴 No caching - refetch on every mount
-- 🔴 No automatic refetching
-- 🔴 Race conditions with concurrent requests
-- 🔴 No request deduplication
-- 🔴 Complex invalidation logic
-- 🔴 Lots of boilerplate
-
-### TanStack Query Solution
+**With TanStack Query:**
 
 ```typescript
-// ✅ TanStack Query - clean and powerful
-const { data, isLoading, error } = useTasks();
+const { data, isLoading } = useTasks(); // Done.
 ```
 
-**Benefits:**
-
-- ✅ Automatic caching and cache invalidation
-- ✅ Background refetching
-- ✅ Request deduplication
-- ✅ Optimistic updates
-- ✅ Loading and error states
-- ✅ Minimal boilerplate
+Automatic caching, refetching, deduplication, and loading states.
 
 ## Architecture
 
 ```
-apps/app/
-├── app/
-│   └── providers.tsx          # QueryClientProvider setup
-├── lib/
-│   └── api/
-│       ├── client.ts          # Generic fetch wrapper
-│       ├── tasks.ts           # Task API functions
-│       ├── billing.ts         # Billing API functions
-│       └── preferences.ts     # Preferences API functions
-└── hooks/
-    ├── use-tasks.ts           # TanStack Query hooks for tasks
-    ├── use-billing.ts         # Billing hooks
-    └── use-settings.ts        # Settings hooks
+app/providers.tsx       # QueryClient setup
+lib/api/tasks.ts        # API functions
+hooks/use-tasks.ts      # TanStack Query hooks
+components/tasks.tsx    # Use hooks
 ```
 
-### 1. Provider Setup
+## Usage Pattern
 
-`app/providers.tsx` sets up the QueryClient:
-
-```typescript
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // Data fresh for 5 min
-      gcTime: 1000 * 60 * 10, // Keep in cache for 10 min
-      retry: 1, // Retry failed requests once
-      refetchOnWindowFocus: true, // Refetch on window focus
-    },
-  },
-});
-```
-
-### 2. API Client
-
-`lib/api/client.ts` provides a generic fetch wrapper:
+**1. API Function** (`lib/api/tasks.ts`):
 
 ```typescript
-export const api = {
-  get: <T>(endpoint: string) => fetcher<T>(endpoint, { method: "GET" }),
-  post: <T>(endpoint: string, data: unknown) =>
-    fetcher<T>(endpoint, { method: "POST", body: JSON.stringify(data) }),
-  // ... put, patch, delete
-};
-```
-
-Features:
-
-- Automatic `credentials: include` for auth cookies
-- JSON content type headers
-- Error handling
-- TypeScript generics for type safety
-
-### 3. API Functions
-
-`lib/api/tasks.ts` defines API functions with TypeScript types:
-
-```typescript
-export interface Task {
-  id: number;
-  title: string;
-  status: "todo" | "in-progress" | "completed" | "cancelled";
-  // ...
-}
-
-export async function getTasks(): Promise<TasksResponse> {
-  return api.get<TasksResponse>("/tasks");
-}
-
-export async function createTask(
-  input: CreateTaskInput
-): Promise<CreateTaskResponse> {
-  return api.post<CreateTaskResponse>("/tasks", input);
+export async function getTasks(): Promise<TasksListResponse> {
+  return api.get<TasksListResponse>("/tasks");
 }
 ```
 
-### 4. TanStack Query Hooks
-
-`hooks/use-tasks.ts` wraps API functions with TanStack Query:
+**2. Hook** (`hooks/use-tasks.ts`):
 
 ```typescript
-// Query keys for cache management
-export const tasksKeys = {
-  all: ["tasks"],
-  lists: () => [...tasksKeys.all, "list"],
-};
+export const tasksKeys = { all: ["tasks"] };
 
-// Fetch tasks
 export function useTasks() {
   return useQuery({
-    queryKey: tasksKeys.lists(),
+    queryKey: tasksKeys.all,
     queryFn: getTasks,
   });
 }
 
-// Create task mutation
 export function useCreateTask() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: createTask,
     onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: tasksKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tasksKeys.all });
     },
   });
 }
 ```
 
-### 5. Usage in Components
-
-Components use the hooks:
+**3. Component**:
 
 ```typescript
 function TasksList() {
-  // Automatic caching, loading, error handling
-  const { data, isLoading, error, refetch } = useTasks();
+  const { data, isLoading } = useTasks();
+  const createTask = useCreateTask();
 
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage error={error} />;
-
-  return (
-    <div>
-      {data.tasks.map((task) => (
-        <TaskItem key={task.id} task={task} />
-      ))}
-      <button onClick={() => refetch()}>Refresh</button>
-    </div>
-  );
+  if (isLoading) return <Spinner />;
+  return <div>{data.tasks.map(task => <TaskItem {...task} />)}</div>;
 }
 ```
 
-## Features in Detail
+## Key Features
 
-### Automatic Caching
+- **Automatic caching** - Multiple components share same data
+- **Background refetch** - Updates on window focus/network reconnect
+- **Request deduplication** - One request for multiple consumers
+- **Optimistic updates** - Instant UI feedback
 
-Data is cached automatically. Multiple components using `useTasks()` share the same cache:
-
-```typescript
-// Component A
-const { data } = useTasks(); // Fetches from API
-
-// Component B (mounted later)
-const { data } = useTasks(); // Uses cached data, no API call!
-```
-
-### Background Refetching
-
-Data refetches automatically:
-
-- When the browser window regains focus
-- When the network reconnects
-- At configured intervals (if enabled)
-
-```typescript
-const { data } = useTasks();
-// Switch tabs, come back → data automatically refetches
-```
-
-### Request Deduplication
-
-Multiple components requesting the same data trigger only one network request:
-
-```typescript
-// Both components mount at the same time
-function ComponentA() {
-  const { data } = useTasks(); // Triggers fetch
-}
-
-function ComponentB() {
-  const { data } = useTasks(); // Waits for the same fetch
-}
-// Only ONE network request is made!
-```
-
-## Best Practices
-
-### 1. Always Use Hooks, Not API Functions Directly
-
-```typescript
-// ✅ Good
-function MyComponent() {
-  const { data } = useTasks();
-  return <div>{data.total} tasks</div>;
-}
-
-// ❌ Bad
-function MyComponent() {
-  const [data, setData] = useState(null);
-  useEffect(() => {
-    getTasks().then(setData);
-  }, []);
-  return <div>{data?.total} tasks</div>;
-}
-```
-
-### 2. Define TypeScript Types
-
-```typescript
-// ✅ Good
-export interface Task {
-  id: number;
-  title: string;
-  status: "todo" | "in-progress" | "completed";
-}
-
-export async function getTasks(): Promise<Task[]> {
-  return api.get<Task[]>("/tasks");
-}
-
-// ❌ Bad (no types)
-export async function getTasks() {
-  return api.get("/tasks");
-}
-```
-
-### 3. Use Query Keys Consistently
-
-```typescript
-// ✅ Good
-export const tasksKeys = {
-  all: ["tasks"],
-  lists: () => [...tasksKeys.all, "list"],
-};
-
-export function useTasks() {
-  return useQuery({
-    queryKey: tasksKeys.lists(),
-    queryFn: getTasks,
-  });
-}
-
-// When invalidating
-queryClient.invalidateQueries({ queryKey: tasksKeys.lists() });
-
-// ❌ Bad (hardcoded keys)
-useQuery({ queryKey: ["tasks"], queryFn: getTasks });
-queryClient.invalidateQueries({ queryKey: ["tasks"] });
-```
-
-## Learn More
-
-- [TanStack Query Docs](https://tanstack.com/query/latest/docs/react/overview)
-- [Query Keys Guide](https://tanstack.com/query/latest/docs/react/guides/query-keys)
-- [Mutations Guide](https://tanstack.com/query/latest/docs/react/guides/mutations)
-- [Optimistic Updates](https://tanstack.com/query/latest/docs/react/guides/optimistic-updates)
-
-## Summary
-
-TanStack Query provides:
-
-✅ **Automatic caching** - Share data across components  
-✅ **Background refetching** - Keep data fresh automatically  
-✅ **Request deduplication** - One request for multiple consumers  
-✅ **Loading & error states** - Built-in state management  
-✅ **Optimistic updates** - Instant UI updates  
-✅ **Type safety** - Full TypeScript support  
-✅ **Minimal boilerplate** - Clean, declarative code
-
-It's the industry standard for data fetching in React, and it's production-ready! 🚀
+See [TanStack Query docs](https://tanstack.com/query) for more.

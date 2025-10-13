@@ -1,136 +1,120 @@
 ---
 title: Stripe Payments
-description: Complete guide to setting up and testing Stripe payments in Orion Kit
+description: Complete guide to setting up Stripe subscriptions in Orion Kit
 ---
 
-# Stripe Payments Guide
+# Stripe Payments
 
-This guide covers everything you need to know about integrating Stripe payments in Orion Kit, from setup to testing.
+Orion Kit includes a full Stripe subscription implementation with checkout, webhooks, billing portal, and multi-plan support. This guide walks you through setup, testing, and production deployment.
 
-## Overview
+## What You'll Build
 
-Orion Kit includes a complete Stripe integration for subscription-based payments:
+After setup, users can:
 
-- ✅ Checkout sessions
-- ✅ Customer portal for managing subscriptions
-- ✅ Webhook handling for real-time updates
-- ✅ Multiple pricing plans (Free, Pro, Enterprise)
-- ✅ Automatic database sync
+1. View plans on `/dashboard/billing`
+2. Click "Upgrade to Pro" → redirect to Stripe Checkout
+3. Complete payment → webhook updates database → redirect back with success message
+4. Manage subscription in Stripe Customer Portal (cancel, update payment method)
 
----
+## How It Works
 
-## Prerequisites
+**Flow:**
 
-Before you start, make sure you have:
+1. User clicks "Upgrade" → frontend calls `/api/checkout` with `priceId`
+2. API creates Stripe Checkout Session → returns session URL
+3. User completes payment on Stripe → Stripe sends webhook to `/api/webhooks/stripe`
+4. Webhook updates `user_preferences` table with subscription data
+5. User redirected back to `/dashboard/billing?success=true`
 
-1. A [Stripe account](https://dashboard.stripe.com/register) (test mode is fine)
-2. Stripe CLI installed: `brew install stripe/stripe-cli/stripe`
-3. Your Stripe API keys
+**Key Parts:**
 
----
+- **`@workspace/payment`**: Stripe client, checkout, webhook handlers
+- **API routes**: `/api/checkout`, `/api/billing-portal`, `/api/webhooks/stripe`
+- **Database**: `user_preferences` stores `stripeCustomerId`, `stripeSubscriptionId`, `plan`, etc.
+- **Frontend**: Billing page shows current plan, upgrade buttons
 
-## Step 1: Get Your Stripe API Keys
+## Setup
 
-### 1. Login to Stripe Dashboard
+### 1. Get API Keys
 
-Go to [https://dashboard.stripe.com/test/apikeys](https://dashboard.stripe.com/test/apikeys)
+**Where:** [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys)
 
-### 2. Copy Your Keys
+**What to copy:**
 
-You'll see two keys:
+- **Publishable key** (starts with `pk_test_`) - used in frontend
+- **Secret key** (starts with `sk_test_`) - used in backend
 
-- **Publishable key** - Starts with `pk_test_...` (safe to expose in frontend)
-- **Secret key** - Starts with `sk_test_...` (keep secret!)
-
-### 3. Add to Environment Variables
-
-**`apps/api/.env.local`:**
+**Add to `apps/api/.env.local`:**
 
 ```bash
 STRIPE_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+NEXT_PUBLIC_APP_URL=http://localhost:3001  # Where to redirect after payment
 ```
 
-**`apps/app/.env.local`:**
+**Add to `apps/app/.env.local`:**
 
 ```bash
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
----
+### 2. Create Subscription Products
 
-## Step 2: Create Products and Prices
+**Where:** [Stripe Products Dashboard](https://dashboard.stripe.com/test/products)
 
-### 1. Go to Products
+**Create two products:**
 
-Visit [https://dashboard.stripe.com/test/products](https://dashboard.stripe.com/test/products)
+**Pro Plan:**
 
-### 2. Create Pro Plan
+- Click **"Add Product"**
+- Name: `Pro`
+- Description: `Pro plan with 100 tasks`
+- Pricing model: **Recurring**
+- Price: `$19.00` / month
+- Click **Save** → copy the **Price ID** (starts with `price_`)
 
-1. Click **"+ Add product"**
-2. Name: `Pro`
-3. Description: `For professionals and small teams`
-4. Pricing model: `Standard pricing`
-5. Price: `$19.00`
-6. Billing period: `Monthly`
-7. Click **"Save product"**
-8. Copy the **Price ID** (starts with `price_...`)
-
-### 3. Create Enterprise Plan
-
-Repeat the above steps with:
+**Enterprise Plan:**
 
 - Name: `Enterprise`
-- Price: `$99.00`
-- Copy the **Price ID**
+- Description: `Enterprise plan with unlimited tasks`
+- Price: `$99.00` / month
+- Copy **Price ID**
 
-### 4. Add Price IDs to Environment Variables
-
-**`apps/api/.env.local`:**
-
-```bash
-NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...
-NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_...
-```
-
-**`apps/app/.env.local`:**
+**Add to `apps/api/.env.local`:**
 
 ```bash
-STRIPE_PRICE_ID_PRO=price_...
-STRIPE_PRICE_ID_ENTERPRISE=price_...
+STRIPE_PRICE_ID_PRO=price_1234567890abcdef
+STRIPE_PRICE_ID_ENTERPRISE=price_0987654321fedcba
 ```
 
-⚠️ **Important:** Price IDs must have `NEXT_PUBLIC_` prefix to work in client components!
+**Add to `apps/app/.env.local`:**
 
----
+```bash
+STRIPE_PRICE_ID_PRO=price_1234567890abcdef
+STRIPE_PRICE_ID_ENTERPRISE=price_0987654321fedcba
+```
 
-## Step 3: Set Up Webhooks (Local Development)
+> **Why two files?** The API needs Price IDs to create checkout sessions. The frontend needs them to pass to the API when user clicks "Upgrade".
 
-Webhooks allow Stripe to notify your app when payments succeed.
+### 3. Setup Webhooks (Local Development)
 
-### 1. Install Stripe CLI
+**Why webhooks?** When a user completes payment on Stripe, Stripe needs to notify your API to update the database. Webhooks are POST requests Stripe sends to your server.
+
+**For local development**, use Stripe CLI to forward webhook events to `localhost`:
+
+**Install Stripe CLI:**
 
 ```bash
 brew install stripe/stripe-cli/stripe
 ```
 
-### 2. Login to Stripe
+**Login to Stripe:**
 
 ```bash
 stripe login
+# Opens browser → login with your Stripe account
 ```
 
-This opens your browser for authentication.
-
-### 3. Start Webhook Listener
-
-**Option A: Using npm script (recommended)**
-
-```bash
-pnpm stripe:listen-dev
-```
-
-**Option B: Direct command**
+**Forward webhooks to local API:**
 
 ```bash
 stripe listen --forward-to localhost:3002/webhooks/stripe
@@ -139,412 +123,185 @@ stripe listen --forward-to localhost:3002/webhooks/stripe
 You'll see output like:
 
 ```
-> Ready! Your webhook signing secret is whsec_abc123xyz... (^C to quit)
+> Ready! Your webhook signing secret is whsec_1234567890abcdef
 ```
 
-**Copy the `whsec_...` secret!**
-
-### 4. Add Webhook Secret to Environment
-
-**`apps/api/.env.local`:**
+**Copy the `whsec_...` secret** and add to `apps/api/.env.local`:
 
 ```bash
-STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_WEBHOOK_SECRET=whsec_1234567890abcdef
 ```
 
-### 5. Restart API Server
-
-Environment variables are only loaded at startup:
+**Restart the API:**
 
 ```bash
-# Stop API server (Ctrl+C) and restart:
 pnpm --filter api dev
 ```
 
----
+> **Note:** The webhook secret stays the same as long as `stripe listen` is running. If you stop and restart it, you'll get a new secret.
 
-## Do I Need a New Webhook Secret Every Time?
+### 4. Enable Customer Portal
 
-**No!** The webhook secret (`whsec_...`) stays the same **as long as `stripe listen` is running**.
+**What it does:** Stripe Customer Portal lets users manage their subscription (cancel, update payment method) without you building that UI.
 
-### When you NEED a new secret:
+**Enable it:**
 
-- ❌ You stopped `stripe listen` and restarted it → **Same secret**
-- ❌ You restart your API server → **Same secret**
-- ✅ You close terminal and start a completely new `stripe listen` session → **New secret**
+1. Go to [Portal Settings](https://dashboard.stripe.com/test/settings/billing/portal)
+2. Click **"Activate test link"**
+3. Enable features you want (cancel subscription, update payment method, etc.)
 
-### Best Practice:
-
-Keep `stripe listen` running in a dedicated terminal tab during development. You only need to update `STRIPE_WEBHOOK_SECRET` once per development session.
+Done! Users can now click "Manage Billing" on `/dashboard/billing`.
 
 ---
 
-## Step 4: Enable Stripe Customer Portal
+## Testing the Payment Flow
 
-The Customer Portal allows users to manage their subscriptions.
+### Test Card
 
-### 1. Go to Customer Portal Settings
+Use Stripe's test card for all test payments:
 
-[https://dashboard.stripe.com/test/settings/billing/portal](https://dashboard.stripe.com/test/settings/billing/portal)
-
-### 2. Click "Activate test link"
-
-### 3. Configure Features (Optional)
-
-Choose what users can do:
-
-- ✅ Update payment method
-- ✅ Cancel subscription
-- ✅ View invoices
-- ⬜ Update subscription (switch plans)
-
-Click **"Save"**
-
----
-
-## Step 5: Complete Environment Setup
-
-Here's what your **complete** `.env.local` files should look like:
-
-### `apps/api/.env.local`
-
-```bash
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
-# Database
-DATABASE_URL=postgresql://...
-
-# Stripe
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...
-NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_...
-NEXT_PUBLIC_APP_URL=http://localhost:3001
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-
-# Observability (optional)
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
-NEXT_PUBLIC_AXIOM_TOKEN=xaat-...
-NEXT_PUBLIC_AXIOM_DATASET=orion-kit
-NEXT_PUBLIC_API_URL=http://localhost:3002
-```
-
-### `apps/app/.env.local`
-
-```bash
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
-# Database
-DATABASE_URL=postgresql://...
-
-# API URL
-NEXT_PUBLIC_API_URL=http://localhost:3002
-
-# Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PRICE_ID_PRO=price_...
-STRIPE_PRICE_ID_ENTERPRISE=price_...
-
-# Observability (optional)
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
-NEXT_PUBLIC_AXIOM_TOKEN=xaat-...
-NEXT_PUBLIC_AXIOM_DATASET=orion-kit
-```
-
----
-
-## Testing Payments
-
-### Test Card Numbers
-
-Stripe provides test cards for different scenarios:
-
-| Card Number           | Scenario                               |
-| --------------------- | -------------------------------------- |
-| `4242 4242 4242 4242` | ✅ Successful payment                  |
-| `4000 0025 0000 3155` | ✅ Requires authentication (3D Secure) |
-| `4000 0000 0000 9995` | ❌ Declined (insufficient funds)       |
-| `4000 0000 0000 0002` | ❌ Declined (card declined)            |
-
-**For any test card:**
-
+- **Card number:** `4242 4242 4242 4242`
 - **Expiry:** Any future date (e.g., `12/34`)
 - **CVC:** Any 3 digits (e.g., `123`)
 - **ZIP:** Any 5 digits (e.g., `12345`)
 
-### Testing the Complete Flow
+See [Stripe test cards](https://stripe.com/docs/testing#cards) for more scenarios (declined cards, 3D Secure, etc.).
 
-#### 1. Start All Services
+### Complete Test Flow
 
-You need **3 terminal windows**:
-
-**Terminal 1 - Webhook Listener:**
+**1. Start all services** (use 3 terminal windows):
 
 ```bash
-pnpm stripe:listen
-```
+# Terminal 1: Stripe webhook listener
+stripe listen --forward-to localhost:3002/webhooks/stripe
 
-**Terminal 2 - API Server:**
-
-```bash
+# Terminal 2: API server
 pnpm --filter api dev
-```
 
-**Terminal 3 - App Server:**
-
-```bash
+# Terminal 3: App server
 pnpm --filter app dev
 ```
 
-#### 2. Navigate to Billing
+**2. Test checkout:**
 
-Open `http://localhost:3001/dashboard/billing`
+1. Visit http://localhost:3001/sign-up → create test account
+2. Go to http://localhost:3001/dashboard/billing
+3. Current plan should show "Free"
+4. Click **"Upgrade to Pro"**
+5. You'll be redirected to Stripe Checkout
+6. Fill in test card: `4242 4242 4242 4242`, any expiry/CVC
+7. Click **"Subscribe"**
+8. Stripe redirects back to `/dashboard/billing?success=true`
+9. Plan should now show **"Pro"**
 
-#### 3. Click "Upgrade to Pro"
+**3. Verify webhook:**
 
-You'll be redirected to Stripe Checkout
-
-#### 4. Fill in Payment Details
-
-```
-Email: test@example.com
-Card number: 4242 4242 4242 4242
-MM/YY: 12/34
-CVC: 123
-Name: Test User
-```
-
-#### 5. Complete Payment
-
-Click **"Pay"**
-
-#### 6. Verify Webhook
-
-In Terminal 1 (webhook listener), you should see:
+In Terminal 1 (Stripe CLI), you should see:
 
 ```
---> checkout.session.completed [evt_abc123]
-<-- [200] POST http://localhost:3002/webhooks/stripe [evt_abc123]
---> customer.subscription.created [evt_def456]
-<-- [200] POST http://localhost:3002/webhooks/stripe [evt_def456]
+[200] POST /webhooks/stripe [checkout.session.completed]
 ```
 
-✅ Green `[200]` means webhook succeeded!
+If you see `[400]` or `[500]`, check API logs for errors.
 
-#### 7. Check Database
-
-Your user should now have:
-
-- ✅ `plan: "pro"`
-- ✅ `stripeCustomerId: "cus_..."`
-- ✅ `stripeSubscriptionId: "sub_..."`
-- ✅ `stripeSubscriptionStatus: "active"`
-
-You can verify in Drizzle Studio:
+**4. Verify database:**
 
 ```bash
 pnpm db:studio
-# Open http://localhost:4983
+# Open user_preferences table
+# You should see:
+# - plan: "pro"
+# - stripeCustomerId: "cus_..."
+# - stripeSubscriptionId: "sub_..."
+# - stripeSubscriptionStatus: "active"
 ```
 
-#### 8. Test Customer Portal
+**5. Test Customer Portal:**
 
-Back in `/dashboard/billing`, click **"Manage Billing"**
-
-You should be redirected to Stripe Customer Portal where you can:
-
-- View invoices
-- Update payment method
-- Cancel subscription
-
----
+1. On `/dashboard/billing`, click **"Manage Billing"**
+2. You'll be redirected to Stripe Customer Portal
+3. Try canceling subscription → returns to app → plan shows "Free" again
 
 ## Troubleshooting
 
-### "priceId is undefined"
+| Issue                                  | Cause                       | Fix                                                                                                                                  |
+| -------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **"STRIPE_SECRET_KEY is not defined"** | Missing API key             | Add `STRIPE_SECRET_KEY` to `apps/api/.env.local` → restart API                                                                       |
+| **"priceId is undefined"**             | Missing Price IDs in env    | Add `STRIPE_PRICE_ID_PRO` and `STRIPE_PRICE_ID_ENTERPRISE` to both `apps/api/.env.local` and `apps/app/.env.local` → restart servers |
+| **Webhook returns `[400]`**            | Wrong webhook secret        | Copy new `whsec_...` from `stripe listen` output → update `STRIPE_WEBHOOK_SECRET` in `apps/api/.env.local` → restart API             |
+| **Webhook returns `[500]`**            | API error (DB, validation)  | Check API terminal for error logs → common cause is missing `DATABASE_URL`                                                           |
+| **Plan doesn't update after payment**  | Webhook not running         | Ensure `stripe listen` is running in Terminal 1                                                                                      |
+| **Redirect fails after checkout**      | Wrong `NEXT_PUBLIC_APP_URL` | Set to `http://localhost:3001` for local dev                                                                                         |
 
-**Problem:** Price IDs not showing in frontend
-
-**Solution:** Make sure price IDs have `NEXT_PUBLIC_` prefix:
-
-```bash
-# ❌ Wrong
-STRIPE_PRICE_ID_PRO=price_...
-
-# ✅ Correct
-NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...
-```
-
-Restart servers after changing env vars!
-
----
-
-### "STRIPE_WEBHOOK_SECRET is not defined"
-
-**Problem:** Webhook secret missing or not loaded
-
-**Solution:**
-
-1. Make sure `stripe listen` is running
-2. Copy the `whsec_...` secret it prints
-3. Add to `apps/api/.env.local`:
-   ```bash
-   STRIPE_WEBHOOK_SECRET=whsec_...
-   ```
-4. Restart API server
-
----
-
-### "Invalid price ID" or "Product ID not found"
-
-**Problem:** Using Product ID (`prod_...`) instead of Price ID (`price_...`)
-
-**Solution:**
-
-1. Go to [Stripe Products](https://dashboard.stripe.com/test/products)
-2. Click on your product
-3. Under "Pricing", copy the **Price ID** (starts with `price_...`)
-4. Update `.env.local` files
-
----
-
-### Webhook shows `[400]` or `[500]`
-
-**Problem:** Webhook failed to process
-
-**Check Terminal 2 (API logs)** for error messages.
-
-**Common causes:**
-
-- Missing `userPreferences` in database (should auto-create now)
-- Invalid price ID
-- Database connection issues
-
-**Fix:** Check API logs and database connection
-
----
-
-### "No Stripe customer found"
-
-**Problem:** User hasn't subscribed yet
-
-**Solution:** Subscribe to a plan first, then use Customer Portal
-
-**Note:** This is expected behavior! Users need an active subscription to access the billing portal.
-
----
-
-## Production Setup
+## Production Deployment
 
 ### 1. Switch to Live Mode
 
-In Stripe Dashboard, toggle from **"Test mode"** to **"Live mode"**
+In Stripe dashboard (top-right corner), toggle from **Test Mode** to **Live Mode**.
 
 ### 2. Get Live API Keys
 
-Same process as test keys, but they'll start with:
+**Developers** → **API Keys**:
 
-- `pk_live_...` (publishable)
-- `sk_live_...` (secret)
+- Copy **Live Publishable Key** (starts with `pk_live_`)
+- Copy **Live Secret Key** (starts with `sk_live_`)
 
-### 3. Create Production Webhook
+### 3. Create Live Products
 
-1. Go to [Webhooks](https://dashboard.stripe.com/webhooks)
-2. Click **"+ Add endpoint"**
-3. URL: `https://your-api-domain.com/webhooks/stripe`
-4. Events to send:
+Repeat product creation from **Setup Step 2**, but in **Live Mode**:
+
+- Create **Pro** plan ($19/month) → copy Price ID
+- Create **Enterprise** plan ($99/month) → copy Price ID
+
+### 4. Setup Production Webhooks
+
+**Important:** In production, Stripe sends webhooks directly to your public URL (not through CLI).
+
+1. Go to **Developers** → **Webhooks** → **Add Endpoint**
+2. **Endpoint URL:** `https://your-api-domain.com/webhooks/stripe` (e.g., `https://api.yourdomain.com/webhooks/stripe`)
+3. **Events to send:** Select these events:
    - `checkout.session.completed`
    - `customer.subscription.created`
    - `customer.subscription.updated`
    - `customer.subscription.deleted`
-   - `invoice.payment_succeeded`
-   - `invoice.payment_failed`
-5. Click **"Add endpoint"**
-6. Copy the **Signing secret** (starts with `whsec_...`)
+4. Click **Add Endpoint**
+5. Copy the **Signing Secret** (starts with `whsec_`)
 
-### 4. Update Production Environment Variables
+### 5. Update Environment Variables in Vercel
 
-In Vercel (or your hosting platform):
+For each app (`web`, `app`, `api`), go to **Vercel Dashboard** → **Settings** → **Environment Variables**:
+
+**`apps/api` (Production):**
 
 ```bash
 STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_... (from webhook endpoint)
-NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_... (live price)
-NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_... (live price)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
-NEXT_PUBLIC_APP_URL=https://your-app-domain.com
+STRIPE_WEBHOOK_SECRET=whsec_... # from webhook endpoint above
+STRIPE_PRICE_ID_PRO=price_... # live Price ID
+STRIPE_PRICE_ID_ENTERPRISE=price_... # live Price ID
+NEXT_PUBLIC_APP_URL=https://app.yourdomain.com
 ```
 
----
-
-## Testing Checklist
-
-Before deploying to production, verify:
-
-- [ ] Test checkout flow with `4242 4242 4242 4242`
-- [ ] Verify webhook receives `checkout.session.completed`
-- [ ] Confirm database updates with subscription data
-- [ ] Test customer portal access
-- [ ] Try canceling and reactivating subscription
-- [ ] Test failed payment with `4000 0000 0000 9995`
-- [ ] Verify error handling and user feedback
-
----
-
-## Learn More
-
-- [Stripe Testing Documentation](https://stripe.com/docs/testing)
-- [Stripe Webhooks Guide](https://stripe.com/docs/webhooks)
-- [Stripe Test Cards](https://stripe.com/docs/testing#cards)
-- [Orion Kit Environment Variables](/guide/environment-variables/)
-
----
-
-## Quick Reference
-
-### Development Commands
+**`apps/app` (Production):**
 
 ```bash
-# Start webhook listener
-pnpm stripe:listen-dev
-
-# Run API server
-pnpm --filter api dev
-
-# Run app server
-pnpm --filter app dev
-
-# Open Drizzle Studio
-pnpm db:studio
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_PRICE_ID_PRO=price_... # same live Price ID
+STRIPE_PRICE_ID_ENTERPRISE=price_... # same live Price ID
 ```
 
-### Test Card
+### 6. Enable Live Customer Portal
 
-```
-Card: 4242 4242 4242 4242
-Expiry: 12/34
-CVC: 123
-ZIP: 12345
-```
+Go to [Live Portal Settings](https://dashboard.stripe.com/settings/billing/portal) → **Activate live link**
 
-### Webhook Events
+### 7. Test with Real Card
 
-| Event                           | When                       |
-| ------------------------------- | -------------------------- |
-| `checkout.session.completed`    | User completes checkout    |
-| `customer.subscription.created` | New subscription created   |
-| `customer.subscription.updated` | Subscription modified      |
-| `customer.subscription.deleted` | Subscription canceled      |
-| `invoice.payment_succeeded`     | Recurring payment succeeds |
-| `invoice.payment_failed`        | Payment fails              |
+Use a real card in test mode first (or your own card). Stripe doesn't charge you for your own subscriptions in test mode.
 
 ---
 
-**Need help?** Check the [troubleshooting section](#troubleshooting) or open an issue on GitHub.
+## Further Reading
+
+- [Stripe Testing Guide](https://stripe.com/docs/testing)
+- [Stripe Webhooks](https://stripe.com/docs/webhooks)
+- [Customer Portal](https://stripe.com/docs/billing/subscriptions/integrating-customer-portal)
+- [Stripe Security](https://stripe.com/docs/security)

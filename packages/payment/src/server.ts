@@ -76,24 +76,6 @@ export async function createBillingPortalSession(
 }
 
 /**
- * Get customer by ID
- */
-export async function getCustomer(
-  customerId: string
-): Promise<Stripe.Customer | null> {
-  try {
-    const customer = await stripe.customers.retrieve(customerId);
-    if (customer.deleted) {
-      return null;
-    }
-    return customer as Stripe.Customer;
-  } catch (error) {
-    console.error("Failed to get customer:", error);
-    return null;
-  }
-}
-
-/**
  * Get subscription by ID
  */
 export async function getSubscription(
@@ -131,47 +113,4 @@ export async function cancelSubscription(
   });
 
   return subscription;
-}
-
-/**
- * Reactivate subscription
- */
-export async function reactivateSubscription(
-  subscriptionId: string
-): Promise<Stripe.Subscription> {
-  const subscription = await stripe.subscriptions.update(subscriptionId, {
-    cancel_at_period_end: false,
-  });
-
-  return subscription;
-}
-
-/**
- * Get or create customer
- */
-export async function getOrCreateCustomer(
-  userId: string,
-  email: string,
-  name?: string
-): Promise<Stripe.Customer> {
-  // Search for existing customer by email
-  const customers = await stripe.customers.list({
-    email,
-    limit: 1,
-  });
-
-  if (customers.data.length > 0) {
-    return customers.data[0]!;
-  }
-
-  // Create new customer
-  const customer = await stripe.customers.create({
-    email,
-    name,
-    metadata: {
-      userId,
-    },
-  });
-
-  return customer;
 }

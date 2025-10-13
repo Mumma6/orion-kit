@@ -4,7 +4,7 @@
  */
 
 import type { UserPreference } from "@workspace/database/schema";
-import type { ApiSuccessResponse, UpdateResponse } from "./api";
+import type { ApiSuccessResponse, CreateResponse } from "./api";
 
 // Re-export domain types
 export type { UserPreference } from "@workspace/database/schema";
@@ -16,4 +16,4 @@ export type UpdatePreferencesInput = Partial<
 
 // Preferences response types
 export type PreferencesResponse = ApiSuccessResponse<UserPreference>;
-export type UpdatePreferencesResponse = UpdateResponse<UserPreference>;
+export type UpdatePreferencesResponse = CreateResponse<UserPreference>;

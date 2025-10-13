@@ -1,197 +1,202 @@
 ---
-title: Auth Package
-description: Authentication with Clerk
+title: "@workspace/auth"
+description: Authentication package using Clerk
 ---
 
 # @workspace/auth
 
-Authentication package powered by [Clerk](https://clerk.com/) providing complete user management and authentication.
+This package wraps Clerk's authentication system, providing user management, session handling, and protected routes.
 
-## Installation
+## What It Does
 
-This package is already included in the workspace. To use it in your app:
+**Clerk** handles:
 
-```json
-{
-  "dependencies": {
-    "@workspace/auth": "workspace:*"
-  }
-}
-```
+- **User authentication**: Sign-up, sign-in, sign-out
+- **Session management**: Secure sessions across all apps
+- **User profiles**: Pre-built UI for user settings
+- **Protected routes**: Middleware to guard `/dashboard/*` routes
 
-## Environment Variables
+**Where it's used:**
 
-Add these to your `.env.local` file:
+- All three Next.js apps (`web`, `app`, `api`)
+- Sign-in/sign-up pages in `apps/app/app/(auth)`
+- Middleware in each app to protect authenticated routes
+- API routes to get current user ID
 
-```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key_here
-CLERK_SECRET_KEY=your_secret_key_here
-```
+## Setup
 
-Get your keys from [Clerk Dashboard → API Keys](https://dashboard.clerk.com/last-active?path=api-keys).
+1. Create a Clerk account at [clerk.com](https://clerk.com)
+2. Add API keys to `.env.local` (see [Cloud Accounts Setup](/guide/accounts-setup))
+3. Clerk is automatically configured via `ClerkProvider` in root layouts
 
-## Usage
+## Usage in Orion Kit
 
-### 1. Set up middleware
+### Middleware (Route Protection)
 
-Create `middleware.ts` in your app:
+All apps use Clerk middleware to protect authenticated routes:
+
+**`apps/app/middleware.ts`:**
 
 ```typescript
-import { createAuthMiddleware, config } from "@workspace/auth/middleware";
-
-// Option 1: Use default middleware
 export { default, config } from "@workspace/auth/middleware";
-
-// Option 2: Custom protected routes
-export const config = {
-  matcher: [
-    "/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
-  ],
-};
-
-export default createAuthMiddleware({
-  protectedRoutes: ["/dashboard(.*)"],
-  publicRoutes: ["/"],
-});
 ```
 
-### 2. Wrap your app with ClerkProvider
+This protects all `/dashboard/*` routes. Unauthenticated users are redirected to `/sign-in`.
 
-In `app/layout.tsx`:
+### Client Components
 
-```typescript
-import { ClerkProvider } from '@workspace/auth/client';
-
-export default function RootLayout({ children }) {
-  return (
-    <ClerkProvider>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </ClerkProvider>
-  );
-}
-```
-
-### 3. Use auth components
+**Sign-in/Sign-out buttons:**
 
 ```typescript
-import {
-  SignInButton,
-  SignUpButton,
-  UserButton,
-  SignedIn,
-  SignedOut,
-} from '@workspace/auth/client';
+import { SignInButton, UserButton, SignedIn, SignedOut } from '@workspace/auth/client';
 
-export default function Header() {
+export const Header = () => {
   return (
     <header>
       <SignedOut>
         <SignInButton />
-        <SignUpButton />
       </SignedOut>
       <SignedIn>
-        <UserButton />
+        <UserButton /> {/* Shows user avatar + dropdown */}
       </SignedIn>
     </header>
   );
-}
+};
 ```
 
-### 4. Access user on the server
+**Used in:**
 
-In Server Components, Route Handlers, or Server Actions:
+- `apps/app/components/header.tsx`
+- `apps/web/components/navbar.tsx`
+
+### Server Components (Get Current User)
+
+Access user data in Server Components and API routes:
 
 ```typescript
 import { auth, currentUser } from "@workspace/auth/server";
 
-// Get auth data
-export async function GET() {
+export default async function DashboardPage() {
   const { userId } = await auth();
 
   if (!userId) {
-    return new Response("Unauthorized", { status: 401 });
+    return redirect("/sign-in");
   }
 
-  // Use userId...
-}
+  // Fetch user's tasks from database using userId
+  const tasks = await db.query.tasks.findMany({
+    where: eq(tasks.userId, userId),
+  });
 
-// Get full user object
-export async function getUser() {
-  const user = await currentUser();
-
-  if (!user) {
-    throw new Error("Unauthorized");
-  }
-
-  return {
-    id: user.id,
-    email: user.emailAddresses[0]?.emailAddress,
-    name: user.firstName + " " + user.lastName,
-  };
+  return <div>Welcome! You have {tasks.length} tasks.</div>;
 }
 ```
 
-### 5. Use hooks on the client
+**Get full user object:**
 
 ```typescript
-'use client';
+const user = await currentUser();
+console.log(user?.emailAddresses[0]?.emailAddress);
+```
 
-import { useUser, useAuth } from '@workspace/auth/client';
+**Used in:**
 
-export function Profile() {
-  const { user, isLoaded, isSignedIn } = useUser();
+- `apps/api/app/tasks/route.ts` - to filter tasks by userId
+- `apps/api/app/preferences/route.ts` - to get user subscription
+- `apps/app/app/dashboard/page.tsx` - to show user-specific data
+
+### Client Hooks
+
+Use Clerk hooks in Client Components:
+
+```typescript
+"use client";
+import { useUser, useAuth } from "@workspace/auth/client";
+
+export const ProfileButton = () => {
+  const { user, isSignedIn, isLoaded } = useUser();
   const { signOut } = useAuth();
 
   if (!isLoaded) return <div>Loading...</div>;
-  if (!isSignedIn) return <div>Not signed in</div>;
+
+  if (!isSignedIn) return <SignInButton />;
 
   return (
     <div>
-      <p>Welcome, {user.firstName}!</p>
-      <button onClick={() => signOut()}>Sign out</button>
+      <p>Hello, {user.firstName}</p>
+      <button onClick={() => signOut()}>Sign Out</button>
     </div>
   );
-}
+};
 ```
 
 ## API Reference
 
-### Client Components (`@workspace/auth/client`)
+### Client (`@workspace/auth/client`)
 
 **Components:**
 
-- `ClerkProvider` - Wrap your app with this
-- `SignIn`, `SignUp` - Full-page auth components
-- `SignInButton`, `SignUpButton`, `SignOutButton` - Pre-built auth buttons
-- `UserButton` - User profile dropdown
-- `SignedIn`, `SignedOut` - Conditional rendering components
-- `UserProfile`, `OrganizationProfile` - Profile management
-- `OrganizationSwitcher`, `OrganizationList` - Organization features
+- `ClerkProvider` - Wrap your app (already done in root layouts)
+- `SignIn`, `SignUp` - Full sign-in/sign-up pages
+- `UserButton` - User avatar with dropdown menu
+- `SignInButton`, `SignUpButton` - Trigger auth modals
+- `SignedIn`, `SignedOut` - Conditional rendering based on auth state
 
 **Hooks:**
 
-- `useUser()` - Hook to access user data
-- `useAuth()` - Hook to access auth methods
-- `useClerk()` - Hook to access Clerk instance
-- `useSignIn()`, `useSignUp()` - Auth flow hooks
+- `useUser()` - Get current user object and loading state
+- `useAuth()` - Get auth methods (`signOut`, `signIn`, etc.) and session data
+- `useClerk()` - Access Clerk instance directly
 
-**Types:**
+### Server (`@workspace/auth/server`)
 
-- `UserResource` - User object type
-- `OrganizationResource` - Organization type
-- `SessionResource` - Session type
+**Functions:**
 
-### Server Utilities (`@workspace/auth/server`)
+- `auth()` - Get `userId`, `sessionId` in Server Components or API routes
+- `currentUser()` - Get full user object (email, name, avatar, etc.)
+- `clerkClient` - Clerk API client for advanced operations (update user, etc.)
 
-- `auth()` - Get auth data (userId, sessionId, etc.)
-- `currentUser()` - Get full user object
-- `clerkClient` - Direct access to Clerk API
-- `clerkMiddleware()` - Middleware function
+## Common Patterns
 
-## Learn More
+### Protect an API route
+
+```typescript
+// apps/api/app/tasks/route.ts
+import { auth } from "@workspace/auth/server";
+
+export async function GET() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const tasks = await db.query.tasks.findMany({
+    where: eq(tasks.userId, userId),
+  });
+
+  return NextResponse.json({ success: true, data: tasks });
+}
+```
+
+### Redirect unauthenticated users
+
+```typescript
+// apps/app/app/dashboard/page.tsx
+import { auth } from "@workspace/auth/server";
+import { redirect } from "next/navigation";
+
+export default async function DashboardPage() {
+  const { userId } = await auth();
+
+  if (!userId) redirect("/sign-in");
+
+  return <div>Protected content</div>;
+}
+```
+
+## Further Reading
 
 - [Clerk Documentation](https://clerk.com/docs)
-- [Next.js + Clerk Quickstart](https://clerk.com/docs/quickstarts/nextjs)
+- [Clerk Next.js Quickstart](https://clerk.com/docs/quickstarts/nextjs)
+- [Clerk API Reference](https://clerk.com/docs/reference/clerkjs)

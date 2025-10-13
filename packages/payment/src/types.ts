@@ -1,11 +1,5 @@
 import type Stripe from "stripe";
 
-export interface StripeCustomer {
-  readonly id: string;
-  readonly email: string;
-  readonly name?: string;
-}
-
 export interface StripeSubscription {
   readonly id: string;
   readonly customerId: string;
@@ -28,13 +22,6 @@ export interface SubscriptionData {
 
 export interface PortalSession {
   readonly url: string;
-}
-
-export interface WebhookEvent {
-  readonly type: string;
-  readonly data: {
-    readonly object: unknown;
-  };
 }
 
 export type SubscriptionStatus =

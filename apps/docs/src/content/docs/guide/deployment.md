@@ -1,535 +1,382 @@
 ---
 title: Deployment Guide
-description: Deploy Orion Kit to production on Vercel
+description: Complete guide to deploying Orion Kit to production on Vercel
 ---
 
 # Deployment Guide
 
-Complete guide to deploying Orion Kit to production on Vercel.
+This guide walks you through deploying Orion Kit's three Next.js apps (`web`, `app`, `api`) to Vercel. You'll set up production services, configure environment variables, and verify the deployment.
 
 ## Overview
 
-Orion Kit consists of 3 separate Next.js applications that need to be deployed independently:
+**What You'll Deploy:**
 
-1. **Landing Page** (`apps/web`) - Marketing site
-2. **Dashboard** (`apps/app`) - Main application
-3. **API** (`apps/api`) - Backend API
+- **`apps/web`**: Marketing/landing page (public)
+- **`apps/app`**: Dashboard app with tasks and billing (authenticated)
+- **`apps/api`**: Backend API for tasks, subscriptions, webhooks
 
-**Important:** `apps/studio` (Drizzle Studio) is **development-only** and should NOT be deployed to production.
+**What NOT to deploy:**
 
----
+- **`apps/studio`**: Drizzle Studio (local development only)
+- **`apps/docs`**: Documentation site (optional, deploy separately if needed)
+
+**Deployment order:** API first → App second → Web third (app needs API URL, web is independent)
 
 ## Prerequisites
 
-Before deploying, ensure you have:
+Before deploying, you need:
 
-- [ ] [Vercel account](https://vercel.com/signup)
-- [ ] GitHub repository with your code
-- [ ] Production accounts for all services (Clerk, Neon, Stripe, etc.)
-- [ ] Production API keys ready
+1. **GitHub repository** with your Orion Kit code (push your local repo)
+2. **Vercel account** (free plan is fine, sign up at [vercel.com](https://vercel.com))
+3. **Production API keys** from cloud services:
+   - Clerk (live keys, not test)
+   - Neon (production database)
+   - Stripe (live mode, products created)
+   - Axiom, PostHog (optional, but recommended for production monitoring)
 
----
+## Step-by-Step Deployment
 
-## Deployment Architecture
+### Step 1: Setup Production Cloud Services
 
-```
-┌─────────────────────────────────────────────────┐
-│              Vercel Projects                    │
-│                                                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌────────┐│
-│  │   web        │  │    app       │  │  api   ││
-│  │ (Landing)    │  │ (Dashboard)  │  │ (API)  ││
-│  │              │  │              │  │        ││
-│  │ *.vercel.app │  │ *.vercel.app │  │ *.app  ││
-│  └──────────────┘  └──────────────┘  └────────┘│
-│         │                  │              │     │
-└─────────┼──────────────────┼──────────────┼─────┘
-          │                  │              │
-          └──────────────────┴──────────────┘
-                             │
-                   ┌─────────▼─────────┐
-                   │   Neon Database   │
-                   │   (Production)    │
-                   └───────────────────┘
-```
+You'll need **production** (live) API keys, not test/development keys.
 
----
+**1. Neon (Production Database)**
 
-## Step 1: Prepare Production Services
+- Create a **new project** in [Neon](https://neon.tech) (separate from your dev database)
+- Name it `orion-production` or similar
+- Copy the **Pooled Connection** URL (starts with `postgresql://`)
+- **Run migration:**
+  ```bash
+  export DATABASE_URL="postgresql://your-production-url..."
+  pnpm db:push
+  ```
+  This creates `tasks` and `user_preferences` tables in production DB.
 
-### 1.1 Create Production Database
+**2. Clerk (Production Auth)**
 
-**Neon:**
+- In [Clerk dashboard](https://clerk.com), create a **new application** (or switch existing app to production)
+- **Add production domains** (after deployment, you'll update this):
+  - Go to **Domains** → add your Vercel domains (e.g., `app.vercel.app`, `api.vercel.app`)
+- Copy **Live API Keys**:
+  - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (starts with `pk_live_`)
+  - `CLERK_SECRET_KEY` (starts with `sk_live_`)
 
-1. Go to [Neon Console](https://console.neon.tech)
-2. Create new project: `orion-production`
-3. Copy **Pooled Connection** string
-4. Save for later: `DATABASE_URL`
+**3. Stripe (Live Mode)**
 
-### 1.2 Create Production Auth
+- In [Stripe dashboard](https://dashboard.stripe.com), toggle to **Live Mode** (top-right)
+- **Create products** (Pro and Enterprise plans) → copy Price IDs
+- **Get live API keys** (**Developers** → **API Keys**):
+  - Publishable key (starts with `pk_live_`)
+  - Secret key (starts with `sk_live_`)
+- **Webhook setup** (important, do this AFTER deploying API):
+  - **Developers** → **Webhooks** → **Add Endpoint**
+  - URL: `https://YOUR-API-DOMAIN.vercel.app/webhooks/stripe` (you'll get this URL after deploying API)
+  - Events: `checkout.session.completed`, `customer.subscription.*`
+  - Copy **Signing Secret** (starts with `whsec_`)
 
-**Clerk:**
+**4. Axiom (Optional, but Recommended)**
 
-1. Go to [Clerk Dashboard](https://dashboard.clerk.com)
-2. Create new application: `Orion Production`
-3. Configure allowed domains:
-   - Add your production domains
-   - Add Vercel preview domains: `*.vercel.app`
-4. Copy API keys:
-   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (starts with `pk_live_`)
-   - `CLERK_SECRET_KEY` (starts with `sk_live_`)
+- Create a **production dataset** in [Axiom](https://axiom.co) (e.g., `orion-production`)
+- Create API token → copy `AXIOM_TOKEN`
 
-### 1.3 Create Production Stripe
+**5. PostHog (Optional)**
 
-**Stripe:**
-
-1. Switch to **Live Mode** in [Stripe Dashboard](https://dashboard.stripe.com)
-2. Create products (same as test mode):
-   - Pro Plan ($19/month)
-   - Enterprise Plan ($99/month)
-3. Copy **live** API keys:
-   - `STRIPE_SECRET_KEY` (starts with `sk_live_`)
-   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (starts with `pk_live_`)
-4. Copy Price IDs:
-   - `NEXT_PUBLIC_STRIPE_PRICE_ID_PRO`
-   - `NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE`
-
-### 1.4 Create Production Webhooks
-
-**Stripe Webhooks:**
-
-1. Go to [Webhooks](https://dashboard.stripe.com/webhooks) (Live Mode)
-2. Click **Add endpoint**
-3. URL: `https://YOUR-API-DOMAIN.vercel.app/webhooks/stripe` (update after API deployment)
-4. Events to send:
-   - `checkout.session.completed`
-   - `customer.subscription.created`
-   - `customer.subscription.updated`
-   - `customer.subscription.deleted`
-   - `invoice.payment_succeeded`
-   - `invoice.payment_failed`
-5. Copy signing secret: `STRIPE_WEBHOOK_SECRET` (starts with `whsec_`)
-
-### 1.5 Production Observability (Optional)
-
-**Axiom:**
-
-1. Create dataset: `orion-production`
-2. Create API token with **Ingest** permission
-3. Copy: `AXIOM_TOKEN`, `AXIOM_DATASET`
-
-**PostHog:**
-
-1. Create new project: `Orion Production`
-2. Copy: `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`
+- Create a **production project** in [PostHog](https://posthog.com)
+- Copy API key and host URL
 
 ---
 
-## Step 2: Deploy to Vercel
+### Step 2: Deploy API to Vercel
 
-### 2.1 Connect GitHub Repository
+Deploy the API first because the app needs to know the API URL.
 
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Click **Add New** → **Project**
-3. Import your GitHub repository
-4. **Don't deploy yet!** We need to configure each app separately.
+**1. Create New Project in Vercel**
 
-### 2.2 Deploy Project 1: API (Backend)
+- Go to [Vercel Dashboard](https://vercel.com/dashboard)
+- Click **Add New** → **Project**
+- Import your GitHub repository
+- Vercel will detect a monorepo
 
-**Why first?** Other apps need the API URL.
+**2. Configure API Project**
 
-1. In Vercel, click **Import** again
-2. Select your repository
-3. Configure:
-   - **Project Name**: `orion-api` (or similar)
-   - **Framework**: Next.js
-   - **Root Directory**: `apps/api`
-   - **Build Command**: Leave default
-   - **Install Command**: `pnpm install`
+- **Project Name:** `orion-api` (or your preferred name)
+- **Framework Preset:** Next.js
+- **Root Directory:** `apps/api` ← **IMPORTANT: Select this from dropdown**
+- **Build Command:** Leave default (`next build`)
+- **Output Directory:** Leave default (`.next`)
 
-4. **Environment Variables** (click "Add"):
+**3. Add Environment Variables**
+
+Click **Environment Variables** and add these (from Step 1):
 
 ```bash
-# Clerk Authentication
+# Clerk (required)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
 CLERK_SECRET_KEY=sk_live_...
 
-# Database
-DATABASE_URL=postgresql://...
+# Database (required)
+DATABASE_URL=postgresql://your-production-neon-url...
 
-# Stripe
+# Stripe (required)
 STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...
-NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
-
-# App URL (will update after app deployment)
-NEXT_PUBLIC_APP_URL=https://orion-app.vercel.app
-
-# Observability (optional)
-AXIOM_TOKEN=xaat-...
-AXIOM_DATASET=orion-production
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-```
-
-5. Select environments for each variable:
-   - ✅ Production
-   - ✅ Preview
-   - ⬜ Development (optional)
-
-6. Click **Deploy**
-7. Wait for deployment to complete
-8. **Copy the deployment URL**: `https://orion-api-xxx.vercel.app`
-
-### 2.3 Update Stripe Webhook
-
-Now that we have the API URL:
-
-1. Go back to [Stripe Webhooks](https://dashboard.stripe.com/webhooks)
-2. Edit your webhook endpoint
-3. Update URL to: `https://YOUR-ACTUAL-API-URL.vercel.app/webhooks/stripe`
-4. Save changes
-
-### 2.4 Deploy Project 2: Dashboard App
-
-1. In Vercel, click **Add New** → **Project**
-2. Select your repository
-3. Configure:
-   - **Project Name**: `orion-app`
-   - **Framework**: Next.js
-   - **Root Directory**: `apps/app`
-
-4. **Environment Variables**:
-
-```bash
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
-CLERK_SECRET_KEY=sk_live_...
-
-# Database (needed for middleware)
-DATABASE_URL=postgresql://...
-
-# API URL (use the URL from Step 2.2)
-NEXT_PUBLIC_API_URL=https://orion-api-xxx.vercel.app
-
-# Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...  # You'll update this after setting up webhook
 STRIPE_PRICE_ID_PRO=price_...
 STRIPE_PRICE_ID_ENTERPRISE=price_...
 
-# Observability (optional)
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+# App URL (required, temporarily use placeholder)
+NEXT_PUBLIC_APP_URL=https://placeholder.vercel.app  # Update after deploying app
+
+# Logging (optional but recommended)
+AXIOM_TOKEN=xaat-...
+AXIOM_DATASET=orion-production
 ```
 
-5. Click **Deploy**
-6. **Copy the deployment URL**: `https://orion-app-xxx.vercel.app`
+**4. Deploy**
 
-### 2.5 Update API Environment Variables
+- Click **Deploy**
+- Wait ~2 minutes for build to complete
+- **Copy the deployment URL** (e.g., `https://orion-api-abc123.vercel.app`)
 
-Now update the API with the actual app URL:
+**5. Update Stripe Webhook**
 
-1. Go to API project in Vercel
-2. **Settings** → **Environment Variables**
-3. Find `NEXT_PUBLIC_APP_URL`
-4. Update value to: `https://orion-app-xxx.vercel.app`
-5. Click **Save**
-6. Redeploy: **Deployments** → Latest → **...** → **Redeploy**
+- Go to Stripe dashboard → **Developers** → **Webhooks** → **Add Endpoint**
+- **Endpoint URL:** `https://orion-api-abc123.vercel.app/webhooks/stripe` (your actual API URL)
+- Select events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`
+- Copy the **Signing Secret** (starts with `whsec_`)
+- Back in Vercel → **Settings** → **Environment Variables** → update `STRIPE_WEBHOOK_SECRET`
+- **Redeploy** the API (Vercel → **Deployments** → three dots → **Redeploy**)
 
-### 2.6 Deploy Project 3: Landing Page
+---
 
-1. In Vercel, click **Add New** → **Project**
-2. Select your repository
-3. Configure:
-   - **Project Name**: `orion-web`
-   - **Framework**: Next.js
-   - **Root Directory**: `apps/web`
+### Step 3: Deploy App to Vercel
 
-4. **Environment Variables**:
+**1. Create New Project**
+
+- Vercel Dashboard → **Add New** → **Project**
+- Import same GitHub repo
+
+**2. Configure App Project**
+
+- **Project Name:** `orion-app`
+- **Root Directory:** `apps/app` ← **IMPORTANT**
+
+**3. Add Environment Variables**
 
 ```bash
-# Clerk (optional for landing)
+# Clerk (required)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
 CLERK_SECRET_KEY=sk_live_...
+
+# Database (required)
+DATABASE_URL=postgresql://your-production-neon-url...
+
+# API URL (required, use URL from Step 2)
+NEXT_PUBLIC_API_URL=https://orion-api-abc123.vercel.app
+
+# Stripe (required)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_PRICE_ID_PRO=price_...
+STRIPE_PRICE_ID_ENTERPRISE=price_...
 
 # Analytics (optional)
 NEXT_PUBLIC_POSTHOG_KEY=phc_...
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
-5. Click **Deploy**
+**4. Deploy**
+
+- Click **Deploy**
+- **Copy the deployment URL** (e.g., `https://orion-app-xyz789.vercel.app`)
+
+**5. Update API's App URL**
+
+- Go to API project in Vercel → **Settings** → **Environment Variables**
+- Update `NEXT_PUBLIC_APP_URL` to your actual app URL: `https://orion-app-xyz789.vercel.app`
+- **Redeploy** the API
 
 ---
 
-## Step 3: Configure Custom Domains (Optional)
+### Step 4: Deploy Web (Marketing Site)
 
-### 3.1 Add Custom Domains
+**1. Create New Project**
 
-For each project:
+- Vercel Dashboard → **Add New** → **Project**
+- Import same GitHub repo
 
-1. Go to project in Vercel
-2. **Settings** → **Domains**
-3. Add your domain:
-   - Web: `www.yourapp.com` or `yourapp.com`
-   - App: `app.yourapp.com`
-   - API: `api.yourapp.com`
-4. Follow Vercel's DNS instructions
+**2. Configure Web Project**
 
-### 3.2 Update Environment Variables
+- **Project Name:** `orion-web`
+- **Root Directory:** `apps/web` ← **IMPORTANT**
 
-After adding custom domains, update:
-
-**API Project:**
+**3. Add Environment Variables** (minimal, web is mostly static)
 
 ```bash
-NEXT_PUBLIC_APP_URL=https://app.yourapp.com
+# Analytics (optional)
+NEXT_PUBLIC_POSTHOG_KEY=phc_...
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+
+# Clerk (optional, if you have auth on marketing site)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
 ```
 
-**App Project:**
+**4. Deploy**
 
-```bash
-NEXT_PUBLIC_API_URL=https://api.yourapp.com
-```
-
-**Redeploy all projects** after updating.
-
-### 3.3 Update Clerk Domains
-
-1. Go to [Clerk Dashboard](https://dashboard.clerk.com)
-2. **Configure** → **Domains**
-3. Add your custom domains
-4. Update Allowed Origins
-
-### 3.4 Update Stripe Webhook
-
-1. Go to [Stripe Webhooks](https://dashboard.stripe.com/webhooks)
-2. Update endpoint URL to: `https://api.yourapp.com/webhooks/stripe`
+- Click **Deploy**
+- **Copy the deployment URL** (e.g., `https://orion-web-def456.vercel.app`)
 
 ---
 
-## Step 4: Database Migration
+### Step 5: Update Clerk Domains
 
-Push your schema to production database:
+**1. Add Production Domains to Clerk**
 
-```bash
-# Set production DATABASE_URL in terminal
-export DATABASE_URL="postgresql://production-url..."
-
-# Push schema
-pnpm db:push
-
-# Optional: Seed initial data
-pnpm db:seed
-```
-
-**Tip:** Don't seed production with test data!
+- Go to Clerk dashboard → your production app → **Domains**
+- Add these domains:
+  - `orion-app-xyz789.vercel.app` (your app URL)
+  - `orion-api-abc123.vercel.app` (your API URL)
+  - `orion-web-def456.vercel.app` (your web URL, if using Clerk there)
 
 ---
 
-## Environment Variables Reference
+### Step 6: Test Production Deployment
 
-### Required for ALL Apps
+**1. Visit your app:** `https://orion-app-xyz789.vercel.app`
+
+**2. Test signup flow:**
+
+- Click **Sign Up** → create account
+- Should redirect to `/dashboard`
+
+**3. Test billing flow:**
+
+- Go to `/dashboard/billing`
+- Click **Upgrade to Pro**
+- Use a real credit card or Stripe test card: `4242 4242 4242 4242`
+- Complete checkout → should redirect back with success message
+- Verify subscription is active in Stripe dashboard
+
+**4. Check logs:**
+
+- Visit Axiom → your production dataset
+- Should see API logs from your test requests
+
+**5. Check analytics:**
+
+- Visit PostHog → your production project
+- Should see page views and events from your test session
+
+---
+
+## Custom Domains (Optional)
+
+If you want to use your own domains instead of Vercel's default URLs:
+
+**1. Buy a domain** (e.g., `yourdomain.com` from Namecheap, Google Domains, etc.)
+
+**2. Add custom domains in Vercel:**
+
+For each project, go to **Settings** → **Domains**:
+
+- **Web:** `yourdomain.com` and `www.yourdomain.com`
+- **App:** `app.yourdomain.com`
+- **API:** `api.yourdomain.com`
+
+**3. Update DNS records** (Vercel provides instructions)
+
+**4. Update environment variables** with custom domains:
+
+In API project:
 
 ```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
-CLERK_SECRET_KEY=sk_live_...
+NEXT_PUBLIC_APP_URL=https://app.yourdomain.com
 ```
 
-### API (`apps/api`)
+In App project:
 
 ```bash
-# Required
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
-CLERK_SECRET_KEY=sk_live_...
-DATABASE_URL=postgresql://...
-NEXT_PUBLIC_APP_URL=https://app.yourapp.com
-
-# Stripe (Required)
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...
-NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
-
-# Observability (Optional)
-AXIOM_TOKEN=xaat-...
-AXIOM_DATASET=orion-production
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
 ```
 
-### App (`apps/app`)
+**5. Update Clerk allowed domains:**
 
-```bash
-# Required
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
-CLERK_SECRET_KEY=sk_live_...
-DATABASE_URL=postgresql://...
-NEXT_PUBLIC_API_URL=https://api.yourapp.com
+- Clerk dashboard → **Domains** → add `app.yourdomain.com`, `api.yourdomain.com`
 
-# Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_PRICE_ID_PRO=price_...
-STRIPE_PRICE_ID_ENTERPRISE=price_...
+**6. Update Stripe webhook URL:**
 
-# Analytics (Optional)
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-```
+- Stripe dashboard → **Webhooks** → update endpoint to `https://api.yourdomain.com/webhooks/stripe`
 
-### Web (`apps/web`)
+**7. Redeploy all three apps** to apply changes
 
-```bash
-# Optional
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
-CLERK_SECRET_KEY=sk_live_...
+---
 
-# Analytics (Optional)
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+## CORS Configuration
+
+Orion Kit's API is configured to accept requests only from your app domain for security.
+
+**How it works:**
+
+- `apps/api/middleware.ts` sets `Access-Control-Allow-Origin` header to `process.env.NEXT_PUBLIC_APP_URL`
+- This prevents other websites from calling your API
+
+**Verification:**
+
+- After deployment, try calling your API from the browser console on a different domain
+- You should get a CORS error
+- Calling from your app domain should work fine
+
+If you need to allow multiple domains, update `apps/api/middleware.ts`:
+
+```typescript
+const allowedOrigins = [
+  process.env.NEXT_PUBLIC_APP_URL,
+  "https://yourdomain.com",
+];
 ```
 
 ---
 
 ## Troubleshooting
 
-### "Unauthorized" errors
+| Issue                                   | Cause                        | Fix                                                                                                         |
+| --------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Build fails with "MODULE_NOT_FOUND"** | Wrong root directory         | Ensure **Root Directory** is set to `apps/api`, `apps/app`, or `apps/web` in Vercel project settings        |
+| **"DATABASE_URL is not defined"**       | Missing env var              | Add `DATABASE_URL` in Vercel → **Settings** → **Environment Variables** → redeploy                          |
+| **"Clerk: Missing publishable key"**    | Missing Clerk env var        | Add both `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` → redeploy                              |
+| **API returns 500 on webhook**          | Wrong Stripe webhook secret  | Copy new `whsec_*` from Stripe webhook endpoint → update `STRIPE_WEBHOOK_SECRET` in API env vars → redeploy |
+| **CORS error when calling API**         | Wrong `NEXT_PUBLIC_APP_URL`  | Update to match your actual app URL in API env vars → redeploy                                              |
+| **Redirect loop after sign-in**         | Clerk domains not configured | Add production domains in Clerk dashboard → **Domains**                                                     |
 
-**Check:**
+**Common mistakes:**
 
-- Clerk keys are production keys (`pk_live_`, `sk_live_`)
-- Domains are configured in Clerk dashboard
-- Cookies are being set correctly
-
-### Database connection errors
-
-**Check:**
-
-- Using **pooled connection** string from Neon
-- Connection string ends with `?sslmode=require`
-- Database exists and schema is pushed
-
-### Stripe webhooks failing
-
-**Check:**
-
-- Webhook URL is correct (with your actual domain)
-- Webhook secret is from the production endpoint
-- All required events are selected
-
-### CORS errors
-
-**Check:**
-
-- `NEXT_PUBLIC_APP_URL` is set correctly in API
-- No trailing slashes in URLs
-- Middleware CORS configuration allows your domains
-
-### Build failures
-
-**Check:**
-
-- All required environment variables are set
-- Root directory is correct (`apps/api`, `apps/app`, `apps/web`)
-- Install command is `pnpm install`
-
----
-
-## Step 5: Update CORS Configuration
-
-**Important:** Update CORS settings to allow your production domains.
-
-### Update API Middleware
-
-Edit `apps/api/middleware.ts`:
-
-```typescript
-// Replace localhost with your production domain
-"Access-Control-Allow-Origin": "https://app.yourapp.com"  // Not localhost!
-```
-
-### Update API Next Config
-
-Edit `apps/api/next.config.mjs`:
-
-```typescript
-headers: [
-  {
-    key: "Access-Control-Allow-Origin",
-    value: "https://app.yourapp.com", // Your production domain
-  },
-];
-```
-
-**Tip:** For multiple domains, use environment variables:
-
-```typescript
-"Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_APP_URL
-```
+- Forgetting to select the correct **Root Directory** in Vercel (it defaults to repo root, not the app)
+- Using test/dev API keys instead of production keys
+- Not redeploying after updating environment variables
 
 ---
 
 ## Production Checklist
 
-Before going live:
+Before going live, verify:
 
-- [ ] All three apps deployed successfully
-- [ ] Custom domains configured (optional)
-- [ ] Database schema pushed to production
-- [ ] CORS updated to production domains
-- [ ] Clerk production app configured with correct domains
-- [ ] Stripe webhook configured with production URL
-- [ ] All environment variables set correctly
-- [ ] Tested sign up flow
-- [ ] Tested payment flow
-- [ ] Tested webhook delivery
-- [ ] Verified logs in Axiom (if enabled)
-- [ ] Verified analytics in PostHog (if enabled)
-- [ ] Set up monitoring alerts
+- [ ] All 3 apps deployed (`api`, `app`, `web`)
+- [ ] Database schema pushed to production Neon: `pnpm db:push`
+- [ ] Stripe webhook endpoint created and pointing to production API URL
+- [ ] Clerk production domains added (app and API URLs)
+- [ ] All environment variables set with **production** (not test) keys
+- [ ] Tested signup flow (create account → redirect to dashboard)
+- [ ] Tested billing flow (upgrade to Pro → payment → subscription active in Stripe)
+- [ ] Logs appearing in Axiom (if configured)
+- [ ] Analytics appearing in PostHog (if configured)
+- [ ] CORS working (API only accepts requests from app domain)
 
----
-
-## Monitoring & Maintenance
-
-### Check Deployment Health
-
-1. **API Health**: Visit `https://api.yourapp.com/health`
-2. **Logs**: Check Vercel logs or Axiom
-3. **Errors**: Monitor Vercel errors
-4. **Analytics**: Check PostHog for user behavior
-
-### Regular Maintenance
-
-- Review Vercel bills monthly
-- Check Neon database usage
-- Rotate API keys quarterly
-- Update dependencies monthly
-- Review and clean logs
+**Estimated time:** ~45-60 minutes for first deployment (including service setup)
 
 ---
 
-## Learn More
+## Further Reading
 
-- [Vercel Documentation](https://vercel.com/docs)
-- [Environment Variables Guide](/guide/environment-variables)
-- [Cloud Services Setup](/guide/accounts-setup)
-- [Stripe Webhooks](/guide/stripe-payments)
-
----
-
-## Quick Deployment Summary
-
-```bash
-# 1. Create production services (Clerk, Neon, Stripe)
-# 2. Deploy in order:
-#    a. API first (get URL)
-#    b. App second (needs API URL)
-#    c. Web last
-# 3. Update Stripe webhook URL
-# 4. Push database schema
-# 5. Test everything!
-```
-
-**Estimated deployment time:** 30-60 minutes for first-time setup
+- [Vercel Deployment Docs](https://vercel.com/docs/deployments)
+- [Next.js Deployment](https://nextjs.org/docs/deployment)
+- [Environment Variables in Vercel](https://vercel.com/docs/concepts/projects/environment-variables)
+- [Monorepo Deployment on Vercel](https://vercel.com/docs/monorepos)

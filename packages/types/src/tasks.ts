@@ -5,7 +5,7 @@
 
 import type { Task } from "@workspace/database/schema";
 import { InsertTask } from "@workspace/database/schema";
-import type { ListResponse, CreateResponse, UpdateResponse } from "./api";
+import type { ListResponse, CreateResponse } from "./api";
 
 // Re-export schemas and types from database/schema (avoids importing client)
 export {
@@ -32,4 +32,4 @@ export interface TasksListResponse extends ListResponse<Task> {
 }
 
 export type CreateTaskResponse = CreateResponse<Task>;
-export type UpdateTaskResponse = UpdateResponse<Task>;
+export type UpdateTaskResponse = CreateResponse<Task>;

@@ -2,113 +2,32 @@
 title: Packages
 ---
 
-Orion Kit is organized as a monorepo with shared packages.
+# Packages
 
-## Available Packages
+Shared packages in the Orion Kit monorepo.
 
-### [@workspace/auth](/packages/auth)
+## Core Packages
 
-Authentication package powered by Clerk. Provides:
+| Package                                       | Purpose                                                  |
+| --------------------------------------------- | -------------------------------------------------------- |
+| **[@workspace/auth](/packages/auth)**         | Clerk authentication (client components, server utils)   |
+| **[@workspace/database](/packages/database)** | Drizzle ORM + Neon Postgres + auto-generated Zod schemas |
+| **[@workspace/types](/packages/types)**       | Centralized API response types                           |
+| **[@workspace/ui](/packages/ui)**             | shadcn/ui components (Radix UI + Tailwind)               |
+| **[@workspace/payment](/packages/payment)**   | Stripe subscriptions and billing                         |
+| **@workspace/analytics**                      | PostHog + Vercel Analytics                               |
+| **@workspace/observability**                  | Axiom logging + Web Vitals                               |
+| **@workspace/jobs**                           | Trigger.dev background jobs                              |
 
-- Client components (`SignInButton`, `UserButton`, etc.)
-- Server utilities (`auth()`, `currentUser()`)
-- Middleware helpers
-- Full TypeScript support
-
-### [@workspace/database](/packages/database)
-
-Database layer with Drizzle ORM and Neon. Includes:
-
-- Type-safe queries with Drizzle
-- Automatic Zod validation schemas
-- Serverless Postgres client
-- Migration management
-- Drizzle Studio integration
-
-### [@workspace/types](/packages/types)
-
-Centralized API response types package:
-
-- Generic API responses (`ApiSuccessResponse<T>`, `CreateResponse<T>`)
-- Composed response types (`CreateTaskResponse`, `TasksListResponse`)
-- Input types (`CreateTaskInput`, `UpdatePreferencesInput`)
-- Type guards and utilities
-
-### [@workspace/ui](/packages/ui)
-
-Shared UI components based on shadcn/ui. Contains:
-
-- Accessible Radix UI components
-- Tailwind CSS styling
-- Dark mode support
-- Reusable across all apps
-
-### @workspace/analytics
-
-Product analytics integration:
-
-- PostHog for event tracking
-- Vercel Analytics for performance
-- React provider components
-- Type-safe analytics events
-
-### @workspace/observability
-
-Structured logging and monitoring:
-
-- Axiom integration for logs
-- Request/response logging
-- Error tracking
-- Performance monitoring
-- Web Vitals tracking
-
-### @workspace/jobs
-
-Background job processing:
-
-- Trigger.dev integration
-- Scheduled tasks
-- Example job implementations
-- TypeScript-first job definitions
-
-### [@workspace/payment](/packages/payment)
-
-Stripe payments and subscriptions:
-
-- Checkout session creation
-- Webhook event handling
-- Subscription management
-- Customer portal integration
-- Multiple pricing tiers
-
-## Using Packages
-
-All packages are consumed via workspace dependencies:
+## Usage
 
 ```json
 {
   "dependencies": {
     "@workspace/auth": "workspace:*",
-    "@workspace/database": "workspace:*",
-    "@workspace/payment": "workspace:*",
-    "@workspace/ui": "workspace:*"
+    "@workspace/database": "workspace:*"
   }
 }
 ```
 
-## Package Development
-
-### Adding New Packages
-
-1. Create directory in `packages/`
-2. Add `package.json` with `name: "@workspace/package-name"`
-3. Update `pnpm-workspace.yaml` (if needed)
-4. Install in consuming apps
-
-### Publishing
-
-Packages are private and workspace-only. They are not published to npm.
-
-## Learn More
-
-Click on each package above to see detailed documentation.
+**Click each package above for documentation.**
