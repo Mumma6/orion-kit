@@ -1,8 +1,11 @@
 import { auth, currentUser } from "@workspace/auth/server";
 import { db, tasks, eq, desc } from "@workspace/database";
 import { createTaskInputSchema } from "@workspace/types";
-
-import type { Task, TasksListResponse } from "@workspace/types";
+import type {
+  Task,
+  TasksListResponse,
+  CreateTaskResponse,
+} from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
@@ -107,11 +110,13 @@ export const POST = withAxiom(async (req) => {
       duration,
     });
 
-    return NextResponse.json({
+    const response: CreateTaskResponse = {
       success: true,
       message: "Task created successfully",
       data: newTask,
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     logger.error("Failed to create task", error as Error);
     throw error;

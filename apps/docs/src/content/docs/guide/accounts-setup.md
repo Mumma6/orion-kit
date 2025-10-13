@@ -1,28 +1,19 @@
 ---
 title: Cloud Accounts Setup
-description: Complete setup guide for all cloud services used in Orion Kit
 ---
-
-# Cloud Accounts Setup
 
 Orion Kit uses cloud services for authentication, database, payments, and monitoring. This guide walks you through creating accounts and configuring each service.
 
-## Overview
+| Service     | What It Does           | Used Where            | Free Tier    |
+| ----------- | ---------------------- | --------------------- | ------------ |
+| **Clerk**   | User auth & management | All Next.js apps      | 10k MAU      |
+| **Neon**    | Postgres database      | API + Database schema | 0.5GB        |
+| **Stripe**  | Subscription payments  | Billing page          | No fees      |
+| **Axiom**   | Structured logging     | API error tracking    | 500MB/month  |
+| **PostHog** | Product analytics      | User behavior         | 1M events/mo |
+| **Vercel**  | Hosting                | Production deploy     | Unlimited    |
 
-| Service     | What It Does           | Used Where            | Free Tier    | Required?      |
-| ----------- | ---------------------- | --------------------- | ------------ | -------------- |
-| **Clerk**   | User auth & management | All Next.js apps      | 10k MAU      | ✅ Yes         |
-| **Neon**    | Postgres database      | API + Database schema | 0.5GB        | ✅ Yes         |
-| **Stripe**  | Subscription payments  | Billing page          | No fees      | ⚠️ For billing |
-| **Axiom**   | Structured logging     | API error tracking    | 500MB/month  | Optional       |
-| **PostHog** | Product analytics      | User behavior         | 1M events/mo | Optional       |
-| **Vercel**  | Hosting                | Production deploy     | Unlimited    | For prod       |
-
----
-
-## 🔐 Clerk (Required)
-
-### What It Does
+## 🔐 Clerk
 
 Clerk handles all user authentication, session management, and user profiles. It provides pre-built UI components for sign-in, sign-up, and user settings.
 
@@ -60,20 +51,9 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 ```
 
-**4. Test Authentication**
-
-```bash
-pnpm dev
-# Visit http://localhost:3001/sign-up
-# Create test account
-# You should be redirected to /dashboard
-```
-
 ---
 
-## 🗄️ Neon (Required)
-
-### What It Does
+## 🗄️ Neon
 
 Neon is a serverless Postgres database with autoscaling, branching, and a generous free tier. It stores all application data (tasks, user preferences, subscriptions).
 
@@ -132,9 +112,7 @@ pnpm db:studio
 
 ---
 
-## 💳 Stripe (Required for Billing)
-
-### What It Does
+## 💳 Stripe
 
 Stripe handles subscription payments, billing, and customer management. It processes payments for Pro and Enterprise plans.
 
@@ -166,7 +144,7 @@ In Stripe dashboard → **Products** → **Add Product**:
 **Enterprise Plan:**
 
 - Name: `Enterprise`
-- Price: `$99/month` (recurring)
+- Price: `$49/month` (recurring)
 - Copy the **Price ID**
 
 **3. Get API Keys**
@@ -230,9 +208,7 @@ See [Stripe Payments Guide](/guide/stripe-payments) for production setup and web
 
 ---
 
-## 📈 Axiom (Optional)
-
-### What It Does
+## 📈 Axiom
 
 Axiom is a serverless logging platform for structured logs, errors, and performance metrics. It provides queryable logs without the cost of traditional logging services.
 
@@ -281,9 +257,7 @@ pnpm dev
 
 ---
 
-## 📊 PostHog (Optional)
-
-### What It Does
+## 📊 PostHog
 
 PostHog is an open-source product analytics platform. It tracks user events, page views, and feature usage without sending data to third parties.
 
@@ -322,15 +296,13 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 pnpm dev
 # Visit http://localhost:3001
 # Navigate a few pages, create a task
-# Visit posthog.com → Activity
+# Visit posthog.com → Web Analytics
 # You should see events appearing in real-time
 ```
 
 ---
 
-## ⚡ Trigger.dev (Optional)
-
-### What It Does
+## ⚡ Trigger.dev
 
 Trigger.dev runs background jobs and scheduled tasks without managing infrastructure. It handles retries, logging, and monitoring.
 
@@ -377,9 +349,7 @@ pnpm trigger:dev
 
 ---
 
-## ▲ Vercel (For Production)
-
-### What It Does
+## ▲ Vercel
 
 Vercel is the deployment platform for Next.js apps. It provides serverless hosting, automatic deployments, and edge functions.
 
@@ -390,30 +360,5 @@ Vercel is the deployment platform for Next.js apps. It provides serverless hosti
 - **Environment variables**: Set in Vercel dashboard for each app
 
 See the [Deployment Guide](/guide/deployment) for complete deployment instructions.
-
-## Quick Setup
-
-```bash
-# 1. Create accounts (15 min total)
-# 2. Copy env files
-cp apps/web/.env.example apps/web/.env.local
-cp apps/app/.env.example apps/app/.env.local
-cp apps/api/.env.example apps/api/.env.local
-cp packages/database/.env.example packages/database/.env
-
-# 3. Fill in API keys
-# 4. Initialize
-pnpm db:push
-pnpm dev
-```
-
-## Verification
-
-```bash
-pnpm dev
-# Visit http://localhost:3001/sign-up
-# Create task in dashboard
-# Check Drizzle Studio: pnpm db:studio
-```
 
 **Troubleshooting?** Check service docs: [Clerk](https://clerk.com/docs) · [Neon](https://neon.tech/docs) · [Stripe](https://stripe.com/docs)

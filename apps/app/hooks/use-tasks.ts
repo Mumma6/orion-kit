@@ -4,7 +4,6 @@ import type {
   Task,
   TasksListResponse,
   CreateTaskInput,
-  UpdateTaskInput,
 } from "@workspace/types";
 import { showSuccessToast, showErrorToast } from "@/lib/errors";
 

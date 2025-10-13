@@ -2,8 +2,6 @@
 title: Error Handling
 ---
 
-# Error Handling
-
 Multi-layer error handling: **Sonner toasts**, **Zod validation**, **TanStack Query**, **Error Boundaries**.
 
 ## Toast Notifications

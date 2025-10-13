@@ -1,8 +1,3 @@
-/**
- * Billing Content Component
- * Main billing page with subscription management
- */
-
 "use client";
 
 import { useState } from "react";
@@ -16,7 +11,8 @@ import {
 import { BillingLoading } from "./billing-loading";
 import { BillingError } from "./billing-error";
 import { CurrentPlanCard } from "./current-plan-card";
-import { PricingCards } from "./pricing-cards";
+import { PricingCard } from "@workspace/payment/client";
+import { WebhookStatus } from "./webhook-status";
 
 export function BillingContent() {
   const {
@@ -28,15 +24,7 @@ export function BillingContent() {
   const checkout = useCheckout();
   const billingPortal = useBillingPortal();
   const [selectedPriceId, setSelectedPriceId] = useState<string | null>(null);
-
-  console.log("subscriptionData", subscriptionData);
-  console.log("PLANS", PLANS);
-  console.log("selectedPriceId", selectedPriceId);
-  console.log("checkout.isPending", checkout.isPending);
-  console.log("billingPortal.isPending", billingPortal.isPending);
-
-  console.log("error", error);
-  console.log("isLoading", isLoading);
+  const [showWebhookWarning, setShowWebhookWarning] = useState(true);
 
   const handleUpgrade = async (priceId: string) => {
     setSelectedPriceId(priceId);
@@ -55,12 +43,15 @@ export function BillingContent() {
     return <BillingError error={error} onRetry={refetch} />;
   }
 
-  const currentPlan = subscriptionData?.plan || "free";
-  const subscription = subscriptionData?.subscription;
+  const currentPlan = subscriptionData?.data.plan ?? "free";
+  const subscription = subscriptionData?.data.subscription;
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
-      {/* Header */}
+      {showWebhookWarning && process.env.NODE_ENV === "development" && (
+        <WebhookStatus onDismiss={() => setShowWebhookWarning(false)} />
+      )}
+
       <div className="flex items-center gap-4">
         <div className="rounded-2xl bg-primary p-3">
           <CreditCard className="h-8 w-8 text-primary-foreground" />
@@ -73,7 +64,6 @@ export function BillingContent() {
         </div>
       </div>
 
-      {/* Current Plan */}
       <CurrentPlanCard
         currentPlan={currentPlan}
         subscription={subscription}
@@ -81,16 +71,19 @@ export function BillingContent() {
         loading={billingPortal.isPending}
       />
 
-      {/* Pricing Cards */}
       <div>
         <h2 className="mb-4 text-2xl font-bold">Available Plans</h2>
-        <PricingCards
-          plans={PLANS}
-          currentPlan={currentPlan}
-          onUpgrade={handleUpgrade}
-          loading={checkout.isPending}
-          selectedPriceId={selectedPriceId}
-        />
+        <div className="grid gap-6 md:grid-cols-2">
+          {PLANS.map((plan) => (
+            <PricingCard
+              key={plan.id}
+              plan={plan}
+              current={currentPlan === plan.id}
+              onSelect={plan.priceId ? handleUpgrade : undefined}
+              loading={checkout.isPending && selectedPriceId === plan.priceId}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

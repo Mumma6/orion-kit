@@ -47,7 +47,7 @@ export const PLANS: readonly PricingPlan[] = [
     id: "enterprise",
     name: "Enterprise",
     description: "For large organizations",
-    price: 99,
+    price: 49,
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE,
     maxTasks: -1,
     maxUsers: -1,

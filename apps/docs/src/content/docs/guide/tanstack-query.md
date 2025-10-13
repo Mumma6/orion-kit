@@ -2,11 +2,7 @@
 title: TanStack Query
 ---
 
-# TanStack Query
-
 Automatic caching, background refetching, and request deduplication for server state.
-
-## Why?
 
 **Without TanStack Query:**
 

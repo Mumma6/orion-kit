@@ -1,6 +1,6 @@
 /**
- * Billing & Payment Response Types
- * Composed from generic API responses and payment domain types
+ * Billing Domain
+ * Combines: Payment package types + API responses
  */
 
 import type {
@@ -8,9 +8,16 @@ import type {
   SubscriptionData,
   PortalSession,
 } from "@workspace/payment";
-import type { ApiSuccessResponse } from "./api";
+import type { ApiResponse } from "./api";
 
-// Billing response types
-export type CreateCheckoutSessionResponse = ApiSuccessResponse<CheckoutSession>;
-export type SubscriptionResponse = ApiSuccessResponse<SubscriptionData>;
-export type CreatePortalSessionResponse = ApiSuccessResponse<PortalSession>;
+// ============================================
+// DOMAIN TYPES (from payment package)
+// ============================================
+export type { CheckoutSession, SubscriptionData, PortalSession };
+
+// ============================================
+// API RESPONSE TYPES (composed with generics)
+// ============================================
+export type CreateCheckoutSessionResponse = ApiResponse<CheckoutSession>;
+export type SubscriptionResponse = ApiResponse<SubscriptionData>;
+export type CreatePortalSessionResponse = ApiResponse<PortalSession>;

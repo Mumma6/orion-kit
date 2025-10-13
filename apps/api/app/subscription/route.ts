@@ -1,6 +1,7 @@
 import { auth } from "@workspace/auth/server";
 import { db, userPreferences, eq } from "@workspace/database";
 import { getSubscription, cancelSubscription } from "@workspace/payment/server";
+import type { SubscriptionResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 
@@ -30,21 +31,29 @@ export const GET = withAxiom(async () => {
       const duration = Date.now() - startTime;
       logger.info("User has no subscription", { userId, duration });
 
-      return NextResponse.json({
+      const response: SubscriptionResponse = {
         success: true,
-        subscription: null,
-        plan: "free",
-      });
+        data: {
+          subscription: null,
+          plan: "free",
+        },
+      };
+
+      return NextResponse.json(response);
     }
 
     const subscription = await getSubscription(userPref.stripeSubscriptionId);
 
     if (!subscription) {
-      return NextResponse.json({
+      const response: SubscriptionResponse = {
         success: true,
-        subscription: null,
-        plan: userPref.plan || "free",
-      });
+        data: {
+          subscription: null,
+          plan: userPref.plan || "free",
+        },
+      };
+
+      return NextResponse.json(response);
     }
 
     const duration = Date.now() - startTime;
@@ -55,11 +64,15 @@ export const GET = withAxiom(async () => {
       duration,
     });
 
-    return NextResponse.json({
+    const response: SubscriptionResponse = {
       success: true,
-      subscription,
-      plan: subscription.plan,
-    });
+      data: {
+        subscription,
+        plan: subscription.plan,
+      },
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     logger.error("Failed to fetch subscription", error as Error);
     return NextResponse.json(

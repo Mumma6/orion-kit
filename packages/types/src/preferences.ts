@@ -1,19 +1,30 @@
 /**
- * User Preferences Response Types
- * Composed from generic API responses and domain types
+ * User Preferences Domain
+ * Combines: Database entity + Zod schemas + API responses
  */
 
 import type { UserPreference } from "@workspace/database/schema";
-import type { ApiSuccessResponse, CreateResponse } from "./api";
+import type { ApiResponse } from "./api";
 
-// Re-export domain types
+// ============================================
+// ENTITY (from database)
+// ============================================
 export type { UserPreference } from "@workspace/database/schema";
 
-// Preferences input types
+// ============================================
+// INPUT SCHEMAS (Zod - for validation)
+// ============================================
+export { updateUserPreferencesSchema } from "@workspace/database/schema";
+
+// ============================================
+// INPUT TYPES (TypeScript - for API requests)
+// ============================================
 export type UpdatePreferencesInput = Partial<
   Omit<UserPreference, "id" | "clerkUserId" | "createdAt" | "updatedAt">
 >;
 
-// Preferences response types
-export type PreferencesResponse = ApiSuccessResponse<UserPreference>;
-export type UpdatePreferencesResponse = CreateResponse<UserPreference>;
+// ============================================
+// API RESPONSE TYPES (composed with generics)
+// ============================================
+export type PreferencesResponse = ApiResponse<UserPreference>;
+export type UpdatePreferencesResponse = ApiResponse<UserPreference>;

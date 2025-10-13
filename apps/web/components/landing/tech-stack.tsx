@@ -50,6 +50,11 @@ const techStack: Tech[] = [
     description: "Complete authentication with beautiful pre-built UI.",
   },
   {
+    emoji: "💳",
+    title: "Stripe",
+    description: "Payment processing for subscriptions and payments.",
+  },
+  {
     emoji: "✅",
     title: "Zod",
     description: "Runtime validation and type inference for forms & APIs.",
@@ -73,6 +78,11 @@ const techStack: Tech[] = [
     emoji: "⚡",
     title: "Trigger.dev",
     description: "Background jobs & scheduled tasks with TypeScript.",
+  },
+  {
+    emoji: "🎯",
+    title: "Playwright",
+    description: "End-to-end testing with Playwright.",
   },
   {
     emoji: "🧪",

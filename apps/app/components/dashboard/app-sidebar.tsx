@@ -54,7 +54,6 @@ const navItems = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
 
-  // Mark the current route as active
   const navItemsWithActive = navItems.map((item) => ({
     ...item,
     isActive: pathname === item.url,

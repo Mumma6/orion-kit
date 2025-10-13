@@ -194,6 +194,9 @@ importers:
       '@workspace/analytics':
         specifier: workspace:*
         version: link:../../packages/analytics
+      '@workspace/payment':
+        specifier: workspace:*
+        version: link:../../packages/payment
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui

@@ -3,11 +3,7 @@ title: Stripe Payments
 description: Complete guide to setting up Stripe subscriptions in Orion Kit
 ---
 
-# Stripe Payments
-
 Orion Kit includes a full Stripe subscription implementation with checkout, webhooks, billing portal, and multi-plan support. This guide walks you through setup, testing, and production deployment.
-
-## What You'll Build
 
 After setup, users can:
 
@@ -16,7 +12,7 @@ After setup, users can:
 3. Complete payment → webhook updates database → redirect back with success message
 4. Manage subscription in Stripe Customer Portal (cancel, update payment method)
 
-## How It Works
+### How It Works
 
 **Flow:**
 

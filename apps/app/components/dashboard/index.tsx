@@ -22,7 +22,6 @@ interface DashboardContentProps {
 export function DashboardContent({ user }: DashboardContentProps) {
   const { data: tasks, isLoading, error, refetch } = useTasks();
 
-  // Log to console when data changes
   if (tasks) {
     console.log("📋 Tasks from TanStack Query:", tasks);
   }

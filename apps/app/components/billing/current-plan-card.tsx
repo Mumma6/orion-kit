@@ -1,8 +1,3 @@
-/**
- * Current Plan Card Component
- * Displays user's current subscription plan
- */
-
 "use client";
 
 import {

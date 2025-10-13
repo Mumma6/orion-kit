@@ -5,6 +5,10 @@ import {
   eq,
   updateUserPreferencesSchema,
 } from "@workspace/database";
+import type {
+  PreferencesResponse,
+  UpdatePreferencesResponse,
+} from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
@@ -40,19 +44,23 @@ export const GET = withAxiom(async () => {
       const duration = Date.now() - startTime;
       logger.info("User preferences created", { userId, duration });
 
-      return NextResponse.json({
+      const response: PreferencesResponse = {
         success: true,
         data: newPref,
-      });
+      };
+
+      return NextResponse.json(response);
     }
 
     const duration = Date.now() - startTime;
     logger.info("User preferences fetched", { userId, duration });
 
-    return NextResponse.json({
+    const response: PreferencesResponse = {
       success: true,
       data: userPref,
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     logger.error("Failed to fetch preferences", error as Error);
     throw error;
@@ -115,11 +123,13 @@ export const PUT = withAxiom(async (req) => {
     const duration = Date.now() - startTime;
     logger.info("User preferences updated", { userId, duration });
 
-    return NextResponse.json({
+    const response: UpdatePreferencesResponse = {
       success: true,
       message: "Preferences updated successfully",
       data: updatedPref,
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     logger.error("Failed to update preferences", error as Error);
     throw error;

@@ -21,17 +21,14 @@ export function TasksContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
-  // Filter and search tasks
   const filteredTasks = useMemo(() => {
     const tasks = tasksData?.data || [];
 
     return tasks.filter((task) => {
-      // Status filter
       if (statusFilter !== "all" && task.status !== statusFilter) {
         return false;
       }
 
-      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
@@ -53,15 +50,12 @@ export function TasksContent() {
 
   const handleDeleteTask = async (taskId: number) => {
     if (!confirm("Are you sure you want to delete this task?")) return;
-    // Delete is handled in EditTaskSheet
   };
 
-  // Loading State
   if (isLoading) {
     return <TasksLoading />;
   }
 
-  // Error State
   if (error) {
     return <TasksError error={error} onRetry={refetch} />;
   }
@@ -70,7 +64,6 @@ export function TasksContent() {
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
-      {/* Header with Create Dialog */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Tasks</h1>
@@ -83,8 +76,8 @@ export function TasksContent() {
           onOpenChange={setShowCreateDialog}
         />
       </div>
+      {tasksData && <TasksStats data={tasksData} />}
 
-      {/* Search and Filter */}
       <TasksFilters
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -92,10 +85,6 @@ export function TasksContent() {
         onStatusFilterChange={setStatusFilter}
       />
 
-      {/* Stats */}
-      {tasksData && <TasksStats data={tasksData} />}
-
-      {/* Tasks Table */}
       <TasksTable
         tasks={tasks}
         filteredTasks={filteredTasks}
@@ -107,7 +96,6 @@ export function TasksContent() {
         onCreateTask={() => setShowCreateDialog(true)}
       />
 
-      {/* Edit Task Sheet */}
       <EditTaskSheet
         task={selectedTask}
         open={selectedTask !== null}

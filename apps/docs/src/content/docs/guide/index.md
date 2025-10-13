@@ -2,8 +2,6 @@
 title: Guide
 ---
 
-# Guides
-
 ## Getting Started
 
 - **[Accounts Setup](/guide/accounts-setup)** - Cloud services setup (Clerk, Neon, Stripe)

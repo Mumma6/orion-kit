@@ -3,7 +3,7 @@ import type {
   CreateCheckoutSessionResponse,
   SubscriptionResponse,
   CreatePortalSessionResponse,
-  ApiSuccessResponse,
+  ApiResponse,
 } from "@workspace/types";
 
 export async function getSubscription(): Promise<SubscriptionResponse> {
@@ -16,8 +16,8 @@ export async function createCheckout(
   return api.post<CreateCheckoutSessionResponse>("/checkout", { priceId });
 }
 
-export async function cancelSubscription(): Promise<ApiSuccessResponse<never>> {
-  return api.delete<ApiSuccessResponse<never>>("/subscription");
+export async function cancelSubscription(): Promise<ApiResponse<never>> {
+  return api.delete<ApiResponse<never>>("/subscription");
 }
 
 export async function createBillingPortal(): Promise<CreatePortalSessionResponse> {

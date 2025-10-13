@@ -1,7 +1,3 @@
-/**
- * Billing Loading State
- */
-
 "use client";
 
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card";
@@ -10,7 +6,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 export function BillingLoading() {
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
-      {/* Header Skeleton */}
       <div className="flex items-center gap-4">
         <Skeleton className="h-16 w-16 rounded-2xl" />
         <div className="space-y-2">
@@ -19,7 +14,6 @@ export function BillingLoading() {
         </div>
       </div>
 
-      {/* Current Plan Skeleton */}
       <Card>
         <CardHeader>
           <Skeleton className="h-6 w-32" />
@@ -30,7 +24,6 @@ export function BillingLoading() {
         </CardContent>
       </Card>
 
-      {/* Pricing Cards Skeleton */}
       <div>
         <Skeleton className="mb-4 h-8 w-48" />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

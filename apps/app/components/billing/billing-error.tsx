@@ -1,7 +1,3 @@
-/**
- * Billing Error State
- */
-
 "use client";
 
 import { Button } from "@workspace/ui/components/button";

@@ -1,16 +1,19 @@
 ---
 title: Quick Start
-description: Get started in 10 minutes
+description: Get up and running with Orion Kit
 ---
-
-# Quick Start
-
-Get Orion Kit running in 10 minutes.
 
 ## Prerequisites
 
 - Node.js 20+ + pnpm (`npm install -g pnpm`)
-- [Clerk](https://clerk.com) + [Neon](https://neon.tech) accounts (both free)
+- Cloud accounts (all have free tiers):
+  - [Clerk](https://clerk.com) - Authentication
+  - [Neon](https://neon.tech) - PostgreSQL database
+  - [Stripe](https://stripe.com) - Payments
+  - [PostHog](https://posthog.com) - Analytics
+  - [Axiom](https://axiom.co) - Logging
+  - [Trigger.dev](https://trigger.dev) - Background jobs
+- [Stripe CLI](https://stripe.com/docs/stripe-cli) - For local webhook testing
 
 ## Setup
 
@@ -20,21 +23,27 @@ git clone <repo-url>
 cd orion
 pnpm install
 
-# 2. Get Clerk keys
-# clerk.com → New Application → Copy API keys
+# 2. Get API keys from all services
+# See /accounts-setup for detailed instructions:
+# - Clerk (auth)
+# - Neon (database)
+# - Stripe (payments)
+# - PostHog (analytics)
+# - Axiom (logging)
+# - Trigger.dev (jobs)
 
-# 3. Get Neon connection string
-# neon.tech → New Project → Copy Pooled Connection
-
-# 4. Create env files
+# 3. Create env files
 cp apps/app/.env.example apps/app/.env.local
 cp apps/api/.env.example apps/api/.env.local
 cp packages/database/.env.example packages/database/.env
 
-# 5. Add keys to .env files (see below)
+# 4. Add keys to .env files (see below)
 
-# 6. Initialize DB
+# 5. Initialize DB
 pnpm db:push
+
+# 6. Start Stripe CLI for webhooks (in new terminal)
+stripe listen --forward-to localhost:3002/webhooks
 
 # 7. Start everything
 pnpm dev
@@ -45,17 +54,41 @@ pnpm dev
 **`apps/app/.env.local`:**
 
 ```bash
+# Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
+
+# API
 NEXT_PUBLIC_API_URL=http://localhost:3002
+
+# PostHog
+NEXT_PUBLIC_POSTHOG_KEY=phc_...
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+
+# Stripe
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
 **`apps/api/.env.local`:**
 
 ```bash
+# Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
+
+# Database
 DATABASE_URL=postgresql://...
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Axiom
+AXIOM_TOKEN=xaat-...
+AXIOM_DATASET=orion
+
+# Trigger.dev
+TRIGGER_SECRET_KEY=tr_dev_...
 ```
 
 **`packages/database/.env`:**
@@ -63,6 +96,8 @@ DATABASE_URL=postgresql://...
 ```bash
 DATABASE_URL=postgresql://...
 ```
+
+> See [Accounts Setup](/accounts-setup) for detailed instructions on getting all API keys.
 
 ## Running Apps
 
@@ -88,14 +123,17 @@ pnpm build             # Build for production
 
 ## Troubleshooting
 
-| Issue          | Fix                                           |
-| -------------- | --------------------------------------------- |
-| "Unauthorized" | Sign in at http://localhost:3001/sign-in      |
-| CORS errors    | Check `NEXT_PUBLIC_API_URL` in app/.env.local |
-| DB connection  | Verify `DATABASE_URL` uses pooled connection  |
+| Issue            | Fix                                                     |
+| ---------------- | ------------------------------------------------------- |
+| "Unauthorized"   | Sign in at http://localhost:3001/sign-in                |
+| CORS errors      | Check `NEXT_PUBLIC_API_URL` in app/.env.local           |
+| DB connection    | Verify `DATABASE_URL` uses pooled connection            |
+| Stripe webhooks  | Ensure Stripe CLI is running with `stripe listen`       |
+| Missing env vars | Check all services are configured (see /accounts-setup) |
 
 ## Next Steps
 
+- [Accounts Setup](/accounts-setup) - Detailed setup for all services
 - [Architecture](/architecture) - Understand the system
 - [Guides](/guide) - Learn best practices
 - [Packages](/packages) - Explore packages

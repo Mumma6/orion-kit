@@ -6,7 +6,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 export function DashboardLoading() {
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
-      {/* Welcome Section Skeleton */}
       <div className="flex items-center gap-4 rounded-lg border p-6">
         <Skeleton className="h-16 w-16 rounded-2xl" />
         <div className="space-y-2">
@@ -15,7 +14,6 @@ export function DashboardLoading() {
         </div>
       </div>
 
-      {/* Stats Cards Skeleton */}
       <div className="grid gap-4 md:grid-cols-4">
         {[...Array(4)].map((_, i) => (
           <Card key={i}>
@@ -29,7 +27,6 @@ export function DashboardLoading() {
         ))}
       </div>
 
-      {/* Tasks List Skeleton */}
       <Card>
         <CardHeader>
           <Skeleton className="h-6 w-32" />

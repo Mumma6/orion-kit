@@ -3,8 +3,6 @@ title: Deployment Guide
 description: Complete guide to deploying Orion Kit to production on Vercel
 ---
 
-# Deployment Guide
-
 This guide walks you through deploying Orion Kit's three Next.js apps (`web`, `app`, `api`) to Vercel. You'll set up production services, configure environment variables, and verify the deployment.
 
 ## Overview

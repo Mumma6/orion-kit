@@ -15,10 +15,6 @@ interface ErrorFallbackProps {
   resetErrorBoundary: () => void;
 }
 
-/**
- * Error Fallback Component
- * Displayed when an error is caught by ErrorBoundary
- */
 export function ErrorFallback({
   error,
   resetErrorBoundary,

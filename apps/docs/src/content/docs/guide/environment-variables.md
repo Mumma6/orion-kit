@@ -1,9 +1,6 @@
 ---
 title: Environment Variables
-description: Environment variables reference
 ---
-
-# Environment Variables
 
 Quick reference for all required environment variables.
 

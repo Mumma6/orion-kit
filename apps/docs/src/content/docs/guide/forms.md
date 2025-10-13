@@ -2,20 +2,28 @@
 title: Forms
 ---
 
-# Forms with React Hook Form + Zod
+### Forms with React Hook Form + Zod
 
 Type-safe forms with **React Hook Form** + **Zod**. Same validation schema on frontend and backend.
+The Zod schemas are created using drizzle-zod
 
 ## Quick Example
 
 ```typescript
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createTaskInputSchema } from "@workspace/database";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@workspace/ui/components/form";
+import { createTaskInputSchema, InsertTask } from "@workspace/database";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage
+} from "@workspace/ui/components/form";
 
 type CreateTaskInput = Omit<
-  import("@workspace/database").InsertTask,
+  InsertTask,
   "id" | "clerkUserId" | "createdAt" | "updatedAt"
 >;
 
@@ -59,9 +67,7 @@ export function CreateTaskForm() {
 
 ## Validation Flow
 
-```
 User types → Zod validates on blur → Show error → Submit to API → Zod validates again → Save to DB
-```
 
 **Same schema both places = guaranteed consistency.**
 

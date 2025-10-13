@@ -2,8 +2,6 @@
 title: E2E Testing
 ---
 
-# E2E Testing
-
 Fast smoke tests with Playwright. Auto-starts servers, runs tests, shows trace on failure.
 
 ## Commands
@@ -30,7 +28,7 @@ pnpm test:e2e:debug   # Pause execution
 - Settings access
 - Billing flow
 
-_Enable by setting up Clerk test mode in `e2e/fixtures.ts`_
+_Enable by setting up Clerk test mode in_
 
 ## Test Structure
 

@@ -1,6 +1,7 @@
 import { auth } from "@workspace/auth/server";
 import { db, tasks, eq } from "@workspace/database";
 import { updateTaskInputSchema } from "@workspace/types";
+import type { UpdateTaskResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
@@ -95,11 +96,13 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
       duration,
     });
 
-    return NextResponse.json({
+    const response: UpdateTaskResponse = {
       success: true,
       message: "Task updated successfully",
       data: updatedTask,
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     logger.error("Failed to update task", error as Error);
     throw error;
@@ -187,11 +190,13 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
       duration,
     });
 
-    return NextResponse.json({
+    const response: UpdateTaskResponse = {
       success: true,
       message: "Task updated successfully",
       data: updatedTask,
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     logger.error("Failed to patch task", error as Error);
     throw error;

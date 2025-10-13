@@ -3,9 +3,7 @@ title: Introduction
 description: Orion Kit - Production-ready SaaS starter
 ---
 
-# Introduction
-
-**Orion Kit** - Production-ready SaaS starter with Next.js, TypeScript, Drizzle ORM, Clerk, and TanStack Query.
+**Orion Kit** - Production-ready SaaS starter with Next.js, TypeScript, Drizzle ORM, Clerk, Stripe, Trigger.dev and much more.
 
 ## What's Included
 
@@ -16,8 +14,10 @@ description: Orion Kit - Production-ready SaaS starter
 - 🎨 **UI** - shadcn/ui + Tailwind CSS
 - 📊 **Dashboard** - Full-featured with analytics
 - 🌐 **Landing** - Modern marketing site
-- 🔌 **API** - Type-safe with observability
+- 🔌 **API** - Serverless and Type-Safe
 - 🧪 **Testing** - Vitest + Playwright
+- 📊 **Analytics** - Posthog and Axiom
+- ⚡ **Jobs** - Jobs and events with Trigger.dev
 
 ## Apps
 
@@ -31,13 +31,11 @@ description: Orion Kit - Production-ready SaaS starter
 
 ## Packages
 
-**[@workspace/auth](/packages/auth)** · **[@workspace/database](/packages/database)** · **[@workspace/types](/packages/types)** · **[@workspace/ui](/packages/ui)** · **[@workspace/payment](/packages/payment)** · **@workspace/analytics** · **@workspace/observability** · **@workspace/jobs**
+**[@workspace/auth](/packages/auth)** · **[@workspace/database](/packages/database)** · **[@workspace/types](/packages/types)** · **[@workspace/ui](/packages/ui)** · **[@workspace/payment](/packages/payment)** · **[@workspace/analytics](/packages/analytics)** · **[@workspace/jobs](/packages/jobs)** · **[@workspace/observability](/packages/observability)**
 
 ## Type Flow
 
-```
 Database Schema → Auto-generate Types + Zod → Export from packages → Compose in @workspace/types → Use in API + Frontend
-```
 
 ## Why Orion Kit?
 

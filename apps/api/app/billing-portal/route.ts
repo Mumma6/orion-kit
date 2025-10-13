@@ -1,6 +1,7 @@
 import { auth } from "@workspace/auth/server";
 import { db, userPreferences, eq } from "@workspace/database";
 import { createBillingPortalSession } from "@workspace/payment/server";
+import type { CreatePortalSessionResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 
@@ -60,10 +61,14 @@ export const POST = withAxiom(async () => {
       duration,
     });
 
-    return NextResponse.json({
+    const response: CreatePortalSessionResponse = {
       success: true,
-      url: session.url,
-    });
+      data: {
+        url: session.url,
+      },
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";

@@ -2,8 +2,6 @@
 title: Zod Validation
 ---
 
-# Zod Validation
-
 Runtime validation with **Zod**, auto-generated from Drizzle schemas.
 
 ## Available Schemas

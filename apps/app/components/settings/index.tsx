@@ -27,7 +27,6 @@ export function SettingsContent() {
     },
   });
 
-  // Update form when preferences load
   useEffect(() => {
     if (preferences?.data) {
       form.reset({

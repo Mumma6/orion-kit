@@ -7,9 +7,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Orion Kit',
-			logo: {
-				src: './src/assets/undraw_launching_szjw.svg',
-			},
+			
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
 			sidebar: [
 			{

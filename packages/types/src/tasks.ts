@@ -1,20 +1,27 @@
 /**
- * Task-specific Response Types
- * Composed from generic API responses and domain types
+ * Tasks Domain
+ * Combines: Database entity + Zod schemas + API responses
  */
 
-import type { Task } from "@workspace/database/schema";
-import { InsertTask } from "@workspace/database/schema";
-import type { ListResponse, CreateResponse } from "./api";
+import type { Task, InsertTask } from "@workspace/database/schema";
+import type { ApiResponse, ListResponse } from "./api";
 
-// Re-export schemas and types from database/schema (avoids importing client)
+// ============================================
+// ENTITY (from database)
+// ============================================
+export type { Task } from "@workspace/database/schema";
+
+// ============================================
+// INPUT SCHEMAS (Zod - for validation)
+// ============================================
 export {
   createTaskInputSchema,
   updateTaskInputSchema,
 } from "@workspace/database/schema";
-export type { Task } from "@workspace/database/schema";
 
-// Task input types (for API requests)
+// ============================================
+// INPUT TYPES (TypeScript - for API requests)
+// ============================================
 export type CreateTaskInput = Omit<
   InsertTask,
   "id" | "clerkUserId" | "createdAt" | "updatedAt"
@@ -22,7 +29,14 @@ export type CreateTaskInput = Omit<
 
 export type UpdateTaskInput = Partial<CreateTaskInput>;
 
-// Task response types (for API responses)
+// ============================================
+// API RESPONSE TYPES (composed with generics)
+// ============================================
+
+/** Single task response */
+export type TaskResponse = ApiResponse<Task>;
+
+/** List response with task-specific metadata */
 export interface TasksListResponse extends ListResponse<Task> {
   userId: string;
   userName: string;
@@ -31,5 +45,9 @@ export interface TasksListResponse extends ListResponse<Task> {
   todo: number;
 }
 
-export type CreateTaskResponse = CreateResponse<Task>;
-export type UpdateTaskResponse = CreateResponse<Task>;
+/** Create/Update/Delete responses */
+export type CreateTaskResponse = ApiResponse<Task>;
+export type UpdateTaskResponse = ApiResponse<Task>;
+
+/** Delete response */
+export type DeleteTaskResponse = ApiResponse<{ deleted: true }>;

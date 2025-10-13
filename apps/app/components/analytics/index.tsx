@@ -14,7 +14,6 @@ import { AnalyticsError } from "./analytics-error";
 export function AnalyticsContent() {
   const { data: tasksData, isLoading, refetch } = useTasks();
 
-  // Calculate analytics
   const analytics = useMemo(() => {
     if (!tasksData?.data) return null;
 
@@ -40,7 +39,6 @@ export function AnalyticsContent() {
         ? Math.round((tasksData.completed / tasks.length) * 100)
         : 0;
 
-    // Group by status for breakdown
     const statusBreakdown = [
       {
         status: "To Do",
@@ -78,7 +76,6 @@ export function AnalyticsContent() {
       },
     ] as const;
 
-    // Recent activity (last 5 tasks)
     const recentActivity = [...tasks]
       .sort(
         (a, b) =>
@@ -124,7 +121,6 @@ export function AnalyticsContent() {
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
-      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="rounded-2xl bg-primary p-3">
           <BarChart3 className="h-8 w-8 text-primary-foreground" />
@@ -137,7 +133,6 @@ export function AnalyticsContent() {
         </div>
       </div>
 
-      {/* Key Metrics */}
       <AnalyticsStats
         tasksThisWeek={analytics.tasksThisWeek}
         tasksThisMonth={analytics.tasksThisMonth}
@@ -147,14 +142,11 @@ export function AnalyticsContent() {
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Status Breakdown */}
         <AnalyticsStatusBreakdown statusBreakdown={analytics.statusBreakdown} />
 
-        {/* Recent Activity */}
         <AnalyticsRecentActivity recentActivity={analytics.recentActivity} />
       </div>
 
-      {/* Productivity Insights */}
       <AnalyticsInsights
         completedThisWeek={analytics.completedThisWeek}
         inProgress={tasksData.inProgress}

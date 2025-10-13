@@ -81,7 +81,7 @@ export function PricingCard({
         <button
           onClick={handleClick}
           disabled={loading || !plan.priceId}
-          className={`w-full rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+          className={`w-full rounded-md px-4 py-2 mt-4 text-sm font-medium transition-colors ${
             plan.popular
               ? "bg-primary text-primary-foreground hover:bg-primary/90"
               : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -91,7 +91,7 @@ export function PricingCard({
             ? "Loading..."
             : plan.price === 0
               ? "Get Started"
-              : "Upgrade to " + plan.name}
+              : plan.name}
         </button>
       )}
     </div>

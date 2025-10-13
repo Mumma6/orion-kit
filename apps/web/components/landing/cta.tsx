@@ -4,7 +4,6 @@ import { Github } from "lucide-react";
 export function CTA() {
   return (
     <section className="relative py-24">
-      {/* Subtle glow only in dark mode */}
       <div className="absolute inset-0 hidden items-center justify-center opacity-30 dark:flex">
         <div className="h-[400px] w-[800px] rounded-full bg-primary/20 blur-3xl" />
       </div>
