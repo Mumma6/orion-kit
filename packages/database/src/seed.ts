@@ -1,10 +1,3 @@
-/**
- * Database Seed Script
- * Run with: pnpm --filter @workspace/database db:seed
- *
- * This script adds example data to your database for development/testing
- */
-
 import "dotenv/config";
 import { db } from "./client";
 import { tasks, userPreferences } from "./schema";
@@ -13,12 +6,11 @@ async function seed() {
   console.log("🌱 Seeding database...");
 
   try {
-    // Example Clerk User ID - replace with your actual Clerk user ID
+    // Example Clerk User ID - replace with your actual Clerk user ID if you want to seed for your own user
     const exampleUserId = "user_example123";
 
     console.log(`📝 Adding example data for user: ${exampleUserId}`);
 
-    // Create user preferences
     const [prefs] = await db
       .insert(userPreferences)
       .values({
@@ -34,7 +26,6 @@ async function seed() {
 
     console.log("✅ User preferences created:", prefs?.id);
 
-    // Create example tasks
     const exampleTasks = [
       {
         clerkUserId: exampleUserId,

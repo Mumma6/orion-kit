@@ -1,5 +1,5 @@
 import { Circle, Clock, CheckCircle2, XCircle } from "lucide-react";
-import type { Task } from "@workspace/types";
+import type { Task } from "@workspace/database";
 
 export type StatusFilter = Task["status"] | "all";
 

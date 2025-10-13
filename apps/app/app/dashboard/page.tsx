@@ -1,4 +1,4 @@
-import { DashboardContent } from "@/components/dashboard-content";
+import { DashboardContent } from "@/components/dashboard";
 import { currentUser } from "@workspace/auth/server";
 
 export default async function DashboardPage() {

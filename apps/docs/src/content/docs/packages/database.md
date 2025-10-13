@@ -1,8 +1,11 @@
 ---
-title: database
+title: Database Package
+description: Type-safe database with Drizzle ORM and Neon
 ---
 
-Database package for Orion Kit, powered by [Drizzle ORM](https://orm.drizzle.team) and [Neon](https://neon.tech).
+# @workspace/database
+
+Database package powered by [Drizzle ORM](https://orm.drizzle.team) and [Neon](https://neon.tech) for type-safe, serverless Postgres.
 
 ## Features
 

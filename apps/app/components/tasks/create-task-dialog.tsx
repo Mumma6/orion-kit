@@ -18,7 +18,7 @@ import {
 } from "@workspace/ui/components/dialog";
 import { Loader2, Plus } from "lucide-react";
 import { useCreateTask } from "@/hooks/use-tasks";
-import { createTaskInputSchema } from "@workspace/types";
+import { createTaskInputSchema } from "@workspace/database";
 import type { CreateTaskInput } from "@workspace/types";
 
 interface CreateTaskDialogProps {
@@ -43,8 +43,8 @@ export function CreateTaskDialog({
     },
   });
 
-  const handleSubmit = async (data: any) => {
-    await createTask.mutateAsync(data as CreateTaskInput);
+  const handleSubmit = async (data: CreateTaskInput) => {
+    await createTask.mutateAsync(data);
     form.reset();
     onOpenChange(false);
   };

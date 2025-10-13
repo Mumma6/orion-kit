@@ -31,8 +31,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { useUpdateTask, useDeleteTask } from "@/hooks/use-tasks";
-import { updateTaskInputSchema } from "@workspace/types";
-import type { Task, CreateTaskInput } from "@workspace/types";
+import { updateTaskInputSchema, type Task } from "@workspace/database";
+import type { CreateTaskInput } from "@workspace/types";
 import { StatusIcon, statusConfig } from "./task-status-config";
 
 interface EditTaskSheetProps {
@@ -68,12 +68,12 @@ export function EditTaskSheet({
     }
   }, [task, form]);
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: Partial<CreateTaskInput>) => {
     if (!task) return;
 
     await updateTask.mutateAsync({
       id: task.id,
-      updates: data as Partial<CreateTaskInput>,
+      updates: data,
     });
 
     onOpenChange(false);
@@ -163,27 +163,7 @@ export function EditTaskSheet({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="grid gap-3 pt-6 border-t">
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleDelete}
-              disabled={deleteTask.isPending}
-              className="w-full"
-            >
-              {deleteTask.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Task
-                </>
-              )}
-            </Button>
-          </div>
+          <div className="grid gap-3 pt-6 border-t"></div>
         </div>
         <SheetFooter className="gap-2">
           <Button
@@ -198,6 +178,25 @@ export function EditTaskSheet({
               </>
             ) : (
               "Save changes"
+            )}
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleDelete}
+            disabled={deleteTask.isPending}
+            className="w-full"
+          >
+            {deleteTask.isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              <>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Task
+              </>
             )}
           </Button>
           <SheetClose asChild>

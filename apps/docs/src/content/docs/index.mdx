@@ -30,12 +30,6 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 - 🎨 **Studio** → [https://local.drizzle.studio?port=3003](https://local.drizzle.studio?port=3003)
 - 📚 **Docs** → [localhost:3004](http://localhost:3004)
 
-**Production:**
-
-- 🌐 **Landing** → [orion-kit.vercel.app](https://orion-kit.vercel.app)
-- 📊 **Dashboard** → [app.orion-kit.vercel.app](https://app.orion-kit.vercel.app)
-- 🔌 **API** → [api.orion-kit.vercel.app/health](https://api.orion-kit.vercel.app/health)
-
 ---
 
 ## Quick Links
@@ -59,21 +53,46 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 
 <CardGrid stagger>
   <Card title="🔐 Authentication" icon="lock">
-    Ready-to-use Clerk integration with protected routes and middleware.
+    Clerk integration with protected routes, middleware, and beautiful pre-built
+    UI.
   </Card>
   <Card title="🗄️ Database" icon="setting">
-    Type-safe Drizzle ORM with Neon Postgres and automatic migrations.
+    Type-safe Drizzle ORM with Neon Postgres, automatic migrations, and Studio
+    GUI.
   </Card>
   <Card title="✅ Validation" icon="approve-check">
-    Runtime validation with Zod on both frontend and backend.
+    Zod schemas on frontend and backend with automatic type inference from
+    Drizzle.
   </Card>
   <Card title="🎨 UI Components" icon="star">
-    Beautiful shadcn/ui components with Tailwind CSS styling.
+    Shadcn/ui components with Radix UI primitives and Tailwind CSS styling.
   </Card>
-  <Card title="📊 Dashboard" icon="laptop">
-    Full-featured admin panel with navigation and user management.
+  <Card title="📊 Analytics & Logging" icon="laptop">
+    PostHog for product analytics, Axiom for structured logging, and Vercel
+    Analytics.
   </Card>
   <Card title="🚀 Data Fetching" icon="rocket">
-    TanStack Query for automatic caching and state management.
+    TanStack Query with automatic caching, optimistic updates, and loading
+    states.
+  </Card>
+  <Card title="📝 Forms" icon="document">
+    React Hook Form with Zod resolvers for type-safe, performant form handling.
+  </Card>
+  <Card title="⚡ Background Jobs" icon="sun">
+    Trigger.dev for scheduled tasks, async processing, and reliable job
+    execution.
+  </Card>
+  <Card title="🧪 Testing" icon="magnifier">
+    Vitest for fast unit testing with comprehensive test suite and coverage
+    reports.
+  </Card>
+  <Card title="📦 Shared Types" icon="puzzle">
+    Centralized TypeScript types package for consistency across entire monorepo.
+  </Card>
+  <Card title="🏗️ Monorepo" icon="seti:config">
+    Turborepo for optimized builds with pnpm workspaces and shared packages.
+  </Card>
+  <Card title="📚 Documentation" icon="open-book">
+    Astro Starlight docs site with search, guides, and comprehensive examples.
   </Card>
 </CardGrid>

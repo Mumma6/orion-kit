@@ -45,8 +45,13 @@ Drizzle Schema
 ```typescript
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createTaskInputSchema } from "@workspace/types";
-import type { CreateTaskInput } from "@workspace/types";
+import { createTaskInputSchema } from "@workspace/database";
+
+type CreateTaskInput = Omit<
+  import("@workspace/database").InsertTask,
+  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+>;
+
 import {
   Form,
   FormControl,
@@ -131,8 +136,12 @@ import {
 import { Input } from "@workspace/ui/components/input";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { useCreateTask } from "@/hooks/use-tasks";
-import { createTaskInputSchema } from "@workspace/types";
-import type { CreateTaskInput } from "@workspace/types";
+import { createTaskInputSchema } from "@workspace/database";
+
+type CreateTaskInput = Omit<
+  import("@workspace/database").InsertTask,
+  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+>;
 
 export function CreateTaskForm() {
   const createTask = useCreateTask();

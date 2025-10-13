@@ -9,10 +9,23 @@ Get up and running in 5 minutes!
 
 ## Prerequisites
 
+### Required Software
+
 - Node.js 20+
 - pnpm installed (`npm install -g pnpm`)
-- [Clerk account](https://dashboard.clerk.com/)
-- [Neon database](https://console.neon.tech/)
+
+### Required Cloud Accounts
+
+- [Clerk](https://clerk.com) - Authentication (free: 10k MAU)
+- [Neon](https://neon.tech) - Database (free: 0.5GB)
+
+### Recommended Cloud Accounts
+
+- [Axiom](https://axiom.co) - Logging (free: 500MB/month)
+- [PostHog](https://posthog.com) - Analytics (free: 1M events/month)
+- [Trigger.dev](https://trigger.dev) - Background jobs (free: 100k runs/month)
+
+> **Note**: See the [Accounts Setup Guide](/guide/accounts-setup/) for detailed setup instructions for each service.
 
 ## 1️⃣ Clone & Install
 
@@ -46,6 +59,17 @@ CLERK_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_API_URL=http://localhost:3002
+NEXT_PUBLIC_POSTHOG_KEY=phc_...
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
+**`apps/web/.env.local`**
+
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_POSTHOG_KEY=phc_...
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
 **`apps/api/.env.local`**
@@ -53,6 +77,9 @@ NEXT_PUBLIC_API_URL=http://localhost:3002
 ```bash
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
+DATABASE_URL=postgresql://...
+AXIOM_TOKEN=xaat-...
+AXIOM_DATASET=orion-logs
 ```
 
 ## 3️⃣ Set Up Database

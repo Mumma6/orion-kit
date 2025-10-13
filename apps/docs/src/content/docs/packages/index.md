@@ -13,31 +13,73 @@ Authentication package powered by Clerk. Provides:
 - Client components (`SignInButton`, `UserButton`, etc.)
 - Server utilities (`auth()`, `currentUser()`)
 - Middleware helpers
+- Full TypeScript support
 
 ### [@workspace/database](/packages/database)
 
 Database layer with Drizzle ORM and Neon. Includes:
 
-- Type-safe queries
-- Zod validation schemas
-- Database client
-- Migrations
+- Type-safe queries with Drizzle
+- Automatic Zod validation schemas
+- Serverless Postgres client
+- Migration management
+- Drizzle Studio integration
 
 ### [@workspace/types](/packages/types)
 
-Centralized TypeScript types. Exports:
+Centralized API response types package:
 
-- Database entity types
-- API request/response types
-- Zod schemas
+- Generic API responses (`ApiSuccessResponse<T>`, `CreateResponse<T>`)
+- Composed response types (`CreateTaskResponse`, `TasksListResponse`)
+- Input types (`CreateTaskInput`, `UpdatePreferencesInput`)
+- Type guards and utilities
 
 ### [@workspace/ui](/packages/ui)
 
 Shared UI components based on shadcn/ui. Contains:
 
-- Accessible components
-- Tailwind-styled
-- Theme support
+- Accessible Radix UI components
+- Tailwind CSS styling
+- Dark mode support
+- Reusable across all apps
+
+### @workspace/analytics
+
+Product analytics integration:
+
+- PostHog for event tracking
+- Vercel Analytics for performance
+- React provider components
+- Type-safe analytics events
+
+### @workspace/observability
+
+Structured logging and monitoring:
+
+- Axiom integration for logs
+- Request/response logging
+- Error tracking
+- Performance monitoring
+- Web Vitals tracking
+
+### @workspace/jobs
+
+Background job processing:
+
+- Trigger.dev integration
+- Scheduled tasks
+- Example job implementations
+- TypeScript-first job definitions
+
+### [@workspace/payment](/packages/payment)
+
+Stripe payments and subscriptions:
+
+- Checkout session creation
+- Webhook event handling
+- Subscription management
+- Customer portal integration
+- Multiple pricing tiers
 
 ## Using Packages
 
@@ -48,7 +90,7 @@ All packages are consumed via workspace dependencies:
   "dependencies": {
     "@workspace/auth": "workspace:*",
     "@workspace/database": "workspace:*",
-    "@workspace/types": "workspace:*",
+    "@workspace/payment": "workspace:*",
     "@workspace/ui": "workspace:*"
   }
 }

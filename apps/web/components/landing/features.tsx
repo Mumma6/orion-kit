@@ -18,25 +18,25 @@ const features: Feature[] = [
     icon: Shield,
     title: "Type-Safe Everything",
     description:
-      "End-to-end type safety with TypeScript, Drizzle ORM, and tRPC for bulletproof code.",
+      "End-to-end type safety with TypeScript, Drizzle ORM, Zod validation, and shared types across the monorepo.",
   },
   {
     icon: Sparkles,
-    title: "Production Ready Setup",
+    title: "Production Ready",
     description:
-      "Authentication, payments, background jobs, and deployment configured out of the box.",
+      "Authentication with Clerk, background jobs with Trigger.dev, analytics with PostHog, and logging with Axiom.",
   },
   {
     icon: Layers,
-    title: "Shared Design System",
+    title: "Modern Stack",
     description:
-      "Beautiful UI components built with Tailwind CSS and shadcn/ui for consistent design.",
+      "Next.js 15, React 19, TanStack Query for data fetching, React Hook Form with Zod resolvers, and Shadcn/UI components.",
   },
   {
     icon: BookOpen,
-    title: "Learn by Example",
+    title: "Developer Experience",
     description:
-      "Real-world examples with teams and tasks to understand patterns and best practices.",
+      "Turborepo monorepo, Vitest testing, Drizzle Studio, Astro docs, strict TypeScript, and comprehensive examples.",
   },
 ];
 

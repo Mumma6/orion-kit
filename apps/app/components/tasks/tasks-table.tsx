@@ -33,7 +33,7 @@ import {
   Trash2,
   Plus,
 } from "lucide-react";
-import type { Task } from "@workspace/types";
+import type { Task } from "@workspace/database";
 import {
   StatusIcon,
   statusConfig,

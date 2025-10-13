@@ -1,4 +1,4 @@
-import { DashboardLayoutClient } from "@/components/dashboard-layout-client";
+import { DashboardLayoutClient } from "@/components/dashboard/dashboard-layout-client";
 import { currentUser } from "@workspace/auth/server";
 import { redirect } from "next/navigation";
 

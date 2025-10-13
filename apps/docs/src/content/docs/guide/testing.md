@@ -1,8 +1,27 @@
 ---
-title: Testing with Vitest
+title: Testing
 ---
 
-# Testing with Vitest
+# Testing
+
+Orion Kit includes two testing approaches:
+
+1. **Unit Tests** - Vitest for fast unit and integration tests
+2. **E2E Tests** - Playwright for end-to-end smoke tests
+
+## Quick Start
+
+```bash
+# Unit tests
+pnpm test
+
+# E2E tests
+pnpm test:e2e
+```
+
+---
+
+## Unit Testing with Vitest
 
 Orion Kit uses [Vitest](https://vitest.dev/) for unit testing and integration testing.
 
@@ -92,49 +111,40 @@ describe("createTaskInputSchema", () => {
 });
 ```
 
-### Example: Testing Type Guards
+### Example: Testing Utility Functions
 
 ```typescript
-// packages/types/__tests__/api.test.ts
+// packages/payment/__tests__/config.test.ts
 import { describe, it, expect } from "vitest";
-import { isSuccessResponse, isErrorResponse } from "../src/api";
-import type { ApiSuccessResponse, ApiErrorResponse } from "../src/api";
+import { canUpgrade, getPlanById } from "../src/config";
 
-describe("API Type Guards", () => {
-  it("should return true for success response", () => {
-    const response: ApiSuccessResponse<string> = {
-      success: true,
-      data: "test",
-    };
+describe("Payment Config Utilities", () => {
+  describe("canUpgrade", () => {
+    it("should allow upgrade from free to pro", () => {
+      expect(canUpgrade("free", "pro")).toBe(true);
+    });
 
-    expect(isSuccessResponse(response)).toBe(true);
+    it("should not allow downgrade from pro to free", () => {
+      expect(canUpgrade("pro", "free")).toBe(false);
+    });
+
+    it("should not allow same plan upgrade", () => {
+      expect(canUpgrade("pro", "pro")).toBe(false);
+    });
   });
 
-  it("should narrow type correctly", () => {
-    const response: ApiSuccessResponse<string> | ApiErrorResponse = {
-      success: true,
-      data: "test",
-    };
+  describe("getPlanById", () => {
+    it("should return correct plan for valid id", () => {
+      const plan = getPlanById("pro");
+      expect(plan).toBeDefined();
+      expect(plan?.name).toBe("Pro");
+    });
 
-    if (isSuccessResponse(response)) {
-      // Type is narrowed to ApiSuccessResponse
-      expect(response.data).toBe("test");
-    }
+    it("should return undefined for invalid id", () => {
+      const plan = getPlanById("invalid");
+      expect(plan).toBeUndefined();
+    });
   });
-});
-```
-
-### Example: Testing API Routes
-
-```typescript
-// apps/api/__tests__/health.test.ts
-import { expect, test } from "vitest";
-import { GET } from "../app/health/route";
-
-test("Health Check", async () => {
-  const response = await GET();
-  expect(response.status).toBe(200);
-  expect(await response.text()).toBe("OK");
 });
 ```
 
@@ -148,29 +158,16 @@ Place tests in `packages/<package>/__tests__/`:
 packages/
 ├── database/
 │   ├── __tests__/
-│   │   ├── schema.test.ts
-│   │   └── client.test.ts
+│   │   └── schema.test.ts        # Example: Zod schema validation
 │   └── src/
-├── types/
+├── payment/
 │   ├── __tests__/
-│   │   └── api.test.ts
+│   │   └── config.test.ts        # Example: Pure utility functions
 │   └── src/
 └── ...
 ```
 
-### App Tests
-
-Place tests in `apps/<app>/__tests__/`:
-
-```
-apps/
-├── api/
-│   ├── __tests__/
-│   │   ├── health.test.ts
-│   │   └── tasks.test.ts
-│   └── app/
-└── ...
-```
+Only add tests where it makes sense to test pure functions or critical business logic.
 
 ## Best Practices
 
@@ -321,18 +318,18 @@ On CI, tests run in non-interactive mode and fail the build if any test fails.
 
 ### ✅ Do Test
 
-- **Zod schemas** - Validation rules
+- **Zod schemas** - Validation rules (see `packages/database/__tests__/schema.test.ts`)
+- **Pure utility functions** - Business logic helpers (see `packages/payment/__tests__/config.test.ts`)
 - **Type guards** - Runtime type checking
-- **Utilities** - Pure functions
-- **API endpoints** - Request/response handling
-- **Business logic** - Core functionality
+- **Complex calculations** - Business logic that can fail
 
 ### ❌ Don't Test
 
 - **Third-party libraries** - Already tested
 - **TypeScript types** - Compile-time checked
 - **UI components** - Use Playwright for E2E instead
-- **Trivial code** - Getters/setters without logic
+- **Trivial code** - Simple wrappers without logic
+- **API route handlers** - Use E2E tests instead
 
 ## Learn More
 
@@ -340,13 +337,48 @@ On CI, tests run in non-interactive mode and fail the build if any test fails.
 - [Testing Best Practices](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
 - [Jest to Vitest Migration](https://vitest.dev/guide/migration.html)
 
+---
+
+## E2E Testing with Playwright
+
+For end-to-end testing, see the [E2E Testing Guide](/guide/e2e-testing).
+
+Quick overview:
+
+```bash
+# Run E2E smoke tests
+pnpm test:e2e
+
+# Run in UI mode
+pnpm test:e2e:ui
+
+# Debug tests
+pnpm test:e2e:debug
+```
+
+**What's tested:**
+
+- Landing page loads
+- Authentication pages load
+- Protected routes redirect correctly
+- API health endpoint responds
+
+See [E2E Testing Guide](/guide/e2e-testing) for complete documentation.
+
+---
+
 ## Summary
 
-✅ **Fast** - Vite-powered test runner  
-✅ **Modern** - ESM and TypeScript support  
-✅ **Coverage** - Built-in code coverage  
-✅ **CI/CD** - Automated testing on push  
-✅ **Developer-friendly** - Watch mode and UI mode  
-✅ **Comprehensive** - Tests across all packages and apps
+**Unit Tests (Vitest):**
+✅ Fast unit and integration tests  
+✅ Package-level testing  
+✅ Business logic validation  
+✅ Zod schema testing
+
+**E2E Tests (Playwright):**
+✅ Smoke tests for critical paths  
+✅ Multi-browser support  
+✅ Visual debugging with trace viewer  
+✅ Automatic server management
 
 Happy testing! 🧪

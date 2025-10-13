@@ -1,16 +1,17 @@
 /**
  * @workspace/types
- * Shared TypeScript types and schemas across all apps
+ * Centralized API response types for the entire monorepo
+ *
+ * This package combines:
+ * - Generic API response interfaces
+ * - Domain types from @workspace/database and @workspace/payment
+ * - Composed response types for consistent API contracts
  */
 
-// Re-export generic API types
+// Generic API responses
 export * from "./api";
 
-// Re-export database types
-export * from "./database";
-
-// Re-export tasks types
+// Domain-specific response types
 export * from "./tasks";
-
-// Re-export Zod schemas (runtime values, safe for client)
-export * from "./schemas";
+export * from "./preferences";
+export * from "./billing";

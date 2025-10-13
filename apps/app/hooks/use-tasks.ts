@@ -1,14 +1,23 @@
-/**
- * Tasks Hooks
- * React Query hooks for task operations
- */
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTask, getTasks, updateTask, deleteTask } from "@/lib/api/tasks";
-import type { CreateTaskInput, TasksListResponse } from "@workspace/types";
+import type { Task } from "@workspace/database";
+import type {
+  TasksListResponse,
+  CreateTaskInput,
+  UpdateTaskInput,
+} from "@workspace/types";
 import { showSuccessToast, showErrorToast } from "@/lib/errors";
 
-// Query keys for caching
+function getStatusCount(tasks: TasksListResponse["data"]) {
+  const filterStatus = (status: Task["status"]) =>
+    tasks.filter((t) => t.status === status).length;
+  return {
+    completed: filterStatus("completed"),
+    inProgress: filterStatus("in-progress"),
+    todo: filterStatus("todo"),
+  };
+}
+
 export const tasksKeys = {
   all: ["tasks"] as const,
   lists: () => [...tasksKeys.all, "list"] as const,
@@ -18,9 +27,6 @@ export const tasksKeys = {
   detail: (id: number) => [...tasksKeys.details(), id] as const,
 };
 
-/**
- * Fetch all tasks for the current user
- */
 export function useTasks() {
   return useQuery<TasksListResponse>({
     queryKey: tasksKeys.lists(),
@@ -28,33 +34,25 @@ export function useTasks() {
   });
 }
 
-/**
- * Create a new task
- */
 export function useCreateTask() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: createTask,
     onSuccess: (response) => {
-      // Show success toast
       showSuccessToast("Task created", response.message);
 
-      // Invalidate and refetch tasks
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() });
 
-      // Optimistically update the cache
       queryClient.setQueryData<TasksListResponse>(tasksKeys.lists(), (old) => {
         if (!old) return old;
         const newTask = response.data;
 
-        // Update the count based on task status
         const updates: Partial<TasksListResponse> = {
           data: [newTask, ...old.data],
           total: old.total + 1,
         };
 
-        // Increment the appropriate counter
         if (newTask.status === "completed") {
           updates.completed = old.completed + 1;
         } else if (newTask.status === "in-progress") {
@@ -67,15 +65,11 @@ export function useCreateTask() {
       });
     },
     onError: (error) => {
-      // Show error toast
       showErrorToast(error, "Failed to create task");
     },
   });
 }
 
-/**
- * Update an existing task
- */
 export function useUpdateTask() {
   const queryClient = useQueryClient();
 
@@ -88,30 +82,19 @@ export function useUpdateTask() {
       updates: Partial<CreateTaskInput>;
     }) => updateTask(id, updates),
     onSuccess: (response) => {
-      // Show success toast
       showSuccessToast("Task updated", response.message);
 
-      // Invalidate and refetch tasks
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() });
 
-      // Optimistically update the cache
       queryClient.setQueryData<TasksListResponse>(tasksKeys.lists(), (old) => {
         if (!old) return old;
         const updatedTask = response.data;
 
-        // Update the task in the array
         const updatedData = old.data.map((task) =>
           task.id === updatedTask.id ? updatedTask : task
         );
 
-        // Recalculate counts
-        const completed = updatedData.filter(
-          (t) => t.status === "completed"
-        ).length;
-        const inProgress = updatedData.filter(
-          (t) => t.status === "in-progress"
-        ).length;
-        const todo = updatedData.filter((t) => t.status === "todo").length;
+        const { completed, inProgress, todo } = getStatusCount(updatedData);
 
         return {
           ...old,
@@ -128,32 +111,25 @@ export function useUpdateTask() {
   });
 }
 
-/**
- * Delete a task
- */
 export function useDeleteTask() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: number) => deleteTask(id),
     onSuccess: (response, deletedId) => {
-      // Show success toast
       showSuccessToast("Task deleted", "Task has been deleted successfully");
 
-      // Optimistically update the cache
       queryClient.setQueryData<TasksListResponse>(tasksKeys.lists(), (old) => {
         if (!old) return old;
 
         const taskToDelete = old.data.find((t) => t.id === deletedId);
         const updatedData = old.data.filter((task) => task.id !== deletedId);
 
-        // Recalculate counts
         const updates: Partial<TasksListResponse> = {
           data: updatedData,
           total: old.total - 1,
         };
 
-        // Decrement the appropriate counter
         if (taskToDelete?.status === "completed") {
           updates.completed = old.completed - 1;
         } else if (taskToDelete?.status === "in-progress") {
@@ -165,7 +141,6 @@ export function useDeleteTask() {
         return { ...old, ...updates };
       });
 
-      // Invalidate queries to ensure consistency
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() });
     },
     onError: (error) => {
@@ -174,9 +149,6 @@ export function useDeleteTask() {
   });
 }
 
-/**
- * Hook for refetching tasks manually
- */
 export function useRefetchTasks() {
   const queryClient = useQueryClient();
 

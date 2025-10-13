@@ -3,22 +3,21 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./api": "./src/api.ts",
-    "./database": "./src/database.ts",
-    "./tasks": "./src/tasks.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@workspace/database": "workspace:*",
-    "zod": "^3.25.76"
+    "@workspace/payment": "workspace:*"
   },
   "devDependencies": {
     "@workspace/typescript-config": "workspace:*",
     "typescript": "^5.9.2"
   }
 }
+

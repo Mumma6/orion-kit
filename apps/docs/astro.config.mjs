@@ -14,6 +14,8 @@ export default defineConfig({
 					items: [
 						{ label: 'Introduction', slug: 'introduction' },
 						{ label: 'Quick Start', slug: 'quick-start' },
+						{ label: 'Accounts Setup', slug: 'guide/accounts-setup' },
+						{ label: 'Environment Variables', slug: 'guide/environment-variables' },
 						{ label: 'Roadmap', slug: 'roadmap' },
 						{ label: 'Changelog', slug: 'changelog' },
 					],
@@ -28,7 +30,17 @@ export default defineConfig({
 				},
 				{
 					label: 'Packages',
-					autogenerate: { directory: 'packages' },
+					items: [
+						{ label: 'Overview', slug: 'packages/index' },
+						{ label: 'Auth', slug: 'packages/auth' },
+						{ label: 'Database', slug: 'packages/database' },
+						{ label: 'Types', slug: 'packages/types' },
+						{ label: 'UI', slug: 'packages/ui' },
+						{ label: 'Analytics', slug: 'packages/analytics' },
+						{ label: 'Observability', slug: 'packages/observability' },
+						{ label: 'Jobs', slug: 'packages/jobs' },
+						{ label: 'Payment', slug: 'packages/payment' },
+					],
 				},
 				{
 					label: 'Reference',

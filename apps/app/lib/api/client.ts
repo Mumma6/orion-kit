@@ -1,33 +1,21 @@
-/**
- * API Client
- * Centralized fetch wrapper for making API requests
- */
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
 }
 
-/**
- * Generic fetch wrapper with error handling
- */
 async function fetcher<T>(
   endpoint: string,
   options: FetchOptions = {}
 ): Promise<T> {
   const { params, ...fetchOptions } = options;
 
-  // Build URL with query params
-  let url = `${API_BASE_URL}${endpoint}`;
-  if (params) {
-    const searchParams = new URLSearchParams(params);
-    url = `${url}?${searchParams.toString()}`;
-  }
+  const url = params
+    ? `${API_BASE_URL}${endpoint}?${new URLSearchParams(params).toString()}`
+    : `${API_BASE_URL}${endpoint}`;
 
   const response = await fetch(url, {
     ...fetchOptions,
-    // Always include credentials for cookies
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
@@ -36,16 +24,22 @@ async function fetcher<T>(
   });
 
   if (!response.ok) {
+    const errorData = (await response.json()) || { error: response.statusText };
+
     const error = new Error(
-      `API Error: ${response.status} ${response.statusText}`
-    );
+      errorData?.error || `API Error: ${response.status} ${response.statusText}`
+    ) as Error & { code?: string };
+
+    if (errorData?.code) {
+      error.code = errorData.code;
+    }
+
     throw error;
   }
 
   return response.json();
 }
 
-// Export HTTP method helpers
 export const api = {
   get: <T>(endpoint: string, options?: FetchOptions) =>
     fetcher<T>(endpoint, { ...options, method: "GET" }),

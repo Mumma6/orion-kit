@@ -4,17 +4,18 @@ import { Github, Sparkles } from "lucide-react";
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
-      {/* Subtle glow - only in dark mode, very minimal */}
       <div className="absolute inset-0 hidden items-center justify-center opacity-40 dark:flex">
         <div className="h-[600px] w-[600px] rounded-full bg-primary/30 blur-3xl" />
       </div>
 
-      {/* Tiny stars - only in dark mode */}
       <div className="absolute inset-0 hidden opacity-20 dark:block">
         <div className="absolute top-20 left-[10%] h-0.5 w-0.5 rounded-full bg-white" />
         <div className="absolute top-40 left-[20%] h-0.5 w-0.5 rounded-full bg-white" />
         <div className="absolute top-32 right-[15%] h-0.5 w-0.5 rounded-full bg-white" />
         <div className="absolute top-60 right-[25%] h-0.5 w-0.5 rounded-full bg-white" />
+        <div className="absolute top-80 right-[35%] h-0.5 w-0.5 rounded-full bg-white" />
+        <div className="absolute top-100 right-[85%] h-0.5 w-0.5 rounded-full bg-white" />
+        <div className="absolute top-120 right-[15%] h-0.5 w-0.5 rounded-full bg-white" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">

@@ -1,59 +1,61 @@
 ---
-title: types
+title: Types Package
+description: Centralized API response types for the monorepo
 ---
 
-Shared TypeScript types across all Orion Kit apps and packages.
+# @workspace/types
+
+Centralized API response types package that composes domain types from other packages into consistent API contracts.
 
 ## Purpose
 
-This package provides:
+The `@workspace/types` package provides:
 
-1. **Generic API Types** - Standard request/response formats
-2. **Database Types** - Re-exports from `@workspace/database`
-3. **Type Guards** - Runtime type checking utilities
+1. **Generic API Response Interfaces** - Reusable response wrappers
+2. **Composed Response Types** - Domain types wrapped in API responses
+3. **Single Source of Truth** - Eliminates duplicate response type definitions
 
-## Why This Package?
+## Architecture
 
-### ❌ Before (Type Duplication)
-
-```typescript
-// apps/api/types.ts
-interface Task {
-  id: number;
-  title: string;
-  // ... duplicated
-}
-
-// apps/app/types.ts
-interface Task {
-  id: number;
-  title: string;
-  // ... duplicated again!
-}
 ```
-
-**Problems:**
-
-- Duplicated type definitions
-- Types can drift out of sync
-- Maintenance nightmare
-
-### ✅ After (Single Source of Truth)
-
-```typescript
-// Everywhere
-import { Task } from "@workspace/types";
+┌──────────────────────────────────────────────┐
+│         @workspace/types                     │
+│                                              │
+│  ┌────────────────────────────────────────┐ │
+│  │  Generic API Responses                 │ │
+│  │  - ApiSuccessResponse<T>               │ │
+│  │  - CreateResponse<T>                   │ │
+│  │  - ListResponse<T>                     │ │
+│  │  - UpdateResponse<T>                   │ │
+│  └────────────────────────────────────────┘ │
+│              ▲                               │
+│              │ Composes with                 │
+│              ▼                               │
+│  ┌────────────────────────────────────────┐ │
+│  │  Domain Types (imported)               │ │
+│  │  - Task (from @workspace/database)     │ │
+│  │  - CheckoutSession (from payment)      │ │
+│  └────────────────────────────────────────┘ │
+│              │                               │
+│              ▼                               │
+│  ┌────────────────────────────────────────┐ │
+│  │  Composed Response Types               │ │
+│  │  - CreateTaskResponse                  │ │
+│  │  - TasksListResponse                   │ │
+│  │  - SubscriptionResponse                │ │
+│  └────────────────────────────────────────┘ │
+└──────────────────────────────────────────────┘
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+   ┌────▼────┐            ┌─────▼────┐
+   │ API App │            │ Frontend │
+   │         │            │   App    │
+   │ Routes  │            │  Hooks   │
+   └─────────┘            └──────────┘
 ```
-
-**Benefits:**
-
-- Single source of truth
-- Types always in sync
-- Less maintenance
 
 ## Installation
-
-Add to your app's `package.json`:
 
 ```json
 {
@@ -63,323 +65,401 @@ Add to your app's `package.json`:
 }
 ```
 
-## Usage
+## What Lives Where
 
-### Database Types (for SELECT queries)
+### ❌ NOT in @workspace/types
 
-```typescript
-import type { Task, UserPreference } from "@workspace/types";
+- Database entities (→ `@workspace/database`)
+- Zod schemas (→ `@workspace/database` or `@workspace/payment`)
+- Payment domain types (→ `@workspace/payment`)
 
-// Task type comes directly from Drizzle schema!
-// Use for data FROM the database
-const task: Task = {
-  id: 1,
-  clerkUserId: "user_123",
-  title: "My task",
-  status: "todo",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  // ... fully typed
-};
-```
+### ✅ IN @workspace/types
 
-### Input Types (for CREATE/UPDATE - Zod-inferred!)
+- Generic API response interfaces
+- Composed response types using domain types
+- Input types for API requests (derived from domain types)
+
+## Generic API Responses
+
+These are the building blocks for all API responses:
 
 ```typescript
-import type { CreateTaskInput } from "@workspace/types";
-import { createTaskInputSchema } from "@workspace/types";
-
-// ✅ Type inferred from Zod schema
-const input: CreateTaskInput = {
-  title: "My task",
-  description: "Description",
-  status: "todo",
-  // No id, clerkUserId, timestamps - correct!
-};
-
-// ✅ Validate at runtime
-const validated = createTaskInputSchema.parse(userInput);
-```
-
-### Generic API Responses
-
-```typescript
-import type { ApiSuccessResponse, CreateResponse } from "@workspace/types/api";
-
-// Consistent API response format
-const response: CreateResponse<Task> = {
-  success: true,
-  message: "Task created successfully",
-  data: newTask,
-};
-```
-
-### List Responses
-
-```typescript
-import type { ListResponse, Task } from "@workspace/types";
-
-const tasksResponse: ListResponse<Task> = {
-  success: true,
-  data: [task1, task2, task3],
-  total: 3,
-};
-```
-
-### Type Guards
-
-```typescript
-import { isSuccessResponse, isErrorResponse } from "@workspace/types/api";
-
-const response = await fetchData();
-
-if (isSuccessResponse(response)) {
-  // TypeScript knows response.data exists
-  console.log(response.data);
-} else if (isErrorResponse(response)) {
-  // TypeScript knows response.error exists
-  console.error(response.error);
-}
-```
-
-## API Types Reference
-
-### Success Response
-
-```typescript
-interface ApiSuccessResponse<T = unknown> {
+// Generic success wrapper
+export interface ApiSuccessResponse<T> {
   success: true;
   data: T;
   message?: string;
 }
-```
 
-### Error Response
-
-```typescript
-interface ApiErrorResponse {
+// Generic error wrapper
+export interface ApiErrorResponse {
   success: false;
   error: string;
   message?: string;
   code?: string;
-  statusCode?: number;
 }
-```
 
-### Create Response
-
-```typescript
-interface CreateResponse<T> {
+// CRUD response types
+export interface CreateResponse<T> {
   success: true;
   message: string;
   data: T;
 }
-```
 
-### Update Response
-
-```typescript
-interface UpdateResponse<T> {
+export interface UpdateResponse<T> {
   success: true;
   message: string;
   data: T;
 }
-```
 
-### Delete Response
+export interface ListResponse<T> {
+  success: true;
+  data: T[];
+  total: number;
+}
 
-```typescript
-interface DeleteResponse {
+export interface DeleteResponse {
   success: true;
   message: string;
   deletedId?: string | number;
 }
 ```
 
-### List Response
+## Composed Response Types
+
+These combine generic responses with domain types:
+
+### Task Responses (`src/tasks.ts`)
 
 ```typescript
-interface ListResponse<T> {
-  success: true;
-  data: T[];
-  total: number;
-  metadata?: Record<string, unknown>;
+import type { Task } from "@workspace/database";
+import type { CreateResponse, ListResponse } from "./api";
+
+// Input type (for API requests)
+export type CreateTaskInput = Omit<
+  import("@workspace/database").InsertTask,
+  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+>;
+
+// Response types (for API responses)
+export type CreateTaskResponse = CreateResponse<Task>;
+
+export interface TasksListResponse extends ListResponse<Task> {
+  userId: string;
+  userName: string;
+  completed: number;
+  inProgress: number;
+  todo: number;
 }
 ```
 
-### Paginated Response
-
-```typescript
-interface PaginatedResponse<T> {
-  success: true;
-  data: T[];
-  pagination: {
-    page: number;
-    pageSize: number;
-    total: number;
-    totalPages: number;
-  };
-}
-```
-
-## Database Types
-
-All database types are re-exported from `@workspace/database`:
+### Billing Responses (`src/billing.ts`)
 
 ```typescript
 import type {
-  Task,
-  InsertTask,
-  UserPreference,
-  InsertUserPreference,
+  CheckoutSession,
+  SubscriptionData,
+  PortalSession,
+} from "@workspace/payment";
+import type { ApiSuccessResponse } from "./api";
+
+export type CreateCheckoutSessionResponse = ApiSuccessResponse<CheckoutSession>;
+export type SubscriptionResponse = ApiSuccessResponse<SubscriptionData>;
+export type CreatePortalSessionResponse = ApiSuccessResponse<PortalSession>;
+```
+
+### Preferences Responses (`src/preferences.ts`)
+
+```typescript
+import type { UserPreference } from "@workspace/database";
+import type { ApiSuccessResponse, UpdateResponse } from "./api";
+
+export type PreferencesResponse = ApiSuccessResponse<UserPreference>;
+export type UpdatePreferencesResponse = UpdateResponse<UserPreference>;
+```
+
+## Usage
+
+### In API Routes
+
+```typescript
+import { db, tasks, createTaskInputSchema } from "@workspace/database";
+import type { CreateTaskResponse, TasksListResponse } from "@workspace/types";
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  const validated = createTaskInputSchema.parse(body);
+
+  const [newTask] = await db
+    .insert(tasks)
+    .values({ ...validated, clerkUserId: userId })
+    .returning();
+
+  // Use composed response type
+  const response: CreateTaskResponse = {
+    success: true,
+    message: "Task created",
+    data: newTask,
+  };
+
+  return NextResponse.json(response);
+}
+```
+
+### In Frontend API Clients
+
+```typescript
+import type {
+  TasksListResponse,
+  CreateTaskResponse,
+  CreateTaskInput,
+} from "@workspace/types";
+import { api } from "./client";
+
+export async function getTasks(): Promise<TasksListResponse> {
+  return api.get<TasksListResponse>("/tasks");
+}
+
+export async function createTask(
+  input: CreateTaskInput
+): Promise<CreateTaskResponse> {
+  return api.post<CreateTaskResponse>("/tasks", input);
+}
+```
+
+### In TanStack Query Hooks
+
+```typescript
+import { useQuery, useMutation } from "@tanstack/react-query";
+import type { TasksListResponse, CreateTaskInput } from "@workspace/types";
+import { getTasks, createTask } from "@/lib/api/tasks";
+
+export function useTasks() {
+  return useQuery<TasksListResponse>({
+    queryKey: ["tasks"],
+    queryFn: getTasks,
+  });
+}
+
+export function useCreateTask() {
+  return useMutation({
+    mutationFn: (input: CreateTaskInput) => createTask(input),
+  });
+}
+```
+
+## Benefits
+
+### ✅ Single Source of Truth
+
+API and Frontend use **identical** response types from one package.
+
+```typescript
+// ✅ Both use the same type
+// apps/api/app/tasks/route.ts
+import type { TasksListResponse } from "@workspace/types";
+
+// apps/app/hooks/use-tasks.ts
+import type { TasksListResponse } from "@workspace/types";
+```
+
+### ✅ No Duplication
+
+Before:
+
+```typescript
+// ❌ Duplicated in API
+// apps/api/lib/types.ts
+export interface TasksListResponse { ... }
+
+// ❌ Duplicated in App
+// apps/app/lib/types.ts
+export interface TasksListResponse { ... }
+```
+
+After:
+
+```typescript
+// ✅ Defined once
+// packages/types/src/tasks.ts
+export interface TasksListResponse { ... }
+```
+
+### ✅ Type Safety Across Apps
+
+TypeScript catches API contract mismatches at compile time:
+
+```typescript
+// If API changes response shape
+const response: TasksListResponse = {
+  success: true,
+  data: tasks,
+  // Missing 'total' field → TypeScript error!
+};
+```
+
+## Package Structure
+
+```
+packages/types/
+├── src/
+│   ├── api.ts          # Generic API response interfaces
+│   ├── tasks.ts        # Task-specific composed types
+│   ├── preferences.ts  # Preferences composed types
+│   ├── billing.ts      # Billing composed types
+│   └── index.ts        # Exports everything
+├── package.json
+└── tsconfig.json
+```
+
+## Import Pattern
+
+### Generic Responses
+
+```typescript
+import type {
+  ApiSuccessResponse,
+  ApiErrorResponse,
+  CreateResponse,
+  ListResponse,
 } from "@workspace/types";
 ```
 
-These types are **inferred directly from Drizzle schemas**, so they're always in sync with your database!
-
-## Type Strategy
-
-### Database Entity Types (from Drizzle)
-
-For data **FROM** the database:
+### Domain-Specific Responses
 
 ```typescript
-import type { Task, UserPreference } from "@workspace/types";
-
-// ✅ Use for:
-// - API responses
-// - Database query results
-// - Displaying data
+import type {
+  TasksListResponse,
+  CreateTaskResponse,
+  CreateTaskInput,
+} from "@workspace/types";
 ```
 
-### Input Types (from Zod)
-
-For data **TO** the database:
+### Domain Types (still from their packages)
 
 ```typescript
-import type { CreateTaskInput } from "@workspace/types";
-import { createTaskInputSchema } from "@workspace/types";
+// ✅ Import entities from domain packages
+import type { Task } from "@workspace/database";
+import type { PricingPlan } from "@workspace/payment";
 
-// ✅ Use for:
-// - API request validation
-// - Form validation
-// - User input
+// ❌ Don't import from @workspace/types
+// Types package re-uses them, doesn't re-export them
 ```
-
-**Why Zod for inputs?**
-
-- Runtime validation
-- Correct fields (omits auto-generated)
-- Custom validation rules
-- Better error messages
-
-See [WHY_ZOD.md](./WHY_ZOD.md) for detailed explanation.
 
 ## Best Practices
 
-### 1. Import from @workspace/types
+### 1. Use Composed Types for API Responses
 
 ```typescript
-// ✅ Good - entity type for SELECT
-import type { Task } from "@workspace/types";
+// ✅ Good - use composed type
+const response: CreateTaskResponse = {
+  success: true,
+  message: "Created",
+  data: task,
+};
 
-// ✅ Good - Zod-inferred type for input
-import type { CreateTaskInput } from "@workspace/types";
-
-// ❌ Bad (duplicating types)
-interface Task {
-  id: number;
-  title: string;
-}
-
-// ❌ Bad (using InsertTask for API input)
-import type { InsertTask } from "@workspace/database";
+// ❌ Bad - inline response type
+const response: { success: true; data: Task } = { ... };
 ```
 
-### 2. Use Generic API Types
+### 2. Import Domain Types from Their Packages
 
 ```typescript
-// ✅ Good
-import type { CreateResponse, Task } from "@workspace/types";
+// ✅ Good - import from domain package
+import type { Task } from "@workspace/database";
+import type { CreateTaskResponse } from "@workspace/types";
 
-async function createTask(data: InsertTask): Promise<CreateResponse<Task>> {
-  // ...
-}
+// ❌ Bad - expecting types to export Task
+import type { Task } from "@workspace/types"; // Won't work!
+```
 
-// ❌ Bad (custom response format)
-async function createTask(data: any): Promise<{ task: Task }> {
-  // ...
+### 3. Extend Generic Types When Needed
+
+```typescript
+// ✅ Good - extend generic type
+export interface TasksListResponse extends ListResponse<Task> {
+  userId: string;
+  userName: string;
+  completed: number;
+  inProgress: number;
+  todo: number;
 }
 ```
 
-### 3. Use Type Guards
+## Type Guards
+
+Use type guards for runtime type checking:
 
 ```typescript
-// ✅ Good
-import { isSuccessResponse } from "@workspace/types/api";
+import { isSuccessResponse, isErrorResponse } from "@workspace/types";
+
+const response = await fetchData();
 
 if (isSuccessResponse(response)) {
-  console.log(response.data); // Fully typed!
-}
-
-// ❌ Bad (manual type checking)
-if (response.success === true) {
-  console.log((response as any).data);
-}
-```
-
-### 4. Extend Generic Types When Needed
-
-```typescript
-import type { ListResponse, Task } from "@workspace/types";
-
-// Add app-specific metadata
-interface TasksListResponse extends ListResponse<Task> {
-  metadata: {
-    completedCount: number;
-    inProgressCount: number;
-    todoCount: number;
-  };
+  console.log(response.data); // TypeScript knows data exists
+} else if (isErrorResponse(response)) {
+  console.error(response.error); // TypeScript knows error exists
 }
 ```
 
 ## Adding New Types
 
-### For Database Models
-
-Add to `packages/database/src/schema.ts`:
+### 1. Add Generic Response (if needed)
 
 ```typescript
-export const newTable = pgTable("new_table", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  // ...
-});
-
-export type NewModel = typeof newTable.$inferSelect;
-export type InsertNewModel = typeof newTable.$inferInsert;
-```
-
-Then export from `packages/database/src/index.ts`:
-
-```typescript
-export { newTable, type NewModel, type InsertNewModel } from "./schema";
-```
-
-The types will automatically be available via `@workspace/types`!
-
-### For Generic API Types
-
-Add to `packages/types/src/api.ts`:
-
-```typescript
-export interface YourCustomResponse<T> {
+// packages/types/src/api.ts
+export interface BatchResponse<T> {
   success: true;
-  data: T;
-  customField: string;
+  data: T[];
+  total: number;
+  processed: number;
+  failed: number;
 }
 ```
 
+### 2. Create Domain-Specific File
+
+```typescript
+// packages/types/src/comments.ts
+import type { Comment } from "@workspace/database";
+import type { CreateResponse, ListResponse } from "./api";
+
+export type CreateCommentInput = Omit<
+  import("@workspace/database").InsertComment,
+  "id" | "userId" | "createdAt"
+>;
+
+export type CreateCommentResponse = CreateResponse<Comment>;
+export type CommentsListResponse = ListResponse<Comment>;
+```
+
+### 3. Export from Index
+
+```typescript
+// packages/types/src/index.ts
+export * from "./api";
+export * from "./tasks";
+export * from "./preferences";
+export * from "./billing";
+export * from "./comments"; // Add new export
+```
+
+## Summary
+
+| Type Category         | Lives In              | Example                          |
+| --------------------- | --------------------- | -------------------------------- |
+| Database Entities     | `@workspace/database` | `Task`, `UserPreference`         |
+| Zod Schemas           | `@workspace/database` | `createTaskInputSchema`          |
+| Payment Domain        | `@workspace/payment`  | `CheckoutSession`, `PricingPlan` |
+| Generic API Responses | `@workspace/types`    | `CreateResponse<T>`              |
+| Composed Responses    | `@workspace/types`    | `CreateTaskResponse`             |
+| Input Types           | `@workspace/types`    | `CreateTaskInput`                |
+
+**Key Principle:** Domain packages own data types, `@workspace/types` owns API response types.
+
 ## Learn More
 
-- [Database Package](../database/README.md)
-- [TypeScript Best Practices](https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html)
+- [Type System Architecture](/architecture/type-system)
+- [Database Package](/packages/database)
+- [Payment Package](/packages/payment)

@@ -1,0 +1,15 @@
+{
+  "name": "@workspace/jobs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "biome check .",
+    "jobs": "npx trigger.dev@latest dev",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@trigger.dev/sdk": "4.0.4"
+  }
+}

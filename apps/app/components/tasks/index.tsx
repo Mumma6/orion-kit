@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
-import type { Task } from "@workspace/types";
+import type { Task } from "@workspace/database";
 import { CreateTaskDialog } from "./create-task-dialog";
 import { EditTaskSheet } from "./edit-task-sheet";
 import { TasksFilters } from "./tasks-filters";

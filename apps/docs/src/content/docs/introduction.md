@@ -11,13 +11,18 @@ Welcome to **Orion Kit** - a modern, production-ready SaaS starter kit.
 
 Orion Kit is a comprehensive monorepo starter that provides everything you need to build a modern SaaS application:
 
-- 🔐 **Authentication** - Ready-to-use Clerk integration
-- 🗄️ **Database** - Serverless Postgres with type-safe queries
-- ✅ **Validation** - Runtime validation with Zod
-- 🎨 **UI** - Beautiful shadcn/ui components
-- 📊 **Dashboard** - Full-featured admin panel
-- 🌐 **Landing Page** - Marketing site template
-- 🔌 **API** - Type-safe backend with validation
+- 🔐 **Authentication** - Clerk with protected routes and middleware
+- 🗄️ **Database** - Neon Postgres with Drizzle ORM
+- 💳 **Payments** - Stripe for subscriptions and billing
+- ✅ **Validation** - Zod schemas on frontend and backend
+- 🎨 **UI** - Shadcn/ui components with Tailwind CSS
+- 📊 **Dashboard** - Full-featured admin panel with analytics
+- 🌐 **Landing Page** - Modern marketing site with pricing
+- 🔌 **API** - Type-safe backend with observability
+- 📈 **Analytics** - PostHog for product insights
+- 🔍 **Logging** - Axiom for structured logging
+- ⚡ **Background Jobs** - Trigger.dev for async tasks
+- 🧪 **Testing** - Vitest with comprehensive test suite
 
 ## Quick Start
 
@@ -62,9 +67,13 @@ New to Orion Kit? Check out the [Quick Start Guide](/quick-start) to get up and 
 ### Shared Packages
 
 - **[@workspace/auth](/packages/auth)** - Authentication utilities
-- **[@workspace/database](/packages/database)** - Database and ORM
-- **[@workspace/types](/packages/types)** - Shared types
+- **[@workspace/database](/packages/database)** - Database ORM and entity types
+- **[@workspace/types](/packages/types)** - Centralized API response types
 - **[@workspace/ui](/packages/ui)** - UI component library
+- **[@workspace/payment](/packages/payment)** - Stripe payments and billing
+- **@workspace/analytics** - PostHog and Vercel Analytics
+- **@workspace/observability** - Axiom logging
+- **@workspace/jobs** - Trigger.dev background jobs
 
 ## Architecture Highlights
 
@@ -73,14 +82,22 @@ New to Orion Kit? Check out the [Quick Start Guide](/quick-start) to get up and 
 ```
 Drizzle Schema (database)
         ↓
-   TypeScript Types + Zod Schemas
+   Drizzle Schema → Types + Zod
         ↓
-    @workspace/types
-        ↓
-   ┌────┴────┐
-   │         │
-Backend    Frontend
-(Validates) (Validates)
+   ┌────────────────┬────────────────┐
+   │ @workspace/    │ @workspace/    │
+   │   database     │   payment      │
+   └────┬───────────┴────┬───────────┘
+        │ Domain Types   │
+        └────────┬────────┘
+                 │
+          @workspace/types
+        (API Response Types)
+                 │
+        ┌────────┴────────┐
+        │                 │
+   Backend App       Frontend App
+   (Routes)          (Hooks/Query)
 ```
 
 See [Architecture](/architecture) for complete details.

@@ -8,6 +8,14 @@ Complete guides for working with Orion Kit.
 
 ## Available Guides
 
+### Getting Started
+
+- **[Accounts Setup](/guide/accounts-setup)** - Set up all required cloud services (Clerk, Neon, Axiom, PostHog, Trigger.dev)
+- **[Environment Variables](/guide/environment-variables)** - Complete reference for all environment variables
+- **[Cloud Services](/guide/cloud-services)** - Overview of all integrated services and why we use them
+
+### Development
+
 - **[TanStack Query](/guide/tanstack-query)** - Learn how to fetch and manage server state
 - **[Forms](/guide/forms)** - Building forms with React Hook Form and Zod
 - **[Zod Validation](/guide/zod)** - Runtime validation throughout the stack

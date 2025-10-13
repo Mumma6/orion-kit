@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function Showcase() {
   return (
-    <section className="relative px-6 py-12">
+    <section className="relative px-6 py-0">
       <div className="mx-auto max-w-7xl">
         <div className="relative mx-auto max-w-5xl">
           {/* Browser mockup */}

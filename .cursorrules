@@ -90,6 +90,13 @@
 - Group related files in directories
 - Follow monorepo workspace conventions
 
+### Documentation
+
+- **ALL** documentation must be in `apps/docs/src/content/docs/`
+- **NO README files** in `packages/` or `apps/` directories
+- **ONLY ONE README** allowed: `README.md` in the root folder
+- Never create package-specific READMEs - use docs app instead
+
 ## Examples
 
 ### ❌ Bad (Imperative, let, mutations)

@@ -16,6 +16,7 @@
     "@tanstack/react-query": "^5.90.2",
     "@workspace/auth": "workspace:*",
     "@workspace/database": "workspace:*",
+    "@workspace/payment": "workspace:*",
     "@workspace/types": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@workspace/analytics": "workspace:*",

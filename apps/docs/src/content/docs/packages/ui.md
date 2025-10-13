@@ -1,10 +1,11 @@
 ---
-title: UI Components
+title: UI Package
+description: Shared component library with shadcn/ui
 ---
 
-# UI Components
+# @workspace/ui
 
-Shared UI component library based on [shadcn/ui](https://ui.shadcn.com/).
+Shared UI component library based on [shadcn/ui](https://ui.shadcn.com/) with Radix UI primitives and Tailwind CSS.
 
 ## Overview
 

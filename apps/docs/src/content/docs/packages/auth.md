@@ -1,8 +1,11 @@
 ---
-title: auth
+title: Auth Package
+description: Authentication with Clerk
 ---
 
-Authentication package for Orion, powered by [Clerk](https://clerk.com/).
+# @workspace/auth
+
+Authentication package powered by [Clerk](https://clerk.com/) providing complete user management and authentication.
 
 ## Installation
 

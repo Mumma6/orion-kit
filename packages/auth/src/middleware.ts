@@ -1,24 +1,5 @@
-/**
- * Middleware helper for Clerk authentication
- * This provides a configured middleware function that can be used in Next.js apps
- */
-
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-/**
- * Create a Clerk middleware with custom configuration
- *
- * @example
- * ```ts
- * // In your app's middleware.ts:
- * import { createAuthMiddleware } from '@workspace/auth/middleware';
- *
- * export default createAuthMiddleware({
- *   protectedRoutes: ['/dashboard(.*)'],
- *   publicRoutes: ['/']
- * });
- * ```
- */
 export function createAuthMiddleware(options?: {
   protectedRoutes?: string[];
   publicRoutes?: string[];
@@ -34,10 +15,6 @@ export function createAuthMiddleware(options?: {
   });
 }
 
-/**
- * Default middleware configuration
- * Matches the Clerk quickstart setup
- */
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params

@@ -8,16 +8,20 @@ Complete architecture documentation for the Orion Kit monorepo.
 
 | Layer                  | Technology            | Purpose                    |
 | ---------------------- | --------------------- | -------------------------- |
-| **Frontend Framework** | Next.js 15 App Router | React framework with SSR   |
+| **Frontend Framework** | Next.js 15 App Router | React 19 with SSR & RSC    |
 | **Authentication**     | Clerk                 | User auth and management   |
 | **Database**           | Neon (Postgres)       | Serverless database        |
 | **ORM**                | Drizzle ORM           | Type-safe database queries |
 | **Validation**         | Zod + drizzle-zod     | Runtime validation         |
 | **Data Fetching**      | TanStack Query        | Server state management    |
 | **Forms**              | React Hook Form       | Form state management      |
-| **UI Components**      | shadcn/ui             | Accessible components      |
-| **Styling**            | Tailwind CSS          | Utility-first CSS          |
+| **UI Components**      | shadcn/ui             | Accessible Radix UI        |
+| **Styling**            | Tailwind CSS v4       | Utility-first CSS          |
+| **Analytics**          | PostHog               | Product analytics          |
+| **Logging**            | Axiom                 | Structured logging         |
+| **Background Jobs**    | Trigger.dev           | Async task processing      |
 | **Testing**            | Vitest                | Unit and integration tests |
+| **Documentation**      | Astro Starlight       | Fast docs site             |
 | **Monorepo**           | Turborepo             | Build orchestration        |
 | **Package Manager**    | pnpm                  | Fast, efficient installs   |
 
@@ -35,7 +39,7 @@ Complete architecture documentation for the Orion Kit monorepo.
 │         └──────────┬───────┴──────────────────┘         │
 │                    │                                     │
 │              @workspace/types                            │
-│         (Shared TypeScript + Zod)                        │
+│         (API response types from packages)               │
 └────────────────────┼───────────────────────────────────┘
                      │
                      │ HTTP + Cookies
@@ -116,11 +120,12 @@ Drizzle Schema (source of truth)
 TypeScript  Zod
   Types    Schemas
    │         │
-   └────┬────┘
-        │
-@workspace/types
-        │
-   ┌────┴────┐
+   └────┬────┴────────────┬────┘
+        │                 │
+@workspace/database  @workspace/payment
+   (DB types)        (Payment types)
+        │                 │
+   ┌────┴────┐       ┌────┴────┐
    │         │
   API      App
 ```
@@ -163,33 +168,56 @@ const form = useForm({
   └── drizzle-zod
 
 @workspace/types
-  └── @workspace/database (for re-exports)
+  ├── Generic API responses
+  ├── Composed response types
+  └── Input types
 
 @workspace/ui
-  └── React + Tailwind components
+  └── React + Radix UI + Tailwind
+
+@workspace/analytics
+  ├── posthog-js
+  ├── posthog-node
+  └── @vercel/analytics
+
+@workspace/observability
+  ├── @axiomhq/nextjs
+  └── Web Vitals
+
+@workspace/jobs
+  └── @trigger.dev/sdk
 
 apps/web (Landing)
-  ├── @workspace/auth
-  └── @workspace/ui
+  ├── @workspace/ui
+  └── @workspace/analytics
 
 apps/app (Dashboard)
   ├── @workspace/auth
   ├── @workspace/database
+  ├── @workspace/payment
   ├── @workspace/types
   ├── @workspace/ui
+  ├── @workspace/analytics
+  ├── @workspace/observability
   ├── @tanstack/react-query
   ├── react-hook-form
-  └── @hookform/resolvers
+  ├── @hookform/resolvers
+  └── sonner (toasts)
 
 apps/api (Backend)
   ├── @workspace/auth
   ├── @workspace/database
+  ├── @workspace/payment
   ├── @workspace/types
+  ├── @workspace/observability
   └── zod
 
 apps/studio (Database GUI)
   ├── @workspace/database
   └── drizzle-kit
+
+apps/docs (Documentation)
+  └── @astrojs/starlight
 ```
 
 ## Security Layers
@@ -273,8 +301,8 @@ pnpm db:push
 # 1. Create route
 apps/api/app/resource/route.ts
 
-# 2. Use shared types
-import { ResourceSchema } from "@workspace/types";
+# 2. Use database types and schemas
+import { type Resource, resourceSchema } from "@workspace/database";
 
 # 3. Validate with Zod
 const validated = resourceSchema.parse(body);
@@ -287,7 +315,7 @@ await db.insert(resource).values(validated);
 
 ```bash
 # 1. Import schema
-import { resourceSchema } from "@workspace/types";
+import { resourceSchema } from "@workspace/database";
 
 # 2. Create form
 const form = useForm({

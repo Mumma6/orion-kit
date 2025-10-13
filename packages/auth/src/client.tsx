@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * Client-side auth exports
- * These are meant to be used in React components
- */
-
-// Re-export Clerk client components
 export {
   ClerkProvider,
   SignInButton,
@@ -31,7 +25,6 @@ export {
   OrganizationList,
 } from "@clerk/nextjs";
 
-// Re-export useful types
 export type {
   UserResource,
   OrganizationResource,

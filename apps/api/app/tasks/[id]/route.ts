@@ -1,6 +1,5 @@
 import { auth } from "@workspace/auth/server";
-import { db, tasks, eq } from "@workspace/database";
-import { updateTaskInputSchema } from "@workspace/types";
+import { db, tasks, eq, updateTaskInputSchema } from "@workspace/database";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
@@ -14,10 +13,6 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-/**
- * PUT /tasks/:id
- * Update a task (full update)
- */
 export const PUT = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
@@ -33,7 +28,6 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    // Validate params with Zod
     const params = await context.params;
     const paramsValidation = taskIdSchema.safeParse(params);
 
@@ -48,7 +42,6 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
 
     const body = await req.json();
 
-    // Validate request body with Zod
     const validation = updateTaskInputSchema.safeParse(body);
 
     if (!validation.success) {
@@ -57,7 +50,6 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
 
     const validatedData = validation.data;
 
-    // Check if task exists and belongs to user
     const existingTasks = await db
       .select()
       .from(tasks)
@@ -80,7 +72,6 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    // Update task
     const updatedTasks = await db
       .update(tasks)
       .set({
@@ -110,14 +101,10 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
     });
   } catch (error) {
     logger.error("Failed to update task", error as Error);
-    throw error; // withAxiom handles error responses
+    throw error;
   }
 });
 
-/**
- * PATCH /tasks/:id
- * Partial update of a task
- */
 export const PATCH = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
@@ -132,7 +119,6 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    // Validate params with Zod
     const params = await context.params;
     const paramsValidation = taskIdSchema.safeParse(params);
 
@@ -147,7 +133,6 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
 
     const body = await req.json();
 
-    // Validate request body with Zod (partial schema)
     const validation = updateTaskInputSchema.safeParse(body);
 
     if (!validation.success) {
@@ -156,7 +141,6 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
 
     const validatedData = validation.data;
 
-    // Check if task exists and belongs to user
     const existingTasks = await db
       .select()
       .from(tasks)
@@ -179,7 +163,6 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    // Update only provided fields
     const updatedTasks = await db
       .update(tasks)
       .set({
@@ -210,14 +193,10 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
     });
   } catch (error) {
     logger.error("Failed to patch task", error as Error);
-    throw error; // withAxiom handles error responses
+    throw error;
   }
 });
 
-/**
- * DELETE /tasks/:id
- * Delete a task
- */
 export const DELETE = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
@@ -232,7 +211,6 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    // Validate params with Zod
     const params = await context.params;
     const paramsValidation = taskIdSchema.safeParse(params);
 
@@ -245,7 +223,6 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
 
     const taskId = paramsValidation.data.id;
 
-    // Check if task exists and belongs to user
     const existingTasks = await db
       .select()
       .from(tasks)
@@ -268,7 +245,6 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    // Delete task
     await db.delete(tasks).where(eq(tasks.id, taskId));
 
     const duration = Date.now() - startTime;
@@ -285,6 +261,6 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
     });
   } catch (error) {
     logger.error("Failed to delete task", error as Error);
-    throw error; // withAxiom handles error responses
+    throw error;
   }
 });

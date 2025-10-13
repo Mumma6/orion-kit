@@ -16,6 +16,7 @@
     "@workspace/auth": "workspace:*",
     "@workspace/database": "workspace:*",
     "@workspace/observability": "workspace:*",
+    "@workspace/payment": "workspace:*",
     "@workspace/types": "workspace:*",
     "next": "^15.4.5",
     "react": "^19.1.1",

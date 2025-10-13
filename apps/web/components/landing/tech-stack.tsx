@@ -22,7 +22,7 @@ const techStack: Tech[] = [
   {
     emoji: "🔷",
     title: "TypeScript",
-    description: "End-to-end type safety across your entire application stack.",
+    description: "End-to-end type safety with strict mode across entire stack.",
   },
   {
     emoji: "🎨",
@@ -32,62 +32,77 @@ const techStack: Tech[] = [
   {
     emoji: "🧩",
     title: "Shadcn/UI",
-    description: "Reusable component system with copy-paste components.",
+    description: "Beautiful, accessible components built with Radix UI.",
   },
   {
     emoji: "🗄️",
     title: "Drizzle ORM",
-    description: "Type-safe SQL for Postgres with excellent DX.",
+    description: "Type-safe SQL with automatic type inference from schema.",
   },
   {
     emoji: "☁️",
     title: "Neon",
-    description: "Serverless Postgres database with instant scaling.",
+    description: "Serverless Postgres with instant scaling and branching.",
   },
   {
     emoji: "🔐",
     title: "Clerk",
-    description: "Authentication & organizations with beautiful UI.",
+    description: "Complete authentication with beautiful pre-built UI.",
   },
   {
-    emoji: "💳",
-    title: "Stripe",
-    description: "Payments & subscriptions with webhooks and billing.",
+    emoji: "✅",
+    title: "Zod",
+    description: "Runtime validation and type inference for forms & APIs.",
+  },
+  {
+    emoji: "🔄",
+    title: "TanStack Query",
+    description: "Powerful data fetching, caching, and state management.",
+  },
+  {
+    emoji: "📝",
+    title: "React Hook Form",
+    description: "Performant forms with Zod resolvers for validation.",
+  },
+  {
+    emoji: "📦",
+    title: "Shared Types",
+    description: "Centralized types package for consistency across apps.",
   },
   {
     emoji: "⚡",
     title: "Trigger.dev",
-    description: "Background jobs & automation with TypeScript.",
+    description: "Background jobs & scheduled tasks with TypeScript.",
+  },
+  {
+    emoji: "🧪",
+    title: "Vitest",
+    description: "Fast unit testing with modern test runner.",
+  },
+  {
+    emoji: "📊",
+    title: "PostHog",
+    description: "Product analytics with event tracking and insights.",
+  },
+  {
+    emoji: "📈",
+    title: "Axiom",
+    description: "Structured logging and observability for production.",
   },
   {
     emoji: "▲",
     title: "Vercel",
-    description: "Deployment & edge runtime with zero config.",
+    description: "Zero-config deployment with edge runtime support.",
   },
   {
-    emoji: "📊",
-    title: "Posthog",
-    description: "Product analytics with feature flags & funnels.",
+    emoji: "🏗️",
+    title: "Turborepo",
+    description: "High-performance monorepo build system.",
   },
   {
-    emoji: "🚨",
-    title: "Sentry",
-    description: "Monitoring & error tracking for production apps.",
-  },
-  {
-    emoji: "📧",
-    title: "Resend",
-    description: "Transactional emails with React components.",
-  },
-  {
-    emoji: "🔌",
-    title: "Serverless APIs",
-    description: "Built-in via Next.js routes with type safety.",
-  },
-  {
-    emoji: "🤖",
-    title: "AI-Ready",
-    description: "Foundation for easy LLM integrations later.",
+    emoji: "📚",
+    title: "Astro Starlight",
+    description: "Fast, accessible documentation site with search.",
   },
 ];
 
@@ -101,7 +116,7 @@ export function TechStack() {
               key={tech.title}
               className="group relative overflow-hidden border-border/60 bg-card/70 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
             >
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-0 mb-0">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
                     <span className="text-lg">{tech.emoji}</span>
