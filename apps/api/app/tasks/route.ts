@@ -1,17 +1,23 @@
 import { auth, currentUser } from "@workspace/auth/server";
-import {
-  db,
-  tasks,
-  eq,
-  desc,
-  createTaskInputSchema,
-} from "@workspace/database";
-import type { TasksListResponse } from "@workspace/types";
+import { db, tasks, eq, desc } from "@workspace/database";
+import { createTaskInputSchema } from "@workspace/types";
+
+import type { Task, TasksListResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
 
-export const GET = withAxiom(async (req) => {
+function getStatusCount(userTasks: TasksListResponse["data"]) {
+  const filterStatus = (status: Task["status"]) =>
+    userTasks.filter((t) => t.status === status).length;
+  return {
+    completed: filterStatus("completed"),
+    inProgress: filterStatus("in-progress"),
+    todo: filterStatus("todo"),
+  };
+}
+
+export const GET = withAxiom(async () => {
   const startTime = Date.now();
 
   try {
@@ -37,11 +43,7 @@ export const GET = withAxiom(async (req) => {
       duration,
     });
 
-    const getStatusCount = (
-      status: "completed" | "in-progress" | "todo" | "cancelled"
-    ) => {
-      return userTasks.filter((t) => t.status === status).length;
-    };
+    const { completed, inProgress, todo } = getStatusCount(userTasks);
 
     const response: TasksListResponse = {
       success: true,
@@ -49,9 +51,9 @@ export const GET = withAxiom(async (req) => {
       total: userTasks.length,
       userId,
       userName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
-      completed: getStatusCount("completed"),
-      inProgress: getStatusCount("in-progress"),
-      todo: getStatusCount("todo"),
+      completed,
+      inProgress,
+      todo,
     };
 
     return NextResponse.json(response);

@@ -11,15 +11,15 @@ Orion Kit integrates with several cloud services to provide a complete productio
 
 Required services for full functionality:
 
-| Service         | Purpose                          | Required       | Free Tier          |
-| --------------- | -------------------------------- | -------------- | ------------------ |
-| **Clerk**       | Authentication & user management | ✅ Yes         | ✅ 10,000 MAU      |
-| **Neon**        | Serverless Postgres database     | ✅ Yes         | ✅ 0.5GB storage   |
-| **Stripe**      | Payments & subscriptions         | ⚠️ Recommended | ✅ No monthly fees |
-| **Axiom**       | Logging & observability          | ⚠️ Recommended | ✅ 500MB/month     |
-| **PostHog**     | Product analytics                | ⚠️ Recommended | ✅ 1M events/month |
-| **Trigger.dev** | Background jobs                  | ⚠️ Optional    | ✅ 100k task runs  |
-| **Vercel**      | Deployment & hosting             | ⚠️ Optional    | ✅ Unlimited hobby |
+| Service         | Purpose                          | Free Tier          |
+| --------------- | -------------------------------- | ------------------ |
+| **Clerk**       | Authentication & user management | ✅ 10,000 MAU      |
+| **Neon**        | Serverless Postgres database     | ✅ 0.5GB storage   |
+| **Stripe**      | Payments & subscriptions         | ✅ No monthly fees |
+| **Axiom**       | Logging & observability          | ✅ 500MB/month     |
+| **PostHog**     | Product analytics                | ✅ 1M events/month |
+| **Trigger.dev** | Background jobs                  | ✅ 100k task runs  |
+| **Vercel**      | Deployment & hosting             | ✅ Unlimited hobby |
 
 ## 🔐 Clerk (Authentication)
 

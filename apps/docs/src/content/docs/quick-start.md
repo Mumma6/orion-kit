@@ -18,9 +18,6 @@ Get up and running in 5 minutes!
 
 - [Clerk](https://clerk.com) - Authentication (free: 10k MAU)
 - [Neon](https://neon.tech) - Database (free: 0.5GB)
-
-### Recommended Cloud Accounts
-
 - [Axiom](https://axiom.co) - Logging (free: 500MB/month)
 - [PostHog](https://posthog.com) - Analytics (free: 1M events/month)
 - [Trigger.dev](https://trigger.dev) - Background jobs (free: 100k runs/month)

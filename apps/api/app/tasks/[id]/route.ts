@@ -1,5 +1,6 @@
 import { auth } from "@workspace/auth/server";
-import { db, tasks, eq, updateTaskInputSchema } from "@workspace/database";
+import { db, tasks, eq } from "@workspace/database";
+import { updateTaskInputSchema } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";

@@ -20,5 +20,3 @@ export {
 } from "./schema";
 
 export { eq, and, or, not, isNull, isNotNull, desc, asc } from "drizzle-orm";
-
-export { type ZodError, type ZodIssue } from "zod";
