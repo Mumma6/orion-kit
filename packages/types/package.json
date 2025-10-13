@@ -13,11 +13,11 @@
   },
   "dependencies": {
     "@workspace/database": "workspace:*",
-    "@workspace/payment": "workspace:*"
+    "@workspace/payment": "workspace:*",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@workspace/typescript-config": "workspace:*",
     "typescript": "^5.9.2"
   }
 }
-

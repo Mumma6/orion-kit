@@ -11,7 +11,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { AlertCircle, CheckCircle2, Circle, Clock, Rocket } from "lucide-react";
 import { useTasks } from "@/hooks/use-tasks";
-import type { Task } from "@workspace/database";
+import type { Task } from "@workspace/types";
 
 interface UserData {
   id: string;

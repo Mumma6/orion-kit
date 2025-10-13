@@ -31,9 +31,10 @@ import {
   Trash2,
 } from "lucide-react";
 import { useUpdateTask, useDeleteTask } from "@/hooks/use-tasks";
-import { updateTaskInputSchema, type Task } from "@workspace/database";
+import { updateTaskInputSchema } from "@workspace/types";
 import type { CreateTaskInput } from "@workspace/types";
 import { StatusIcon, statusConfig } from "./task-status-config";
+import { Task } from "@workspace/types";
 
 interface EditTaskSheetProps {
   task: Task | null;

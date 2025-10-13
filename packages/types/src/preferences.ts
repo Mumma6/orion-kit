@@ -3,8 +3,11 @@
  * Composed from generic API responses and domain types
  */
 
-import type { UserPreference } from "@workspace/database";
+import type { UserPreference } from "@workspace/database/schema";
 import type { ApiSuccessResponse, UpdateResponse } from "./api";
+
+// Re-export domain types
+export type { UserPreference } from "@workspace/database/schema";
 
 // Preferences input types
 export type UpdatePreferencesInput = Partial<

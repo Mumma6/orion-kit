@@ -18,7 +18,7 @@ import {
 } from "@workspace/ui/components/dialog";
 import { Loader2, Plus } from "lucide-react";
 import { useCreateTask } from "@/hooks/use-tasks";
-import { createTaskInputSchema } from "@workspace/database";
+import { createTaskInputSchema } from "@workspace/types";
 import type { CreateTaskInput } from "@workspace/types";
 
 interface CreateTaskDialogProps {

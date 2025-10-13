@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { CheckCircle2, Circle, Clock } from "lucide-react";
-import type { Task } from "@workspace/database";
+import type { Task } from "@workspace/types";
 
 interface DashboardTasksPreviewProps {
   readonly tasks: readonly Task[];

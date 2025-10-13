@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
-import type { Task } from "@workspace/database";
+import type { Task } from "@workspace/types";
 
 interface RecentActivityItem {
   readonly title: string;

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTask, getTasks, updateTask, deleteTask } from "@/lib/api/tasks";
-import type { Task } from "@workspace/database";
 import type {
+  Task,
   TasksListResponse,
   CreateTaskInput,
   UpdateTaskInput,

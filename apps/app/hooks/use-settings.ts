@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPreferences, updatePreferences } from "@/lib/api/preferences";
-import type { UserPreference } from "@workspace/database";
-import type { UpdatePreferencesInput } from "@workspace/types";
+import type { UserPreference, UpdatePreferencesInput } from "@workspace/types";
 import { showSuccessToast, showErrorToast } from "@/lib/errors";
 
 export const preferencesKeys = {

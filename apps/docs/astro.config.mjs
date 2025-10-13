@@ -31,17 +31,7 @@ export default defineConfig({
 				},
 				{
 					label: 'Packages',
-					items: [
-						{ label: 'Overview', slug: 'packages/index' },
-						{ label: 'Auth', slug: 'packages/auth' },
-						{ label: 'Database', slug: 'packages/database' },
-						{ label: 'Types', slug: 'packages/types' },
-						{ label: 'UI', slug: 'packages/ui' },
-						{ label: 'Analytics', slug: 'packages/analytics' },
-						{ label: 'Observability', slug: 'packages/observability' },
-						{ label: 'Jobs', slug: 'packages/jobs' },
-						{ label: 'Payment', slug: 'packages/payment' },
-					],
+					autogenerate: { directory: 'packages' },
 				},
 			{
 				label: 'Reference',

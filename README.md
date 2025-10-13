@@ -47,7 +47,7 @@ All apps will start:
 - 🌐 **Landing:** http://localhost:3000
 - 📊 **Dashboard:** http://localhost:3001
 - 🔌 **API:** http://localhost:3002
-- 🎨 **Studio:** http://localhost:3003
+- 🎨 **Studio:** https://local.drizzle.studio/?port=3003
 - 📚 **Docs:** http://localhost:3004 ⭐ **Start here!**
 
 ## 🛠️ Tech Stack

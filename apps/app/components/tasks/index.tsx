@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
-import type { Task } from "@workspace/database";
 import { CreateTaskDialog } from "./create-task-dialog";
 import { EditTaskSheet } from "./edit-task-sheet";
 import { TasksFilters } from "./tasks-filters";
@@ -11,6 +10,7 @@ import { TasksTable } from "./tasks-table";
 import { TasksLoading } from "./tasks-loading";
 import { TasksError } from "./tasks-error";
 import type { StatusFilter } from "./task-status-config";
+import { Task } from "@workspace/types";
 
 export function TasksContent() {
   const { data: tasksData, isLoading, error, refetch } = useTasks();

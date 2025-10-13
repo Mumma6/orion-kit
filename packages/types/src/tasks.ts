@@ -3,12 +3,20 @@
  * Composed from generic API responses and domain types
  */
 
-import type { Task } from "@workspace/database";
+import type { Task } from "@workspace/database/schema";
+import { InsertTask } from "@workspace/database/schema";
 import type { ListResponse, CreateResponse, UpdateResponse } from "./api";
+
+// Re-export schemas and types from database/schema (avoids importing client)
+export {
+  createTaskInputSchema,
+  updateTaskInputSchema,
+} from "@workspace/database/schema";
+export type { Task } from "@workspace/database/schema";
 
 // Task input types (for API requests)
 export type CreateTaskInput = Omit<
-  import("@workspace/database").InsertTask,
+  InsertTask,
   "id" | "clerkUserId" | "createdAt" | "updatedAt"
 >;
 
