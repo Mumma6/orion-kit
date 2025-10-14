@@ -1,5 +1,11 @@
 {
   "name": "orion-kit",
+  "author": "Martin Linde Persson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mumma6/orion-kit"
+  },
   "version": "0.0.1",
   "private": true,
   "scripts": {

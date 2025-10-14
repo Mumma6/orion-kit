@@ -22,7 +22,7 @@ pnpm dev
 **Apps running:**
 
 - 🌐 **Landing:** http://localhost:3000
-- 📊 **Dashboard:** http://localhost:3001 ← **Start here**
+- 📊 **Dashboard:** http://localhost:3001
 - 🔌 **API:** http://localhost:3002
 - 📚 **Docs:** http://localhost:3004
 
@@ -103,22 +103,6 @@ DATABASE_URL=postgresql://...
 - ⚡ **Jobs** - Trigger.dev background tasks
 - 🧪 **Testing** - Vitest + Playwright E2E
 - 📚 **Documentation** - Complete guides & API docs
-
-## 🏗️ Architecture
-
-```
-┌─────────┐  ┌─────────┐  ┌─────────┐
-│   Web   │  │   App   │  │   API   │
-│ (3000)  │  │ (3001)  │  │ (3002)  │
-└─────────┘  └─────────┘  └─────────┘
-     │            │            │
-     └────────────┼────────────┘
-                  │
-            ┌─────────┐
-            │ Database│
-            │ (Neon)  │
-            └─────────┘
-```
 
 **Type-safe stack:** Database Schema → Auto-generated Types → Shared Packages → API + Frontend
 

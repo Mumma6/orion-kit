@@ -114,6 +114,11 @@ const techStack: Tech[] = [
     title: "Astro Starlight",
     description: "Fast, accessible documentation site with search.",
   },
+  {
+    emoji: "🐶",
+    title: "Husky",
+    description: "Git hooks for linting and formatting.",
+  },
 ];
 
 export function TechStack() {
