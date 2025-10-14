@@ -6,6 +6,7 @@ import type { NextRequest, NextFetchEvent } from "next/server";
 import { createAuthMiddleware } from "@workspace/auth/middleware";
 
 // Define protected routes
+/*
 const isProtectedRoute = createRouteMatcher([
   "/api/tasks(.*)",
   "/api/preferences(.*)",
@@ -65,6 +66,9 @@ export default clerkMiddleware(
     return response;
   }
 );
+*/
+
+export default clerkMiddleware();
 
 export const config = {
   matcher: [
