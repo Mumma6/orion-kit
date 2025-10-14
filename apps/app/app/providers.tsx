@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
 import { AnalyticsProvider } from "@workspace/analytics/src/provider";
-import { ClerkProvider } from "@workspace/auth";
+import { ClerkProvider } from "@workspace/auth/client";
 import { WebVitals } from "@workspace/observability/client";
 
 export function Providers({ children }: { children: React.ReactNode }) {
