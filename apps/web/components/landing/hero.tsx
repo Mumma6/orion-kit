@@ -1,5 +1,5 @@
 import { Button } from "@workspace/ui/components/button";
-import { Github, Link, Sparkles } from "lucide-react";
+import { Github, Sparkles } from "lucide-react";
 
 const linkUrl = process.env.NEXT_PUBLIC_DOCS_URL;
 
@@ -45,13 +45,13 @@ export function Hero() {
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
-              <Link href={`${linkUrl}/docs`}>Get Started</Link>
+              <a href={`${linkUrl}/docs`}>Get Started</a>
             </Button>
-            <Button size="lg" variant="outline" className="gap-2">
-              <Github className="h-5 w-5" />
-              <Link href={`https://github.com/Mumma6/orion-kit`}>
+            <Button size="lg" variant="outline" className="gap-2" asChild>
+              <a href={`https://github.com/Mumma6/orion-kit`}>
+                <Github className="h-5 w-5" />
                 View on GitHub
-              </Link>
+              </a>
             </Button>
           </div>
         </div>
