@@ -3,8 +3,6 @@ title: Adding Email
 description: Resend for transactional emails
 ---
 
-# Adding Email
-
 Transactional emails with **Resend** + **React Email** templates.
 
 ## Setup

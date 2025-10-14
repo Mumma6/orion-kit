@@ -1,6 +1,6 @@
 {
     "name": "studio",
-    "version": "0.0.0",
+    "version": "0.0.1",
   "scripts": {
     "dev": "drizzle-kit studio --port 3003",
     "clean": "git clean -xdf .cache .turbo dist node_modules",

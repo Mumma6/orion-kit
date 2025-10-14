@@ -5,8 +5,8 @@ export function Showcase() {
     <section className="relative px-6 py-0">
       <div className="mx-auto max-w-7xl">
         <div className="relative mx-auto max-w-5xl">
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-cyan-500/20 via-violet-600/10 to-transparent shadow-lg shadow-violet-500/10">
-            <div className="flex items-center gap-2 border-b border-border bg-card/50 px-4 py-3 backdrop-blur-sm">
+          <div className="relative pb-4 aspect-video w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-cyan-500/20 via-violet-600/10 to-transparent shadow-lg shadow-violet-500/10">
+            <div className="flex items-center gap-2 border-b border-border bg-card/50 px-4 py-3  backdrop-blur-sm">
               <div className="flex gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-500/50" />
                 <div className="h-3 w-3 rounded-full bg-yellow-500/50" />
@@ -31,7 +31,7 @@ export function Showcase() {
           </div>
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-18 text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
             A realistic SaaS foundation
           </h2>

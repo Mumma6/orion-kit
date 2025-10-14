@@ -1,28 +1,42 @@
 ---
-title: "@workspace/payment"
+title: Payment Package
 description: Stripe subscription payments and billing
 ---
 
-# @workspace/payment
+Complete Stripe integration for subscription billing with checkout sessions, webhooks, billing portal, and plan management.
 
-This package handles all Stripe subscription logic: checkout sessions, webhooks, billing portal access, and plan management.
+## What's Included
 
-## What It Does
+### 📦 Package Structure
 
-**Payment package provides:**
+```
+packages/payment/src/
+├── config.ts      # Pricing plans (Free, Pro, Enterprise)
+├── server.ts      # Server-side Stripe functions
+├── client.tsx     # React components (PricingCard, SubscriptionBadge)
+├── webhooks.ts    # Webhook event handlers
+├── types.ts       # TypeScript interfaces
+├── billing.ts     # Zod schemas for validation
+└── index.ts       # Main exports
+```
 
-- **Checkout sessions**: Create Stripe Checkout URLs for subscription purchases
-- **Webhooks**: Sync subscription data from Stripe to your database automatically
-- **Billing portal**: Let users manage subscriptions (cancel, update payment method)
-- **Plan configuration**: Define pricing tiers (Free, Pro, Enterprise)
+### 🎯 Core Features
 
-**Where it's used:**
+- **✅ Checkout Sessions** - Create Stripe Checkout URLs for subscriptions
+- **✅ Webhook Handlers** - Auto-sync subscription data to database
+- **✅ Billing Portal** - Let users manage subscriptions (cancel, update payment)
+- **✅ Plan Configuration** - Define pricing tiers with features
+- **✅ React Components** - Ready-to-use PricingCard and SubscriptionBadge
+- **✅ Type Safety** - Full TypeScript support with Zod validation
+- **✅ Utility Functions** - Plan lookup, upgrade logic, status helpers
 
-- **`apps/api/app/checkout/route.ts`**: Creates Stripe Checkout sessions
-- **`apps/api/app/billing-portal/route.ts`**: Opens Stripe Customer Portal
-- **`apps/api/app/webhooks/stripe/route.ts`**: Receives Stripe events, updates DB
-- **`apps/app/components/billing/`**: Displays pricing cards and subscription status
-- **`packages/database/src/schema/user-preferences.ts`**: Stores subscription data
+### 📍 Where It's Used
+
+- **`apps/api/app/checkout/route.ts`** - Creates Stripe Checkout sessions
+- **`apps/api/app/billing-portal/route.ts`** - Opens Stripe Customer Portal
+- **`apps/api/app/webhooks/stripe/route.ts`** - Receives Stripe events, updates DB
+- **`apps/app/components/billing/`** - Displays pricing cards and subscription status
+- **`packages/database/src/schema/user-preferences.ts`** - Stores subscription data
 
 ## How It Works
 
@@ -35,84 +49,170 @@ This package handles all Stripe subscription logic: checkout sessions, webhooks,
 
 ## Setup
 
-See [Stripe Payments Guide](/guide/stripe-payments) for complete setup instructions.
+### 1. Stripe Configuration
 
-**Quick setup:**
+1. Get API keys from [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys)
+2. Create products in Stripe:
+   - **Pro Plan**: $19/month → copy Price ID
+   - **Enterprise Plan**: $49/month → copy Price ID
+3. Add environment variables:
 
-1. Get Stripe API keys from [dashboard](https://dashboard.stripe.com/test/apikeys)
-2. Create products (Pro $19/mo, Enterprise $99/mo) → copy Price IDs
-3. Add env vars (see guide)
-4. Set up webhooks: `stripe listen --forward-to localhost:3002/webhooks/stripe`
+```bash
+# apps/api/.env.local
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 
-## Usage in Orion Kit
-
-### Create Checkout Session (API Route)
-
-**`apps/api/app/checkout/route.ts`:**
-
-```typescript
-import { auth } from "@workspace/auth/server";
-import { createCheckoutSession } from "@workspace/payment/server";
-
-export async function POST(request: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { priceId } = await request.json();
-
-  // Get user email from Clerk
-  const user = await currentUser();
-  const email = user?.emailAddresses[0]?.emailAddress;
-
-  // Create Stripe Checkout Session
-  const session = await createCheckoutSession(userId, email, priceId);
-
-  return NextResponse.json({ url: session.url });
-}
+# apps/app/.env.local
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...
+NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_...
 ```
 
-### Frontend (Billing Page)
+### 2. Webhook Setup
 
-**`apps/app/components/billing/index.tsx`:**
+```bash
+# Install Stripe CLI
+npm install -g stripe-cli
+
+# Login to Stripe
+stripe login
+
+# Forward webhooks to local API
+stripe listen --forward-to localhost:3002/webhooks/stripe
+
+# Copy webhook secret to .env.local
+```
+
+### 3. Database Schema
+
+Subscription data is stored in `user_preferences` table:
+
+```sql
+-- Auto-created by Drizzle
+CREATE TABLE user_preferences (
+  plan VARCHAR(50) DEFAULT 'free',
+  stripe_customer_id VARCHAR(255),
+  stripe_subscription_id VARCHAR(255),
+  stripe_subscription_status VARCHAR(50),
+  stripe_price_id VARCHAR(255),
+  stripe_current_period_end TIMESTAMP
+);
+```
+
+## API Reference
+
+### Server Functions (`@workspace/payment/server`)
+
+**`createCheckoutSession(userId, email, priceId, options?)`**
+
+Creates Stripe Checkout Session for subscription:
 
 ```typescript
+import { createCheckoutSession } from "@workspace/payment/server";
+
+const session = await createCheckoutSession(
+  userId,
+  "user@example.com",
+  "price_1234567890",
+  {
+    successUrl: "https://app.com/success",
+    cancelUrl: "https://app.com/cancel",
+  }
+);
+
+// Returns: { id, url } - redirect user to session.url
+```
+
+**`createBillingPortalSession(customerId, returnUrl?)`**
+
+Opens Stripe Customer Portal:
+
+```typescript
+import { createBillingPortalSession } from "@workspace/payment/server";
+
+const session = await createBillingPortalSession(
+  "cus_1234567890",
+  "https://app.com/billing"
+);
+
+// Returns: { url } - redirect user to session.url
+```
+
+**`getSubscription(subscriptionId)`**
+
+Retrieves subscription details:
+
+```typescript
+import { getSubscription } from "@workspace/payment/server";
+
+const subscription = await getSubscription("sub_1234567890");
+
+// Returns: StripeSubscription | null
+```
+
+### Plan Configuration (`@workspace/payment/config`)
+
+**`PLANS`** - Array of pricing plans:
+
+```typescript
+import { PLANS, getPlanById, canUpgrade } from "@workspace/payment/config";
+
+// Get all plans
+console.log(PLANS); // [{ id: "free", name: "Free", price: 0, ... }, ...]
+
+// Get specific plan
+const proPlan = getPlanById("pro");
+
+// Check if user can upgrade
+const canUpgradeToPro = canUpgrade("free", "pro"); // true
+```
+
+**Available plans:**
+
+- **Free**: $0/month, 10 tasks, 1 user
+- **Pro**: $19/month, unlimited tasks, 5 users, popular
+- **Enterprise**: $49/month, unlimited everything, SSO
+
+### React Components (`@workspace/payment/client`)
+
+**`PricingCard`** - Ready-to-use pricing card:
+
+```typescript
+import { PricingCard } from "@workspace/payment/client";
 import { PLANS } from "@workspace/payment/config";
-import { useCheckout, useBillingPortal } from "@/hooks/use-billing";
 
-export const BillingContent = () => {
-  const checkout = useCheckout();
-  const billingPortal = useBillingPortal();
-
-  const handleUpgrade = async (priceId: string) => {
-    // Calls /api/checkout → gets Stripe URL → redirects
-    await checkout.mutateAsync(priceId);
-  };
-
-  const handleManageBilling = async () => {
-    // Calls /api/billing-portal → opens Customer Portal
-    await billingPortal.mutateAsync();
-  };
-
+export function BillingPage() {
   return (
-    <div>
+    <div className="grid grid-cols-3 gap-6">
       {PLANS.map((plan) => (
         <PricingCard
           key={plan.id}
           plan={plan}
-          onUpgrade={() => handleUpgrade(plan.priceId)}
+          current={userPlan === plan.id}
+          onSelect={handleUpgrade}
+          loading={isLoading}
         />
       ))}
-      <button onClick={handleManageBilling}>Manage Billing</button>
     </div>
   );
-};
+}
 ```
 
-### Webhook Handler (Syncs DB)
+**`SubscriptionBadge`** - Status indicator:
 
-**`apps/api/app/webhooks/stripe/route.ts`:**
+```typescript
+import { SubscriptionBadge } from "@workspace/payment/client";
+
+<SubscriptionBadge status="active" />     // Green "Active"
+<SubscriptionBadge status="past_due" />   // Yellow "Past Due"
+<SubscriptionBadge status="canceled" />   // Red "Canceled"
+```
+
+### Webhook Handlers (`@workspace/payment/webhooks`)
+
+**`handleWebhookEvent(event, dbAdapter)`**
+
+Processes Stripe webhook events:
 
 ```typescript
 import { handleWebhookEvent } from "@workspace/payment/webhooks";
@@ -122,132 +222,103 @@ export async function POST(request: Request) {
   const signature = request.headers.get("stripe-signature");
   const body = await request.text();
 
-  // Verify webhook signature
   const event = stripe.webhooks.constructEvent(
     body,
     signature,
     process.env.STRIPE_WEBHOOK_SECRET
   );
 
-  // Handle event → updates user_preferences table
   await handleWebhookEvent(event, {
-    updateSubscription: async (userId, data) => {
+    updateUserSubscription: async (data) => {
       await db
         .update(userPreferences)
         .set(data)
-        .where(eq(userPreferences.userId, userId));
+        .where(eq(userPreferences.clerkUserId, data.userId));
+    },
+    cancelUserSubscription: async (userId) => {
+      await db
+        .update(userPreferences)
+        .set({ plan: "free" })
+        .where(eq(userPreferences.clerkUserId, userId));
     },
   });
 
-  return NextResponse.json({ received: true });
+  return Response.json({ received: true });
 }
 ```
 
-## API Reference
+**Handled events:**
 
-### Server (`@workspace/payment/server`)
+- `checkout.session.completed` - New subscription
+- `customer.subscription.updated` - Plan changes
+- `customer.subscription.deleted` - Cancellation
+- `invoice.payment_succeeded` - Successful payment
+- `invoice.payment_failed` - Failed payment
 
-**`createCheckoutSession(userId, email, priceId, options?)`**
+## Types & Validation
 
-- Creates a Stripe Checkout Session
-- Returns: `{ id, url }` - redirect user to `url`
-- Options: `{ successUrl?, cancelUrl? }`
-
-**`createBillingPortalSession(customerId, returnUrl?)`**
-
-- Opens Stripe Customer Portal for subscription management
-- Returns: `{ url }` - redirect user to `url`
-
-**`getSubscription(subscriptionId)`**
-
-- Retrieves subscription details from Stripe
-- Returns: `StripeSubscription` object with status, plan, period end
-
-**`cancelSubscription(subscriptionId)`**
-
-- Cancels subscription at period end (not immediately)
-- User keeps access until current period ends
-
-### Config (`@workspace/payment/config`)
-
-**`PLANS`** - Array of pricing plans:
+### TypeScript Types (`@workspace/payment/types`)
 
 ```typescript
-export const PLANS = [
-  { id: "free", name: "Free", price: 0, maxTasks: 10 },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 19,
-    priceId: env.STRIPE_PRICE_ID_PRO,
-    maxTasks: 100,
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    price: 99,
-    priceId: env.STRIPE_PRICE_ID_ENTERPRISE,
-    maxTasks: -1,
-  },
-];
+import type {
+  StripeSubscription,
+  CheckoutSession,
+  SubscriptionData,
+  PortalSession
+} from "@workspace/payment/types";
+
+// StripeSubscription - Full subscription object
+interface StripeSubscription {
+  id: string;
+  customerId: string;
+  status: "active" | "canceled" | "past_due" | ...;
+  priceId: string;
+  currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
+  plan: "free" | "pro" | "enterprise";
+}
+
+// CheckoutSession - Checkout response
+interface CheckoutSession {
+  url: string;
+  sessionId: string;
+}
 ```
 
-**`getPlanByPriceId(priceId)`** - Get plan config from Stripe Price ID
-
-### Webhooks (`@workspace/payment/webhooks`)
-
-**`handleWebhookEvent(event, dbAdapter)`**
-
-- Handles Stripe webhook events
-- Auto-syncs subscription data to database
-- Events handled: `checkout.session.completed`, `customer.subscription.*`
-
-## Database Schema
-
-Subscription data is stored in `user_preferences` table:
-
-| Field                      | Type     | Description                                          |
-| -------------------------- | -------- | ---------------------------------------------------- |
-| `plan`                     | `string` | Current plan: `"free"`, `"pro"`, or `"enterprise"`   |
-| `stripeCustomerId`         | `string` | Stripe customer ID (starts with `cus_`)              |
-| `stripeSubscriptionId`     | `string` | Stripe subscription ID (starts with `sub_`)          |
-| `stripeSubscriptionStatus` | `string` | Status: `"active"`, `"canceled"`, `"past_due"`, etc. |
-| `stripePriceId`            | `string` | Stripe price ID (starts with `price_`)               |
-| `stripeCurrentPeriodEnd`   | `Date`   | When current billing period ends                     |
-
-**Example:**
+### Zod Schemas (`@workspace/payment/billing`)
 
 ```typescript
-{
-  userId: "user_123",
-  plan: "pro",
-  stripeCustomerId: "cus_abc123",
-  stripeSubscriptionId: "sub_xyz789",
-  stripeSubscriptionStatus: "active",
-  stripePriceId: "price_1234567890",
-  stripeCurrentPeriodEnd: new Date("2025-11-13"),
-}
+import { createCheckoutSessionInputSchema } from "@workspace/payment/billing";
+
+// Validate checkout input
+const validated = createCheckoutSessionInputSchema.parse({
+  priceId: "price_1234567890",
+  successUrl: "https://app.com/success",
+  cancelUrl: "https://app.com/cancel",
+});
 ```
 
 ## Testing
 
-**Test card:** `4242 4242 4242 4242`
+### Test Cards
 
-- Expiry: any future date
-- CVC: any 3 digits
-- ZIP: any 5 digits
+Use these cards in Stripe test mode:
 
-**Test flow:**
+- **Success**: `4242 4242 4242 4242`
+- **Decline**: `4000 0000 0000 0002`
+- **Requires 3D Secure**: `4000 0025 0000 3155`
 
-1. Start `stripe listen` in terminal
+Any future expiry date, any CVC, any ZIP.
+
+### Test Flow
+
+1. Start `stripe listen --forward-to localhost:3002/webhooks/stripe`
 2. Visit `/dashboard/billing`
 3. Click "Upgrade to Pro"
-4. Use test card
+4. Use test card `4242 4242 4242 4242`
 5. Complete checkout
 6. Verify webhook received `[200]` in terminal
 7. Check `pnpm db:studio` → `user_preferences` → `plan` should be `"pro"`
-
-See [Stripe Payments Guide](/guide/stripe-payments) for complete testing instructions.
 
 ## Production Deployment
 
@@ -257,7 +328,24 @@ See [Stripe Payments Guide](/guide/stripe-payments) for complete testing instruc
 4. **Update environment variables** in Vercel with live keys
 5. **Test with real card** before going live
 
-See [Deployment Guide](/guide/deployment) for full production setup.
+## Package Exports
+
+```typescript
+// Main exports
+import { PLANS, getPlanById } from "@workspace/payment";
+
+// Server functions
+import { createCheckoutSession } from "@workspace/payment/server";
+
+// React components
+import { PricingCard } from "@workspace/payment/client";
+
+// Webhook handlers
+import { handleWebhookEvent } from "@workspace/payment/webhooks";
+
+// Configuration
+import { PLANS } from "@workspace/payment/config";
+```
 
 ## Further Reading
 

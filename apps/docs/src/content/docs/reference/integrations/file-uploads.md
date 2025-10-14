@@ -3,8 +3,6 @@ title: Adding File Uploads
 description: UploadThing for file uploads
 ---
 
-# Adding File Uploads
-
 Drag-and-drop uploads with **UploadThing** (or AWS S3).
 
 ## UploadThing Setup

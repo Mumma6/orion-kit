@@ -3,8 +3,6 @@ title: Adding Search
 description: Algolia/Meilisearch full-text search
 ---
 
-# Adding Search
-
 Full-text search with **Algolia** (easier) or **Meilisearch** (cheaper).
 
 ## Algolia Setup

@@ -5,8 +5,6 @@ description: Complete guide to deploying Orion Kit to production on Vercel
 
 This guide walks you through deploying Orion Kit's three Next.js apps (`web`, `app`, `api`) to Vercel. You'll set up production services, configure environment variables, and verify the deployment.
 
-## Overview
-
 **What You'll Deploy:**
 
 - **`apps/web`**: Marketing/landing page (public)
@@ -30,7 +28,7 @@ Before deploying, you need:
    - Clerk (live keys, not test)
    - Neon (production database)
    - Stripe (live mode, products created)
-   - Axiom, PostHog (optional, but recommended for production monitoring)
+   - Axiom, PostHog (for production monitoring)
 
 ## Step-by-Step Deployment
 
@@ -72,12 +70,12 @@ You'll need **production** (live) API keys, not test/development keys.
   - Events: `checkout.session.completed`, `customer.subscription.*`
   - Copy **Signing Secret** (starts with `whsec_`)
 
-**4. Axiom (Optional, but Recommended)**
+**4. Axiom**
 
 - Create a **production dataset** in [Axiom](https://axiom.co) (e.g., `orion-production`)
 - Create API token → copy `AXIOM_TOKEN`
 
-**5. PostHog (Optional)**
+**5. PostHog**
 
 - Create a **production project** in [PostHog](https://posthog.com)
 - Copy API key and host URL

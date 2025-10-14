@@ -3,8 +3,6 @@ title: Adding CMS
 description: Sanity CMS integration
 ---
 
-# Adding CMS
-
 Headless CMS with **Sanity** for blog posts and marketing content.
 
 ## Setup

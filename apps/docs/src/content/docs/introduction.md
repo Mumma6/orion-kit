@@ -1,47 +1,52 @@
 ---
 title: Introduction
-description: Orion Kit - Production-ready SaaS starter
+description: Production-ready SaaS boilerplate for Next.js
 ---
 
-**Orion Kit** - Production-ready SaaS starter with Next.js, TypeScript, Drizzle ORM, Clerk, Stripe, Trigger.dev and much more.
+**Orion Kit** is a production-ready SaaS boilerplate that gets you from zero to deployed faster. Built with Next.js 15, TypeScript, and modern tools.
 
-## What's Included
+## What You Get
 
-- 🔐 **Auth** - Clerk with protected routes
+- 🔐 **Authentication** - Clerk with protected routes
 - 🗄️ **Database** - Neon Postgres + Drizzle ORM
-- 💳 **Payments** - Stripe subscriptions
-- ✅ **Validation** - Zod on frontend + backend
+- 💳 **Payments** - Stripe subscriptions & billing
 - 🎨 **UI** - shadcn/ui + Tailwind CSS
-- 📊 **Dashboard** - Full-featured with analytics
-- 🌐 **Landing** - Modern marketing site
-- 🔌 **API** - Serverless and Type-Safe
-- 🧪 **Testing** - Vitest + Playwright
-- 📊 **Analytics** - Posthog and Axiom
-- ⚡ **Jobs** - Jobs and events with Trigger.dev
+- 📊 **Analytics** - PostHog + Axiom logging
+- ⚡ **Jobs** - Trigger.dev background tasks
+- 🧪 **Testing** - Vitest + Playwright E2E
 
-## Apps
+## Architecture
 
-| App        | Port | Description   |
-| ---------- | ---- | ------------- |
-| **web**    | 3000 | Landing page  |
-| **app**    | 3001 | Dashboard     |
-| **api**    | 3002 | API backend   |
-| **studio** | 3003 | Database GUI  |
-| **docs**   | 3004 | Documentation |
+```
+┌─────────┐  ┌─────────┐  ┌─────────┐
+│   Web   │  │   App   │  │   API   │
+│ (3000)  │  │ (3001)  │  │ (3002)  │
+└─────────┘  └─────────┘  └─────────┘
+     │            │            │
+     └────────────┼────────────┘
+                  │
+            ┌─────────┐
+            │ Database│
+            │ (Neon)  │
+            └─────────┘
+```
 
-## Packages
+## Type-Safe Stack
 
-**[@workspace/auth](/packages/auth)** · **[@workspace/database](/packages/database)** · **[@workspace/types](/packages/types)** · **[@workspace/ui](/packages/ui)** · **[@workspace/payment](/packages/payment)** · **[@workspace/analytics](/packages/analytics)** · **[@workspace/jobs](/packages/jobs)** · **[@workspace/observability](/packages/observability)**
+Database Schema → Auto-generated Types → Shared Packages → API + Frontend
 
-## Type Flow
+Everything is type-safe from database to UI with zero duplication.
 
-Database Schema → Auto-generate Types + Zod → Export from packages → Compose in @workspace/types → Use in API + Frontend
+## Quick Start
 
-## Why Orion Kit?
+```bash
+git clone https://github.com/orion-kit/orion
+cd orion
+pnpm install
+pnpm dev
+```
 
-✅ Production-ready · ✅ Type-safe · ✅ Fast DX · ✅ Scalable · ✅ Well-documented
-
-**Get started:** [Quick Start →](/quick-start)  
-**Learn more:** [Architecture →](/architecture) · [Guides →](/guide) · [Packages →](/packages)
+**Next:** [Quick Start Guide →](/quick-start)  
+**Learn:** [Architecture →](/architecture) · [Packages →](/packages)
 
 **GitHub:** [github.com/orion-kit/orion](https://github.com/orion-kit/orion)

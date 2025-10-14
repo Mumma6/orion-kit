@@ -3,8 +3,6 @@ title: Adding Real-time
 description: Pusher/Ably for WebSockets
 ---
 
-# Adding Real-time Features
-
 Real-time updates with **Pusher** (or Ably) for notifications, chat, live updates.
 
 ## Pusher Setup

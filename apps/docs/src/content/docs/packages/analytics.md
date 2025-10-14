@@ -3,8 +3,6 @@ title: Analytics Package
 description: PostHog and Vercel Analytics
 ---
 
-# @workspace/analytics
-
 Product analytics with **PostHog** (events, funnels, feature flags) and **Vercel Analytics** (performance).
 
 ## Setup

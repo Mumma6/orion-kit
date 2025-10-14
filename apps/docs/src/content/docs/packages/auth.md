@@ -1,13 +1,9 @@
 ---
-title: "@workspace/auth"
+title: Auth Package
 description: Authentication package using Clerk
 ---
 
-# @workspace/auth
-
 This package wraps Clerk's authentication system, providing user management, session handling, and protected routes.
-
-## What It Does
 
 **Clerk** handles:
 

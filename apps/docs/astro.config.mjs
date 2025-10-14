@@ -1,11 +1,15 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightThemeNova from 'starlight-theme-nova'
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
 		starlight({
+			plugins: [
+				starlightThemeNova(), 
+			  ],
 			title: 'Orion Kit',
 			
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
@@ -23,14 +27,18 @@ export default defineConfig({
 				label: 'Guide',
 				autogenerate: { directory: 'guide' },
 			},
-				{
-					label: 'Architecture',
-					autogenerate: { directory: 'architecture' },
-				},
-				{
-					label: 'Packages',
-					autogenerate: { directory: 'packages' },
-				},
+			{
+				label: 'Architecture',
+				autogenerate: { directory: 'architecture' },
+			},
+			{
+				label: 'Applications',
+				autogenerate: { directory: 'apps' },
+			},
+			{
+				label: 'Packages',
+				autogenerate: { directory: 'packages' },
+			},
 			{
 				label: 'Reference',
 				items: [

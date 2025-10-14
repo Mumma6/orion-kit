@@ -1,5 +1,5 @@
 import { auth, currentUser } from "@workspace/auth/server";
-import { db, tasks, eq, desc } from "@workspace/database";
+import { db, tasks, eq, desc, userPreferences } from "@workspace/database";
 import { createTaskInputSchema } from "@workspace/types";
 import type {
   Task,
@@ -90,11 +90,21 @@ export const POST = withAxiom(async (req) => {
 
     const validatedData = validation.data;
 
+    const userPreferencesStatus = await db
+      .select({ defaultTaskStatus: userPreferences.defaultTaskStatus })
+      .from(userPreferences)
+      .where(eq(userPreferences.clerkUserId, userId))
+      .limit(1);
+
+    const defaultTaskStatus =
+      (userPreferencesStatus[0]?.defaultTaskStatus as Task["status"]) || "todo";
+
     const newTasks = await db
       .insert(tasks)
       .values({
         clerkUserId: userId,
         ...validatedData,
+        status: defaultTaskStatus,
       })
       .returning();
 

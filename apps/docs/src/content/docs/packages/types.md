@@ -3,8 +3,6 @@ title: Types Package
 description: Centralized API response types
 ---
 
-# @workspace/types
-
 Centralized type system that combines database entities, domain types, and API responses into a consistent, reusable structure.
 
 ## What It Does
@@ -20,17 +18,17 @@ This package is the **type hub** for Orion Kit:
 
 ```
 ┌─────────────────────────────────────────┐
-│  @workspace/database  @workspace/payment │
-│  (Task, UserPref)     (CheckoutSession)  │
+│  @workspace/database  @workspace/payment│
+│  (Task, UserPref)     (CheckoutSession) │
 └──────────────┬──────────────────────────┘
                │ Import entities
                ▼
     ┌──────────────────────┐
-    │  @workspace/types     │
-    │  src/api.ts           │  Generic responses
-    │  src/tasks.ts         │  Task domain
-    │  src/preferences.ts   │  Preferences domain
-    │  src/billing.ts       │  Billing domain
+    │  @workspace/types    │
+    │  src/api.ts          │  Generic responses
+    │  src/tasks.ts        │  Task domain
+    │  src/preferences.ts  │  Preferences domain
+    │  src/billing.ts      │  Billing domain
     └──────────┬───────────┘
                │ Export composed types
        ┌───────┴────────┐

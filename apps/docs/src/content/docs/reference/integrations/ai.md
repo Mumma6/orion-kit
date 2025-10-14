@@ -3,8 +3,6 @@ title: Adding AI Features
 description: OpenAI + Vercel AI SDK integration
 ---
 
-# Adding AI Features
-
 Integrate OpenAI and Vercel AI SDK for chat, text generation, and streaming.
 
 ## Quick Setup

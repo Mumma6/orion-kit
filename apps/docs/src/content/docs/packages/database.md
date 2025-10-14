@@ -3,8 +3,6 @@ title: Database Package
 description: Drizzle ORM + Neon Postgres
 ---
 
-# @workspace/database
-
 Type-safe database with **Drizzle ORM** + **Neon** serverless Postgres. Auto-generated types and Zod schemas.
 
 ## Setup
@@ -51,15 +49,58 @@ await db
   .where(eq(userPreferences.clerkUserId, userId));
 ```
 
-## Validation
+## Validation with Drizzle-Zod
 
-Auto-generated Zod schemas:
+**Drizzle-Zod** automatically generates Zod schemas from your Drizzle tables, ensuring validation stays in sync with your database schema.
+
+### How It Works
+
+```typescript
+import { pgTable, integer, varchar } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+
+// 1. Define Drizzle table
+export const tasks = pgTable("tasks", {
+  id: integer().primaryKey(),
+  clerkUserId: varchar({ length: 255 }).notNull(),
+  title: varchar({ length: 255 }).notNull(),
+  status: varchar({ length: 50 }).notNull().default("todo"),
+});
+
+// 2. Auto-generate Zod schemas
+export const insertTaskSchema = createInsertSchema(tasks);
+export const selectTaskSchema = createSelectSchema(tasks);
+
+// 3. Customize validation (optional)
+export const createTaskInputSchema = createInsertSchema(tasks, {
+  title: (schema) => schema.min(1).max(255),
+  status: (schema) => schema.regex(/^(todo|in-progress|completed)$/),
+}).omit({
+  id: true,
+  clerkUserId: true,
+});
+```
+
+### Benefits
+
+- ✅ **Single source of truth** - Schema changes automatically update validation
+- ✅ **Type-safe** - TypeScript + runtime validation from same definition
+- ✅ **Less code** - No manual Zod schema duplication
+- ✅ **Customizable** - Refine validation rules per field
+
+### Usage
 
 ```typescript
 import { createTaskInputSchema } from "@workspace/database";
 
+// Validate user input
 const validated = createTaskInputSchema.parse(userInput);
-await db.insert(tasks).values({ ...validated, clerkUserId: userId });
+
+// Insert validated data
+await db.insert(tasks).values({
+  ...validated,
+  clerkUserId: userId,
+});
 ```
 
 ## Commands

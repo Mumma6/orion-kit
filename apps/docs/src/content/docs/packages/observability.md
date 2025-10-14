@@ -3,8 +3,6 @@ title: Observability Package
 description: Logging with Axiom
 ---
 
-# @workspace/observability
-
 Structured logging, error tracking, and Web Vitals monitoring with **Axiom**.
 
 ## Setup
