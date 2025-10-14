@@ -1,8 +1,16 @@
+import { clerkMiddleware, createRouteMatcher } from "@workspace/auth/server";
 import { transformMiddlewareRequest } from "@axiomhq/nextjs";
-import { clerkMiddleware } from "@workspace/auth/server";
 import { logger } from "@workspace/observability/server";
 import { NextResponse } from "next/server";
 import type { NextRequest, NextFetchEvent } from "next/server";
+
+// Define protected routes
+const isProtectedRoute = createRouteMatcher([
+  "/api/tasks(.*)",
+  "/api/preferences(.*)",
+  "/api/subscription(.*)",
+  "/api/billing-portal(.*)",
+]);
 
 export default clerkMiddleware(
   async (auth, req: NextRequest, event: NextFetchEvent) => {
@@ -24,6 +32,11 @@ export default clerkMiddleware(
           "Access-Control-Max-Age": "86400",
         },
       });
+    }
+
+    // Protect routes that require authentication
+    if (isProtectedRoute(req)) {
+      await auth.protect();
     }
 
     // For all other requests, add CORS headers to the response
@@ -54,7 +67,9 @@ export default clerkMiddleware(
 
 export const config = {
   matcher: [
-    // Only run on API routes for this API server
-    "/api/:path*",
+    // Skip Next.js internals and all static files, unless found in search params
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Always run for API routes
+    "/(api|trpc)(.*)",
   ],
 };
