@@ -1,5 +1,3 @@
-import { useAuth } from "@workspace/auth/client";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface FetchOptions extends RequestInit {
@@ -16,15 +14,11 @@ async function fetcher<T>(
     ? `${API_BASE_URL}${endpoint}?${new URLSearchParams(params).toString()}`
     : `${API_BASE_URL}${endpoint}`;
 
-  const auth = useAuth();
-  const authToken = await auth.getToken();
-
   const response = await fetch(url, {
     ...fetchOptions,
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...(authToken && { Authorization: `Bearer ${authToken}` }),
       ...fetchOptions.headers,
     },
   });

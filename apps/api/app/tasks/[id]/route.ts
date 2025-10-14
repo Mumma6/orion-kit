@@ -1,4 +1,4 @@
-import { auth } from "@workspace/auth/server";
+import { auth, currentUser } from "@workspace/auth/server";
 import { db, tasks, eq } from "@workspace/database";
 import { updateTaskInputSchema } from "@workspace/types";
 import type { UpdateTaskResponse } from "@workspace/types";
@@ -19,16 +19,14 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    logger.warn("Unauthorized access to PUT /tasks/:id");
-    if (!userId) {
+    if (!user) {
       logger.warn("Unauthorized access to PUT /tasks/:id");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     const params = await context.params;
     const paramsValidation = taskIdSchema.safeParse(params);
@@ -113,15 +111,14 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
+    if (!user) {
       logger.warn("Unauthorized access to PATCH /tasks/:id");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     const params = await context.params;
     const paramsValidation = taskIdSchema.safeParse(params);
@@ -207,15 +204,13 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
-      logger.warn("Unauthorized access to DELETE /tasks/:id");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     const params = await context.params;
     const paramsValidation = taskIdSchema.safeParse(params);

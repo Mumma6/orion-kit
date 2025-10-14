@@ -10,18 +10,14 @@ export const POST = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      logger.warn("Unauthorized access to POST /checkout");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
     const user = await currentUser();
-    const userEmail = user?.emailAddresses[0]?.emailAddress;
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = user.id;
+
+    const userEmail = user?.email;
 
     if (!userEmail) {
       return NextResponse.json(

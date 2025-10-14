@@ -1,32 +1,17 @@
 "use client";
 
 export {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignOutButton,
-  UserButton,
-  SignedIn,
-  SignedOut,
-  useUser,
-  useAuth,
-  useClerk,
-  useSignIn,
-  useSignUp,
-  RedirectToSignIn,
-  RedirectToSignUp,
-  RedirectToUserProfile,
-  SignIn,
-  SignUp,
-  UserProfile,
-  OrganizationSwitcher,
-  OrganizationProfile,
-  CreateOrganization,
-  OrganizationList,
-} from "@clerk/nextjs";
+  KindeProvider,
+  useKindeAuth,
+  useKindeBrowserClient,
+  LoginLink,
+  RegisterLink,
+  LogoutLink,
+  CreateOrgLink,
+} from "@kinde-oss/kinde-auth-nextjs";
 
 export type {
-  UserResource,
-  OrganizationResource,
-  SessionResource,
-} from "@clerk/types";
+  KindeUser as User,
+  KindeOrganization as Organization,
+  KindeState as Session,
+} from "@kinde-oss/kinde-auth-nextjs/types";
