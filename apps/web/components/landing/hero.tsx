@@ -49,7 +49,9 @@ export function Hero() {
             </Button>
             <Button size="lg" variant="outline" className="gap-2">
               <Github className="h-5 w-5" />
-              View on GitHub
+              <Link href={`https://github.com/Mumma6/orion-kit`}>
+                View on GitHub
+              </Link>
             </Button>
           </div>
         </div>

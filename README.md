@@ -21,10 +21,10 @@ pnpm dev
 
 **Apps running:**
 
-- 🌐 **Landing:** http://localhost:3000
-- 📊 **Dashboard:** http://localhost:3001
-- 🔌 **API:** http://localhost:3002
-- 📚 **Docs:** http://localhost:3004
+- 🌐 **Landing:** https://orion-kit-web.vercel.app
+- 📊 **Dashboard:** https://orion-kit-app.vercel.app
+- 🔌 **API:** https://orion-kit-api.vercel.app
+- 📚 **Docs:** https://orion-kit-docs.vercel.app
 
 ## 🔧 What You Need
 
