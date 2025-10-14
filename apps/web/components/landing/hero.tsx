@@ -45,10 +45,12 @@ export function Hero() {
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
-              <a href={`${linkUrl}/docs`}>Get Started</a>
+              <a target="_blank" href={linkUrl}>
+                Get Started
+              </a>
             </Button>
             <Button size="lg" variant="outline" className="gap-2" asChild>
-              <a href={`https://github.com/Mumma6/orion-kit`}>
+              <a target="_blank" href={`https://github.com/Mumma6/orion-kit`}>
                 <Github className="h-5 w-5" />
                 View on GitHub
               </a>
