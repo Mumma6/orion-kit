@@ -6,7 +6,10 @@ import type {
 } from "@workspace/types";
 
 export async function getTasks(): Promise<TasksListResponse> {
+  console.log("getTasks");
   const response = await api.get<TasksListResponse>("/tasks");
+
+  console.log("response", response);
 
   return {
     ...response,

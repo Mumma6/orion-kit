@@ -21,11 +21,12 @@ function getStatusCount(userTasks: TasksListResponse["data"]) {
 }
 
 export const GET = withAxiom(async () => {
+  console.log("GET /tasks");
   const startTime = Date.now();
 
   try {
     const { userId } = await auth();
-
+    console.log("userId", userId);
     if (!userId) {
       logger.warn("Unauthorized access to GET /tasks");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
