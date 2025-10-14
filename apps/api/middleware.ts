@@ -6,18 +6,13 @@ import type { NextRequest, NextFetchEvent } from "next/server";
 
 export default clerkMiddleware(
   async (auth, req: NextRequest, event: NextFetchEvent) => {
-    // Handle CORS preflight
+    // Handle CORS preflight - allow all origins for demo
     if (req.method === "OPTIONS") {
-      const allowedOrigin =
-        process.env.NODE_ENV === "production"
-          ? "https://orion-kit-app.vercel.app"
-          : "http://localhost:3001";
-
       return new NextResponse(null, {
         status: 200,
         headers: {
           "Access-Control-Allow-Credentials": "true",
-          "Access-Control-Allow-Origin": allowedOrigin,
+          "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods":
             "GET, POST, PUT, PATCH, DELETE, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization, Cookie",
@@ -26,15 +21,11 @@ export default clerkMiddleware(
       });
     }
 
-    // For all other requests, add CORS headers to the response
+    // For all other requests, add CORS headers to the response - allow all origins for demo
     const response = NextResponse.next();
-    const allowedOrigin =
-      process.env.NODE_ENV === "production"
-        ? "https://orion-kit-app.vercel.app"
-        : "http://localhost:3001";
 
     response.headers.set("Access-Control-Allow-Credentials", "true");
-    response.headers.set("Access-Control-Allow-Origin", allowedOrigin);
+    response.headers.set("Access-Control-Allow-Origin", "*");
     response.headers.set(
       "Access-Control-Allow-Methods",
       "GET, POST, PUT, PATCH, DELETE, OPTIONS"

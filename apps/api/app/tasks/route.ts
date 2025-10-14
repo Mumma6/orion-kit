@@ -26,7 +26,6 @@ export const GET = withAxiom(async () => {
 
   try {
     const { userId } = await auth();
-    console.log("userId", userId);
     if (!userId) {
       logger.warn("Unauthorized access to GET /tasks");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
