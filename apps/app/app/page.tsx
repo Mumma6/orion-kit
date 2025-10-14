@@ -21,7 +21,7 @@ export default async function RootPage() {
         <h1 className="text-4xl font-bold text-center">Welcome to Orion Kit</h1>
         <p className="text-lg text-muted-foreground text-center max-w-md">
           A modern, full-stack development kit built with Next.js, TypeScript,
-          and Tailwind CSS.
+          Kinde, and Tailwind CSS.
         </p>
       </div>
 
