@@ -25,13 +25,14 @@ export const GET = withAxiom(async () => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
+
+    const userId = user?.id;
+
     if (!userId) {
       logger.warn("Unauthorized access to GET /tasks");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const user = await currentUser();
 
     const userTasks = await db
       .select()
