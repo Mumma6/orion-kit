@@ -16,7 +16,6 @@ export function Showcase() {
                 orion-kit-saas.vercel.app
               </div>
             </div>
-
             <div className="flex h-full items-center justify-center p-8">
               <div className="relative h-full w-full">
                 <Image
