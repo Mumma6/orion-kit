@@ -22,7 +22,8 @@
     "db:check": "pnpm --filter @workspace/database db:check",
     "db:seed": "pnpm --filter @workspace/database db:seed",
     "stripe:listen-dev": "stripe listen --forward-to localhost:3002/webhooks/stripe",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
@@ -30,6 +31,8 @@
     "@vitest/ui": "^3.2.4",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
     "prettier": "^3.6.2",
     "turbo": "^2.5.5",
     "typescript": "5.7.3",
@@ -38,5 +41,9 @@
   "packageManager": "pnpm@10.4.1",
   "engines": {
     "node": ">=20"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix"],
+    "*.{md,json}": ["prettier --write"]
   }
 }

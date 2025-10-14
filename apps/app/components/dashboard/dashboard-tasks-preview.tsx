@@ -59,7 +59,7 @@ export function DashboardTasksPreview({ tasks }: DashboardTasksPreviewProps) {
     <Card>
       <CardHeader>
         <CardTitle>Your Tasks</CardTitle>
-        <CardDescription>A list of tasks fetched from the API</CardDescription>
+        <CardDescription>A list of tasks</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

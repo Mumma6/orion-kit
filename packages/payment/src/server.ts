@@ -1,8 +1,3 @@
-/**
- * Stripe Server Utilities
- * Server-side only functions for Stripe integration
- */
-
 import Stripe from "stripe";
 import type { StripeSubscription } from "./types";
 import { getPlanByPriceId } from "./config";
@@ -16,9 +11,6 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   typescript: true,
 });
 
-/**
- * Create a Stripe Checkout Session for subscription
- */
 export async function createCheckoutSession(
   userId: string,
   userEmail: string,
@@ -58,9 +50,6 @@ export async function createCheckoutSession(
   return session;
 }
 
-/**
- * Create a Stripe Billing Portal Session
- */
 export async function createBillingPortalSession(
   customerId: string,
   returnUrl?: string
@@ -75,9 +64,6 @@ export async function createBillingPortalSession(
   return session;
 }
 
-/**
- * Get subscription by ID
- */
 export async function getSubscription(
   subscriptionId: string
 ): Promise<StripeSubscription | null> {
@@ -102,9 +88,6 @@ export async function getSubscription(
   }
 }
 
-/**
- * Cancel subscription
- */
 export async function cancelSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription> {

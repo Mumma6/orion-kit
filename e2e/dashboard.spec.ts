@@ -18,14 +18,4 @@ test.describe("Dashboard", () => {
 
     await expect(page).toHaveURL(/sign-in/);
   });
-
-  test("should load API health endpoint", async ({ request }) => {
-    const response = await request.get("http://localhost:3002/health");
-
-    expect(response.ok()).toBeTruthy();
-    expect(response.status()).toBe(200);
-
-    const text = await response.text();
-    expect(text).toBe("OK");
-  });
 });

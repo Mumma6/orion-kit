@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@trigger.dev/sdk": "4.0.4"
+    "@trigger.dev/sdk": "4.0.4",
+    "dotenv": "^16.4.7"
   }
 }

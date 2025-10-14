@@ -22,10 +22,6 @@ interface DashboardContentProps {
 export function DashboardContent({ user }: DashboardContentProps) {
   const { data: tasks, isLoading, error, refetch } = useTasks();
 
-  if (tasks) {
-    console.log("📋 Tasks from TanStack Query:", tasks);
-  }
-
   if (isLoading) {
     return <DashboardLoading />;
   }

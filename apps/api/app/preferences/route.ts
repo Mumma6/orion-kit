@@ -41,6 +41,13 @@ export const GET = withAxiom(async () => {
         .values({ clerkUserId: userId })
         .returning();
 
+      if (!newPref) {
+        return NextResponse.json(
+          { success: false, error: "Failed to create user preferences" },
+          { status: 500 }
+        );
+      }
+
       const duration = Date.now() - startTime;
       logger.info("User preferences created", { userId, duration });
 
