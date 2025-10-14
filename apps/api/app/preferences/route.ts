@@ -1,4 +1,4 @@
-import { auth } from "@workspace/auth/server";
+import { auth, currentUser } from "@workspace/auth/server";
 import {
   db,
   userPreferences,
@@ -17,15 +17,13 @@ export const GET = withAxiom(async () => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
-      logger.warn("Unauthorized access to GET /preferences");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     const preferences = await db
       .select()
@@ -78,15 +76,13 @@ export const PUT = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
-      logger.warn("Unauthorized access to PUT /preferences");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     const body = await req.json();
 

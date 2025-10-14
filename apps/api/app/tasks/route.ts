@@ -26,7 +26,7 @@ export const GET = withAxiom(async () => {
 
   try {
     const user = await currentUser();
-
+    console.log("user", user);
     const userId = user?.id;
 
     if (!userId) {
@@ -54,7 +54,7 @@ export const GET = withAxiom(async () => {
       data: userTasks,
       total: userTasks.length,
       userId,
-      userName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
+      userName: `${user?.given_name || ""} ${user?.family_name || ""}`.trim(),
       completed,
       inProgress,
       todo,
@@ -71,7 +71,8 @@ export const POST = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
+    const userId = user?.id;
 
     if (!userId) {
       logger.warn("Unauthorized access to POST /tasks");

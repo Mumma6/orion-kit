@@ -27,21 +27,19 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
-import { useUser, useClerk } from "@workspace/auth/client";
+import { useKindeAuth } from "@workspace/auth/client";
 import { useRouter } from "next/navigation";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
+  const { user, isLoading } = useKindeAuth();
   const router = useRouter();
 
   const handleSignOut = async () => {
-    await signOut();
     router.push("/");
   };
 
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
@@ -63,9 +61,9 @@ export function NavUser() {
   }
 
   const userName =
-    `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
-  const userEmail = user.emailAddresses[0]?.emailAddress || "";
-  const userAvatar = user.imageUrl || "";
+    `${user.given_name || ""} ${user.family_name || ""}`.trim() || "User";
+  const userEmail = user.email || "";
+  const userAvatar = user.picture || "";
   const userInitials = userName
     .split(" ")
     .map((n) => n[0])

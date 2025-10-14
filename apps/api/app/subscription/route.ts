@@ -1,4 +1,4 @@
-import { auth } from "@workspace/auth/server";
+import { auth, currentUser } from "@workspace/auth/server";
 import { db, userPreferences, eq } from "@workspace/database";
 import { getSubscription, cancelSubscription } from "@workspace/payment/server";
 import type { SubscriptionResponse } from "@workspace/types";
@@ -9,15 +9,13 @@ export const GET = withAxiom(async () => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
-      logger.warn("Unauthorized access to GET /subscription");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     const preferences = await db
       .select()
@@ -86,15 +84,14 @@ export const DELETE = withAxiom(async () => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
+    if (!user) {
       logger.warn("Unauthorized access to DELETE /subscription");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     const preferences = await db
       .select()

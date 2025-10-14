@@ -1,4 +1,4 @@
-import { auth } from "@workspace/auth/server";
+import { auth, currentUser } from "@workspace/auth/server";
 import { db, userPreferences, eq } from "@workspace/database";
 import { createBillingPortalSession } from "@workspace/payment/server";
 import type { CreatePortalSessionResponse } from "@workspace/types";
@@ -9,15 +9,12 @@ export const POST = withAxiom(async () => {
   const startTime = Date.now();
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
-      logger.warn("Unauthorized access to POST /billing-portal");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const userId = user.id;
 
     const preferences = await db
       .select()

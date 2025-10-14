@@ -7,10 +7,10 @@ export default async function DashboardPage() {
   // Extract only the fields we need as a plain object
   const userData = {
     id: user!.id,
-    firstName: user!.firstName,
-    lastName: user!.lastName,
-    email: user!.emailAddresses[0]?.emailAddress || "",
-    imageUrl: user!.imageUrl,
+    firstName: user!.given_name,
+    lastName: user!.family_name,
+    email: user!.email || "",
+    imageUrl: user!.picture,
   };
 
   return <DashboardContent user={userData} />;

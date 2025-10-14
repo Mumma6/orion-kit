@@ -1,15 +1,12 @@
-import { createAuthMiddleware } from "@workspace/auth/middleware";
+import { withAuth } from "@workspace/auth/server";
 
-export default createAuthMiddleware({
-  protectedRoutes: ["/dashboard(.*)"],
-  publicRoutes: ["/", "/sign-in(.*)", "/sign-up(.*)"],
+export default withAuth(async function middleware() {}, {
+  publicPaths: ["/", "/api/public"],
 });
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
+    // Run on everything but Next internals and static files
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Skip API routes - they have their own middleware
-    "/((?!api).*)",
   ],
 };
