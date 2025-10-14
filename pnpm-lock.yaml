@@ -396,6 +396,9 @@ importers:
       '@trigger.dev/sdk':
         specifier: 4.0.4
         version: 4.0.4(zod@3.25.76)
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
 
   packages/observability:
     dependencies:
