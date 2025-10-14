@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Settings } from "lucide-react";
-import { useClerk, useUser } from "@workspace/auth";
+import { useClerk, useUser } from "@workspace/auth/client";
 import { usePreferences, useUpdatePreferences } from "@/hooks/use-settings";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { SettingsProfile } from "./settings-profile";
