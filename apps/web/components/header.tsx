@@ -3,6 +3,8 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { OrionLogo } from "@workspace/ui/components/orion-logo";
 import Link from "next/link";
 
+const linkUrl = process.env.NEXT_PUBLIC_LINK_URL;
+
 export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -11,7 +13,7 @@ export function Header() {
           <OrionLogo size="sm" />
         </Link>
         <div className="flex items-center gap-3">
-          <Link href="http://localhost:3001/sign-in">
+          <Link href={`${linkUrl}/sign-in`}>
             <Button size="sm">Sign In</Button>
           </Link>
           <ModeToggle />
