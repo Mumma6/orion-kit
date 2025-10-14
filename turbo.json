@@ -8,13 +8,19 @@
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "DATABASE_URL",
-        "CLERK_SECRET_KEY",
         "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
         "STRIPE_SECRET_KEY",
         "STRIPE_WEBHOOK_SECRET",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_STRIPE_PRICE_ID_PRO",
+        "NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE",
+        "NEXT_PUBLIC_POSTHOG_KEY",
+        "NEXT_PUBLIC_POSTHOG_HOST",
+        "NEXT_PUBLIC_AXIOM_TOKEN",
+        "NEXT_PUBLIC_AXIOM_DATASET",
         "NEXT_PUBLIC_APP_URL",
-        "AXIOM_TOKEN",
-        "AXIOM_DATASET"
+        "NEXT_PUBLIC_API_URL"
       ]
     },
     "lint": {
