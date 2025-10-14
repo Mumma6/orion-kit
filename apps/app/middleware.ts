@@ -1,7 +1,7 @@
 import { withAuth } from "@workspace/auth/server";
 
 export default withAuth(async function middleware() {}, {
-  publicPaths: ["/", "/api/public"],
+  publicPaths: ["/"],
 });
 
 export const config = {
