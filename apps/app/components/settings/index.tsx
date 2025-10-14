@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Settings } from "lucide-react";
-import { useClerk, useUser } from "@workspace/auth/client";
+import { useKindeAuth } from "@workspace/auth/client";
 import { usePreferences, useUpdatePreferences } from "@/hooks/use-settings";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { SettingsProfile } from "./settings-profile";
@@ -12,8 +12,7 @@ import { SettingsNotifications } from "./settings-notifications";
 import type { UpdatePreferencesInput } from "@workspace/types";
 
 export function SettingsContent() {
-  const { user } = useUser();
-  const { openUserProfile } = useClerk();
+  const { user } = useKindeAuth();
 
   const { data: preferences, isLoading } = usePreferences();
   const updatePreferences = useUpdatePreferences();
@@ -105,7 +104,7 @@ export function SettingsContent() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <SettingsProfile user={user} onEditProfile={openUserProfile} />
+        <SettingsProfile user={user} onEditProfile={() => {}} />
 
         <SettingsTaskPreferences
           defaultStatus={currentDefaultStatus}

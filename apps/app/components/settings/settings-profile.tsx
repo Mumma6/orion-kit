@@ -10,11 +10,11 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { Separator } from "@workspace/ui/components/separator";
-import { User } from "lucide-react";
-import type { UserResource } from "@workspace/auth/client";
+import { User as UserIcon } from "lucide-react";
+import type { User } from "@workspace/auth/client";
 
 interface SettingsProfileProps {
-  readonly user: UserResource | null | undefined;
+  readonly user: User | null | undefined;
   readonly onEditProfile: () => void;
 }
 
@@ -29,7 +29,7 @@ export function SettingsProfile({ user, onEditProfile }: SettingsProfileProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
+              <UserIcon className="h-5 w-5" />
               Profile
             </CardTitle>
             <CardDescription>Your account information</CardDescription>
@@ -41,35 +41,28 @@ export function SettingsProfile({ user, onEditProfile }: SettingsProfileProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
-          {user.imageUrl && (
+          {user.picture && (
             <img
-              src={user.imageUrl}
-              alt={user.fullName || "User"}
+              src={user.picture}
+              alt={user.given_name || "User"}
               className="h-16 w-16 rounded-full border-2 border-primary/20"
             />
           )}
           <div>
             <div className="font-semibold text-lg">
-              {user.fullName || "User"}
+              {user.given_name || "User"}
             </div>
-            <div className="text-sm text-muted-foreground">
-              {user.primaryEmailAddress?.emailAddress}
-            </div>
+            <div className="text-sm text-muted-foreground">{user.email}</div>
           </div>
         </div>
         <Separator />
         <div className="grid gap-3">
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">User ID</span>
-            <span className="text-sm font-mono">{user.id.slice(0, 12)}...</span>
+            <span className="text-sm">{user.id}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">Member since</span>
-            <span className="text-sm">
-              {user.createdAt
-                ? new Date(user.createdAt).toLocaleDateString()
-                : "N/A"}
-            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">Status</span>

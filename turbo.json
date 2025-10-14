@@ -22,8 +22,17 @@
         "NEXT_PUBLIC_APP_URL",
         "NEXT_PUBLIC_API_URL",
         "NEXT_PUBLIC_LINK_URL",
-        "NEXT_PUBLIC_DOCS_URL"
+        "NEXT_PUBLIC_DOCS_URL",
+        "KINDE_CLIENT_ID",
+        "KINDE_CLIENT_SECRET",
+        "KINDE_ISSUER_URL",
+        "KINDE_SITE_URL",
+        "KINDE_POST_LOGOUT_REDIRECT_URL",
+        "KINDE_POST_LOGIN_REDIRECT_URL",
+        "KINDE_CLIENT_SECRET",
+        "KINDE_ISSUER_URL"
       ]
+      
     },
     "lint": {
       "dependsOn": ["^lint"]
