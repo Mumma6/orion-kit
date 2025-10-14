@@ -1,106 +1,135 @@
 # 🚀 Orion Kit
 
-A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, and best-in-class cloud services.
+**Production-ready SaaS boilerplate** built with Next.js 15, TypeScript, and modern tools. Get from zero to deployed in minutes.
 
-## ✨ What's Included
+## ⚡ Quick Start
+
+```bash
+# 1. Clone & install
+git clone <your-repo>
+cd orion
+pnpm install
+
+# 2. Set up environment variables (see below)
+
+# 3. Initialize database
+pnpm db:push
+
+# 4. Start everything
+pnpm dev
+```
+
+**Apps running:**
+
+- 🌐 **Landing:** http://localhost:3000
+- 📊 **Dashboard:** http://localhost:3001 ← **Start here**
+- 🔌 **API:** http://localhost:3002
+- 📚 **Docs:** http://localhost:3004
+
+## 🔧 What You Need
+
+**Required accounts** (all have generous free tiers):
+
+| Service                        | Purpose        | Free Tier |
+| ------------------------------ | -------------- | --------- |
+| [Clerk](https://clerk.com)     | Authentication | 10k users |
+| [Neon](https://neon.tech)      | Database       | 0.5GB     |
+| [Stripe](https://stripe.com)   | Payments       | No fees   |
+| [PostHog](https://posthog.com) | Analytics      | 1M events |
+| [Axiom](https://axiom.co)      | Logging        | 500MB/mo  |
+
+## 🛠️ Environment Setup
+
+**1. Create `.env.local` files:**
+
+```bash
+cp apps/app/.env.example apps/app/.env.local
+cp apps/api/.env.example apps/api/.env.local
+cp packages/database/.env.example packages/database/.env
+```
+
+**2. Add your API keys** (get them from the services above):
+
+**`apps/app/.env.local`:**
+
+```bash
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# API
+NEXT_PUBLIC_API_URL=http://localhost:3002
+
+# PostHog
+NEXT_PUBLIC_POSTHOG_KEY=phc_...
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+
+# Stripe
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+```
+
+**`apps/api/.env.local`:**
+
+```bash
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# Database
+DATABASE_URL=postgresql://...
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Axiom
+AXIOM_TOKEN=xaat-...
+AXIOM_DATASET=orion
+```
+
+**`packages/database/.env`:**
+
+```bash
+DATABASE_URL=postgresql://...
+```
+
+## 🎯 What's Included
 
 - 🔐 **Authentication** - Clerk with protected routes
 - 🗄️ **Database** - Neon Postgres + Drizzle ORM
 - 💳 **Payments** - Stripe subscriptions + webhooks
-- ✅ **Validation** - Zod schemas everywhere
 - 🎨 **UI** - Shadcn/ui + Tailwind CSS v4
-- 📊 **Analytics** - PostHog + Vercel Analytics
-- 🔍 **Logging** - Axiom structured logging
+- 📊 **Analytics** - PostHog + Axiom logging
 - ⚡ **Jobs** - Trigger.dev background tasks
-- 🧪 **Testing** - Vitest with 16+ tests
-- 📚 **Docs** - Astro Starlight documentation
+- 🧪 **Testing** - Vitest + Playwright E2E
+- 📚 **Documentation** - Complete guides & API docs
 
-## 📚 Documentation
+## 🏗️ Architecture
 
-**→ Start here: http://localhost:3004** (when running `pnpm dev`)
-
-Complete documentation includes:
-
-- 🚀 Quick Start Guide
-- 🔧 Accounts Setup (Clerk, Neon, Axiom, PostHog, Trigger.dev)
-- 🏗️ Architecture Overview
-- 📦 Package API References
-- 💡 Best Practices & Examples
-
-## 🚀 Quick Start
-
-```bash
-# Install dependencies
-pnpm install
-
-# Set up environment variables (see apps/docs/content/quick-start.mdx)
-
-# Push database schema
-pnpm db:push
-
-# Start all apps (including docs!)
-pnpm dev
+```
+┌─────────┐  ┌─────────┐  ┌─────────┐
+│   Web   │  │   App   │  │   API   │
+│ (3000)  │  │ (3001)  │  │ (3002)  │
+└─────────┘  └─────────┘  └─────────┘
+     │            │            │
+     └────────────┼────────────┘
+                  │
+            ┌─────────┐
+            │ Database│
+            │ (Neon)  │
+            └─────────┘
 ```
 
-All apps will start:
+**Type-safe stack:** Database Schema → Auto-generated Types → Shared Packages → API + Frontend
 
-- 🌐 **Landing:** http://localhost:3000
-- 📊 **Dashboard:** http://localhost:3001
-- 🔌 **API:** http://localhost:3002
-- 🎨 **Studio:** https://local.drizzle.studio/?port=3003
-- 📚 **Docs:** http://localhost:3004 ⭐ **Start here!**
+## 📦 Monorepo Structure
 
-## 🛠️ Tech Stack
-
-**Frontend & Framework:**
-
-- Next.js 15 (App Router + React 19)
-- TypeScript (strict mode)
-- Tailwind CSS v4
-- Shadcn/ui + Radix UI
-
-**Backend & Database:**
-
-- Neon (Serverless Postgres)
-- Drizzle ORM (type-safe queries)
-- Zod (runtime validation)
-
-**Data & State:**
-
-- TanStack Query (data fetching + caching)
-- React Hook Form (forms + validation)
-
-**Authentication & Security:**
-
-- Clerk (complete auth solution)
-- Zod schemas (frontend + backend)
-
-**Observability:**
-
-- Axiom (structured logging)
-- PostHog (product analytics)
-- Vercel Analytics (performance)
-
-**DevOps:**
-
-- Trigger.dev (background jobs)
-- Turborepo (monorepo)
-- Vitest (testing)
-- pnpm (package manager)
-
-## 📦 What's Inside?
-
-### Apps
-
-| App      | Port | Description                   |
-| -------- | ---- | ----------------------------- |
-| `web`    | 3000 | Marketing landing page        |
-| `app`    | 3001 | Dashboard application         |
-| `api`    | 3002 | API backend                   |
-| `studio` | 3003 | Database GUI (Drizzle Studio) |
-| `docs`   | 3004 | Documentation (Starlight)     |
-
-### Packages
+| App    | Port | Description            |
+| ------ | ---- | ---------------------- |
+| `web`  | 3000 | Marketing landing page |
+| `app`  | 3001 | Dashboard application  |
+| `api`  | 3002 | API backend            |
+| `docs` | 3004 | Documentation          |
 
 | Package                    | Description                      |
 | -------------------------- | -------------------------------- |
@@ -113,122 +142,47 @@ All apps will start:
 | `@workspace/observability` | Axiom logging + Web Vitals       |
 | `@workspace/jobs`          | Trigger.dev background jobs      |
 
-## 🚫 What's NOT Included (By Design)
+## 🚀 Commands
 
-Orion Kit is a **focused starter kit** - not a kitchen sink. We intentionally excluded some popular features to keep the codebase clean and maintainable.
+```bash
+pnpm dev               # Start all apps
+pnpm db:push           # Push database schema
+pnpm db:studio         # Open database GUI
+pnpm test              # Run tests
+pnpm build             # Build for production
+```
 
-### Not Included
+## 🔌 Adding Features
 
-- **AI SDK** (Vercel AI SDK, OpenAI)
-- **Email** (Resend, Nodemailer)
-- **Internationalization** (i18n)
-- **CMS** (Sanity, Contentful)
-- **File Uploads** (UploadThing, S3)
+Need more? We've got guides for popular integrations:
 
-### Why Not?
-
-**Every project has different needs.** Including everything would:
-
-- 🔴 Bloat the codebase with unused features
-- 🔴 Add complexity you might not need
-- 🔴 Make it harder to understand and maintain
-- 🔴 Increase costs (more services = more bills)
-
-### How to Add Them
-
-We've written comprehensive guides for the most requested features:
-
-- **[AI Features](http://localhost:3004/reference/integrations/ai/)** - Vercel AI SDK, OpenAI, streaming
-- **[Email](http://localhost:3004/reference/integrations/email/)** - Resend, transactional emails, templates
-- **[i18n](http://localhost:3004/reference/integrations/i18n/)** - next-intl, translations, locale routing
-- **[File Uploads](http://localhost:3004/reference/integrations/file-uploads/)** - UploadThing, S3, image optimization
-- **[CMS](http://localhost:3004/reference/integrations/cms/)** - Sanity, Contentful, content management
-- **[Real-time](http://localhost:3004/reference/integrations/realtime/)** - Pusher, Ably, WebSockets
-- **[Search](http://localhost:3004/reference/integrations/search/)** - Algolia, Meilisearch, full-text search
+- **[AI Features](http://localhost:3004/reference/integrations/ai/)** - OpenAI, streaming, chat
+- **[Email](http://localhost:3004/reference/integrations/email/)** - Resend, transactional emails
+- **[File Uploads](http://localhost:3004/reference/integrations/file-uploads/)** - UploadThing, S3
+- **[i18n](http://localhost:3004/reference/integrations/i18n/)** - next-intl, translations
+- **[CMS](http://localhost:3004/reference/integrations/cms/)** - Sanity, Contentful
+- **[Real-time](http://localhost:3004/reference/integrations/realtime/)** - Pusher, WebSockets
 
 **[View All Integration Guides →](http://localhost:3004/reference/integrations/)**
 
-**Philosophy:** Start minimal, add only what you need.
+## 🚨 Troubleshooting
 
-## 🎯 Key Features
+| Issue            | Fix                                           |
+| ---------------- | --------------------------------------------- |
+| "Unauthorized"   | Sign in at http://localhost:3001/sign-in      |
+| CORS errors      | Check `NEXT_PUBLIC_API_URL` in app/.env.local |
+| DB connection    | Verify `DATABASE_URL` uses pooled connection  |
+| Missing env vars | Check all services are configured             |
 
-### Type Safety & Validation
+## 📚 Documentation
 
-- ✅ **End-to-end TypeScript** - Strict mode across entire stack
-- ✅ **Zod validation** - Runtime validation on client and server
-- ✅ **Drizzle ORM** - Type-safe database queries with inference
-- ✅ **Shared types** - Single source of truth via @workspace/types
+**Complete docs:** http://localhost:3004 (when running `pnpm dev`)
 
-### Authentication & Security
-
-- ✅ **Clerk integration** - Complete auth with beautiful UI
-- ✅ **Protected routes** - Middleware-based route protection
-- ✅ **Session management** - Secure cookie-based sessions
-- ✅ **User management** - Profile, sign in/up, password reset
-
-### Data & State Management
-
-- ✅ **TanStack Query** - Smart caching and data fetching
-- ✅ **React Hook Form** - Performant forms with Zod resolvers
-- ✅ **Optimistic updates** - Instant UI feedback
-- ✅ **Error boundaries** - Graceful error handling
-
-### Observability & Analytics
-
-- ✅ **Axiom logging** - Structured logs with powerful queries
-- ✅ **PostHog analytics** - Product insights and funnels
-- ✅ **Vercel Analytics** - Performance and web vitals
-- ✅ **Error tracking** - Automatic error capture
-
-### Developer Experience
-
-- ✅ **Monorepo** - Turborepo with shared packages
-- ✅ **Hot reload** - Turbopack for fast development
-- ✅ **Documentation** - Comprehensive Starlight docs
-- ✅ **Testing** - Vitest with 16+ passing tests
-- ✅ **Type generation** - Automatic from database schema
-
-## ☁️ Cloud Services
-
-Orion Kit integrates with best-in-class services (all have generous free tiers):
-
-| Service                            | Purpose           | Free Tier | Setup                                      |
-| ---------------------------------- | ----------------- | --------- | ------------------------------------------ |
-| [Clerk](https://clerk.com)         | Authentication    | 10k MAU   | [Guide](/guide/accounts-setup/#clerk)      |
-| [Neon](https://neon.tech)          | Postgres Database | 0.5GB     | [Guide](/guide/accounts-setup/#neon)       |
-| [Stripe](https://stripe.com)       | Payments          | No fees   | [Guide](/guide/accounts-setup/#stripe)     |
-| [Axiom](https://axiom.co)          | Logging           | 500MB/mo  | [Guide](/guide/accounts-setup/#axiom)      |
-| [PostHog](https://posthog.com)     | Analytics         | 1M events | [Guide](/guide/accounts-setup/#posthog)    |
-| [Trigger.dev](https://trigger.dev) | Background Jobs   | 100k runs | [Guide](/guide/accounts-setup/#triggerdev) |
-
-**→ Complete setup guide: http://localhost:3004/guide/accounts-setup/**
-
-## 💳 Stripe Quick Start
-
-```bash
-# 1. Start webhook listener
-pnpm stripe:listen-dev
-
-# 2. Copy the whsec_... secret to apps/api/.env.local
-# 3. Restart API server
-# 4. Test with card: 4242 4242 4242 4242
-```
-
-**→ Complete Stripe guide: http://localhost:3004/guide/stripe-payments/**
-
-## 📖 Documentation
-
-Visit **http://localhost:3004** for complete documentation including:
-
-- 📘 **[Quick Start Guide](http://localhost:3004/quick-start)** - Get started in 5 minutes
-- ☁️ **[Cloud Accounts Setup](http://localhost:3004/guide/accounts-setup)** - Clerk, Neon, Stripe, etc.
-- 🔧 **[Environment Variables](http://localhost:3004/guide/environment-variables)** - All required env vars
-- 🚀 **[Deployment Guide](http://localhost:3004/guide/deployment)** - Deploy to Vercel
+- 🚀 **[Quick Start](http://localhost:3004/quick-start)** - Get started in 5 minutes
+- ☁️ **[Accounts Setup](http://localhost:3004/guide/accounts-setup)** - Configure all services
 - 🏗️ **[Architecture](http://localhost:3004/architecture/overview)** - System design
-- 📦 **[Packages](http://localhost:3004/packages)** - Package documentation
-- 🔌 **[Integrations](http://localhost:3004/reference/integrations)** - Add AI, Email, i18n, etc.
-
-All documentation is also available in `apps/docs/src/content/docs/`
+- 📦 **[Packages](http://localhost:3004/packages)** - API documentation
+- 🔌 **[Integrations](http://localhost:3004/reference/integrations)** - Add features
 
 ## 📝 License
 
