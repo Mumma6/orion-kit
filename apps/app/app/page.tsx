@@ -2,7 +2,7 @@ import { currentUser } from "@workspace/auth/server";
 import { redirect } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
 import { OrionLogo } from "@workspace/ui/components/orion-logo";
-import Link from "next/link";
+import { LoginLink, RegisterLink } from "@workspace/auth/client";
 
 export default async function RootPage() {
   console.log("RootPage");
@@ -26,12 +26,12 @@ export default async function RootPage() {
       </div>
 
       <div className="flex gap-4">
-        <Button asChild>
-          <Link href="/sign-in">Sign In</Link>
-        </Button>
-        <Button variant="outline" asChild>
-          <Link href="/sign-up">Sign Up</Link>
-        </Button>
+        <LoginLink>
+          <Button>Sign In</Button>
+        </LoginLink>
+        <RegisterLink>
+          <Button variant="outline">Sign Up</Button>
+        </RegisterLink>
       </div>
 
       <div className="mt-8 text-center text-sm text-muted-foreground">
