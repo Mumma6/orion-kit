@@ -10,7 +10,7 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
       status: 200,
       headers: {
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "http://localhost:3001",
+        "Access-Control-Allow-Origin": "https://orion-kit-app.vercel.app",
         "Access-Control-Allow-Methods": "GET,DELETE,PATCH,POST,PUT,OPTIONS",
         "Access-Control-Allow-Headers":
           "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, Cookie",
@@ -23,7 +23,10 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
   const res = NextResponse.next();
 
   res.headers.append("Access-Control-Allow-Credentials", "true");
-  res.headers.append("Access-Control-Allow-Origin", "http://localhost:3001");
+  res.headers.append(
+    "Access-Control-Allow-Origin",
+    "https://orion-kit-app.vercel.app"
+  );
   res.headers.append(
     "Access-Control-Allow-Methods",
     "GET,DELETE,PATCH,POST,PUT,OPTIONS"
