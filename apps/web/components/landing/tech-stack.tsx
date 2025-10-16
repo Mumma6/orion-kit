@@ -46,8 +46,9 @@ const techStack: Tech[] = [
   },
   {
     emoji: "🔐",
-    title: "Clerk",
-    description: "Complete authentication with beautiful pre-built UI.",
+    title: "JWT Auth",
+    description:
+      "Custom authentication system with httpOnly cookies and zero vendor lock-in.",
   },
   {
     emoji: "💳",

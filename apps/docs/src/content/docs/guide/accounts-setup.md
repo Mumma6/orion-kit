@@ -2,54 +2,44 @@
 title: Cloud Accounts Setup
 ---
 
-Orion Kit uses cloud services for authentication, database, payments, and monitoring. This guide walks you through creating accounts and configuring each service.
+Orion Kit uses cloud services for database, payments, and monitoring. Authentication is handled by our custom JWT system (no external dependencies!). This guide walks you through creating accounts and configuring each service.
 
-| Service     | What It Does           | Used Where            | Free Tier    |
-| ----------- | ---------------------- | --------------------- | ------------ |
-| **Clerk**   | User auth & management | All Next.js apps      | 10k MAU      |
-| **Neon**    | Postgres database      | API + Database schema | 0.5GB        |
-| **Stripe**  | Subscription payments  | Billing page          | No fees      |
-| **Axiom**   | Structured logging     | API error tracking    | 500MB/month  |
-| **PostHog** | Product analytics      | User behavior         | 1M events/mo |
-| **Vercel**  | Hosting                | Production deploy     | Unlimited    |
+| Service     | What It Does          | Used Where            | Free Tier    |
+| ----------- | --------------------- | --------------------- | ------------ |
+| **Neon**    | Postgres database     | API + Database schema | 0.5GB        |
+| **Stripe**  | Subscription payments | Billing page          | No fees      |
+| **Axiom**   | Structured logging    | API error tracking    | 500MB/month  |
+| **PostHog** | Product analytics     | User behavior         | 1M events/mo |
+| **Vercel**  | Hosting               | Production deploy     | Unlimited    |
 
-## 🔐 Clerk
+## 🔐 Authentication (Custom JWT)
 
-Clerk handles all user authentication, session management, and user profiles. It provides pre-built UI components for sign-in, sign-up, and user settings.
+Orion Kit uses a **custom JWT-based authentication system** - no external auth provider needed! This gives you complete control and eliminates vendor lock-in.
 
-### How It's Used in Orion Kit
+### How It Works
 
-- **`@workspace/auth`**: Exports Clerk components and middleware
-- **Sign-in/Sign-up pages**: Pre-built auth flows at `/sign-in` and `/sign-up`
-- **Protected routes**: Middleware checks authentication for `/dashboard/*`
-- **User data**: Access `userId` and `user` object in Server Components and API routes
+- **Custom auth system**: JWT tokens with httpOnly cookies
+- **Zero dependencies**: No Clerk, Auth0, or other auth providers
+- **Full control**: Custom UI, logic, and data storage
+- **Cost-effective**: No monthly fees or user limits
 
 ### Setup
 
-**1. Create Clerk Account**
+**1. Configure Environment Variables**
 
-- Go to [clerk.com](https://clerk.com)
-- Sign up (free plan = 10k monthly active users)
-- Create a new application (choose "Next.js")
-
-**2. Get API Keys**
-
-- In Clerk dashboard → **API Keys**
-- Copy `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (starts with `pk_test_`)
-- Copy `CLERK_SECRET_KEY` (starts with `sk_test_`)
-
-**3. Configure Environment Variables**
-
-Add to **all three apps** (`.env.local`):
-
-- `apps/web/.env.local`
-- `apps/app/.env.local`
-- `apps/api/.env.local`
+Add to your API app (`.env.local`):
 
 ```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
+# apps/api/.env.local
+AUTH_JWT_SECRET=your-super-secret-key-min-32-characters-long
+NEXT_PUBLIC_APP_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:3002
+DATABASE_URL=postgresql://...
 ```
+
+**2. That's it!**
+
+No external accounts needed. The auth system is built into Orion Kit and works out of the box.
 
 ---
 

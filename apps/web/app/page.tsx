@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "TypeScript",
     "React",
     "Stripe payments",
-    "Clerk authentication",
+    "JWT authentication",
     "TailwindCSS",
     "Drizzle ORM",
     "Turborepo",

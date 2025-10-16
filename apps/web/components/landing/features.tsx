@@ -24,7 +24,7 @@ const features: Feature[] = [
     icon: Sparkles,
     title: "Production Ready",
     description:
-      "Authentication with Clerk, background jobs with Trigger.dev, analytics with PostHog, and logging with Axiom.",
+      "Custom JWT authentication, background jobs with Trigger.dev, analytics with PostHog, and logging with Axiom.",
   },
   {
     icon: Layers,
