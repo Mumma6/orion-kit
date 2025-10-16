@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextFetchEvent, NextRequest } from "next/server";
 import { transformMiddlewareRequest } from "@axiomhq/nextjs";
 import { logger } from "@workspace/observability/server";
-import { getUserId } from "./lib/auth";
+import { getUserId } from "@workspace/auth/server";
 
 export async function middleware(req: NextRequest, event: NextFetchEvent) {
   const origin = process.env.NEXT_PUBLIC_APP_URL!;

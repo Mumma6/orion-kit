@@ -1,7 +1,7 @@
 "use client";
 
 import { useTasks } from "@/hooks/use-tasks";
-import { useUser } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { DashboardWelcome } from "./dashboard-welcome";
 import { DashboardStats } from "./dashboard-stats";
 import { DashboardTasksPreview } from "./dashboard-tasks-preview";
@@ -9,7 +9,8 @@ import { DashboardLoading } from "./dashboard-loading";
 import { DashboardError } from "./dashboard-error";
 
 export function DashboardContent() {
-  const { data: user, isPending: userLoading } = useUser();
+  const { data: authData, isPending: userLoading } = useAuth();
+  const user = authData?.data || null;
   const { data: tasks, isLoading: tasksLoading, error, refetch } = useTasks();
 
   const isLoading = userLoading || tasksLoading;
@@ -33,7 +34,7 @@ export function DashboardContent() {
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
-      <DashboardWelcome name={user.name} />
+      <DashboardWelcome name={user?.name || ""} />
 
       {error && <DashboardError error={error} onRetry={refetch} />}
 

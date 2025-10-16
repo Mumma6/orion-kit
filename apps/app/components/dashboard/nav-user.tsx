@@ -27,11 +27,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
-import { useUser, useLogout } from "@/hooks/use-auth";
+import { useAuth, useLogout } from "@/hooks/use-auth";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { data: user, isPending } = useUser();
+  const { data: authData, isPending } = useAuth();
+  const user = authData?.data || null;
   const logoutMutation = useLogout();
 
   const handleSignOut = () => {

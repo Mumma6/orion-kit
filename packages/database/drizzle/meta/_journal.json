@@ -71,6 +71,13 @@
       "when": 1760624728068,
       "tag": "0009_supreme_triathlon",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1760641510270,
+      "tag": "0010_clumsy_orphan",
+      "breakpoints": true
     }
   ]
 }

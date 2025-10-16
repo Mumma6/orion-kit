@@ -1,9 +1,12 @@
 import { db, userPreferences, eq } from "@workspace/database";
 import { createBillingPortalSession } from "@workspace/payment/server";
-import type { CreatePortalSessionResponse } from "@workspace/types";
+import type {
+  CreatePortalSessionResponse,
+  ApiErrorResponse,
+} from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@workspace/auth/server";
 
 export const POST = withAxiom(async (req) => {
   const startTime = Date.now();
@@ -12,7 +15,10 @@ export const POST = withAxiom(async (req) => {
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
     const userId = user.id;
 

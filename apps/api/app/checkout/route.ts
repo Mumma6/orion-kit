@@ -1,10 +1,13 @@
 import { createCheckoutSession } from "@workspace/payment/server";
-import { createCheckoutSessionInputSchema } from "@workspace/payment";
-import type { CreateCheckoutSessionResponse } from "@workspace/types";
+import { createCheckoutSessionInputSchema } from "@workspace/types";
+import type {
+  CreateCheckoutSessionResponse,
+  ApiErrorResponse,
+} from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@workspace/auth/server";
 
 export const POST = withAxiom(async (req) => {
   const startTime = Date.now();
@@ -13,7 +16,10 @@ export const POST = withAxiom(async (req) => {
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const body = await req.json();

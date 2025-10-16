@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
+import type { LogoutResponse } from "@workspace/types";
 
 export async function POST() {
-  const response = NextResponse.json({ success: true });
+  const responseData: LogoutResponse = {
+    success: true,
+    data: { loggedOut: true },
+    message: "Logged out successfully",
+  };
+
+  const response = NextResponse.json(responseData);
 
   // Clear the auth cookie
   response.cookies.set("auth", "", {

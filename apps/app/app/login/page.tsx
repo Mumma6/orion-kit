@@ -7,7 +7,13 @@ import { useLogin } from "@/hooks/use-auth";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import Link from "next/link";
@@ -35,7 +41,6 @@ export default function LoginPage() {
     loginMutation.mutate(data);
   };
 
-  // Handle login errors
   useEffect(() => {
     if (loginMutation.isError) {
       form.setError("root", {
@@ -111,14 +116,19 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
+            <span className="text-muted-foreground">
+              Don't have an account?{" "}
+            </span>
             <Link href="/signup" className="text-primary hover:underline">
               Sign up
             </Link>
           </div>
 
           <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-muted-foreground hover:underline">
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:underline"
+            >
               ← Back to home
             </Link>
           </div>

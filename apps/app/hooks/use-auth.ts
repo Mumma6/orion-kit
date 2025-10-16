@@ -1,49 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-
-export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  image?: string | null;
-  emailVerified?: boolean;
-}
-
-export interface AuthResponse {
-  user: AuthUser | null;
-}
-
-export interface LoginInput {
-  email: string;
-  password: string;
-}
-
-export interface RegisterInput {
-  email: string;
-  password: string;
-  name: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  userId: string;
-}
+import type {
+  AuthUser,
+  AuthResponse,
+  LoginInput,
+  RegisterInput,
+  LoginResponse,
+  RegisterResponse,
+  LogoutResponse,
+} from "@workspace/types";
+import { getAuthToken } from "@workspace/auth/client";
 
 export const authKeys = {
   all: ["auth"] as const,
   user: () => [...authKeys.all, "user"] as const,
 };
-
-function getAuthToken(): string | null {
-  if (typeof window === "undefined") return null;
-
-  // Only use cookies - no localStorage for security
-  const cookies = document.cookie.split(";");
-  const authCookie = cookies.find((cookie) =>
-    cookie.trim().startsWith("auth=")
-  );
-  return authCookie ? authCookie.split("=")[1] || null : null;
-}
 
 async function fetchAuthUser(): Promise<AuthResponse> {
   const token = getAuthToken();
@@ -82,14 +53,6 @@ export function useAuth() {
   });
 }
 
-export function useUser() {
-  const { data, ...rest } = useAuth();
-  return {
-    data: data?.user || null,
-    ...rest,
-  };
-}
-
 export function useLogin() {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -126,7 +89,7 @@ export function useLogin() {
 
 export function useRegister() {
   return useMutation({
-    mutationFn: async (input: RegisterInput): Promise<{ success: boolean }> => {
+    mutationFn: async (input: RegisterInput): Promise<RegisterResponse> => {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
@@ -150,7 +113,7 @@ export function useLogout() {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async (): Promise<{ success: boolean }> => {
+    mutationFn: async (): Promise<LogoutResponse> => {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(`${API_BASE_URL}/auth/logout`, {
         method: "POST",

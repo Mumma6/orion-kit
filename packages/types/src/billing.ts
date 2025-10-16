@@ -1,12 +1,54 @@
-import type {
+import { z } from "zod";
+import type { ApiResponse } from "./api";
+
+// ============================================
+// BILLING ZOD SCHEMAS
+// ============================================
+
+export const createCheckoutSessionInputSchema = z.object({
+  priceId: z.string().min(1, "Price ID is required"),
+  successUrl: z.string().url().optional(),
+  cancelUrl: z.string().url().optional(),
+});
+
+// ============================================
+// BILLING TYPES (from Zod schemas)
+// ============================================
+
+export type CreateCheckoutSessionInput = z.infer<
+  typeof createCheckoutSessionInputSchema
+>;
+
+// Re-export payment types for consistency
+export type {
   CheckoutSession,
   SubscriptionData,
   PortalSession,
+  StripeSubscription,
+  PricingPlan,
 } from "@workspace/payment";
-import type { ApiResponse } from "./api";
 
-export type { CheckoutSession, SubscriptionData, PortalSession };
+// Re-export payment config for consistency
+export {
+  PLANS,
+  getPlanById,
+  getPlanByPriceId,
+  isFreePlan,
+  canUpgrade,
+} from "@workspace/payment/config";
 
-export type CreateCheckoutSessionResponse = ApiResponse<CheckoutSession>;
-export type SubscriptionResponse = ApiResponse<SubscriptionData>;
-export type CreatePortalSessionResponse = ApiResponse<PortalSession>;
+// ============================================
+// BILLING RESPONSE TYPES
+// ============================================
+
+export type CreateCheckoutSessionResponse = ApiResponse<{
+  url: string;
+  sessionId: string;
+}>;
+export type SubscriptionResponse = ApiResponse<{
+  subscription: any | null;
+  plan: string;
+}>;
+export type CreatePortalSessionResponse = ApiResponse<{
+  url: string;
+}>;

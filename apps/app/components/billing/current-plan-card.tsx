@@ -10,8 +10,8 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import { CheckCircle2, Calendar, Loader2 } from "lucide-react";
-import { getPlanById } from "@workspace/payment/config";
-import type { StripeSubscription } from "@workspace/payment";
+import { getPlanById } from "@workspace/types";
+import type { StripeSubscription } from "@workspace/types";
 
 interface CurrentPlanCardProps {
   readonly currentPlan: string;

@@ -4,6 +4,7 @@ import {
   text,
   timestamp,
   integer,
+  boolean,
   pgEnum,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
@@ -103,7 +104,7 @@ export const users = pgTable("users", {
   id: varchar("id", { length: 255 }).primaryKey(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  emailVerified: timestamp("email_verified", { mode: "date" }),
+  emailVerified: boolean("email_verified").default(false),
   image: varchar("image", { length: 255 }),
   password: varchar("password", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),

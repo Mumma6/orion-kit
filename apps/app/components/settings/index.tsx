@@ -1,18 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Settings } from "lucide-react";
-import { useUser } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { usePreferences, useUpdatePreferences } from "@/hooks/use-settings";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { SettingsProfile } from "./settings-profile";
 import { SettingsTaskPreferences } from "./settings-task-preferences";
 import { SettingsNotifications } from "./settings-notifications";
+import { EditProfileModal } from "./edit-profile-modal";
 import type { UpdatePreferencesInput } from "@workspace/types";
 
 export function SettingsContent() {
-  const { data: user, isPending } = useUser();
+  const { data: authData, isPending } = useAuth();
+  const user = authData?.data || null;
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
   const { data: preferences, isLoading } = usePreferences();
   const updatePreferences = useUpdatePreferences();
@@ -104,7 +107,10 @@ export function SettingsContent() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <SettingsProfile user={user} onEditProfile={() => {}} />
+        <SettingsProfile
+          user={user}
+          onEditProfile={() => setIsEditProfileModalOpen(true)}
+        />
 
         <SettingsTaskPreferences
           defaultStatus={currentDefaultStatus}
@@ -120,6 +126,14 @@ export function SettingsContent() {
           onWeeklyDigestChange={handleWeeklyDigestChange}
         />
       </div>
+
+      {user && (
+        <EditProfileModal
+          open={isEditProfileModalOpen}
+          onOpenChange={setIsEditProfileModalOpen}
+          user={user}
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CreditCard } from "lucide-react";
-import { PLANS } from "@workspace/payment/config";
+import { PLANS } from "@workspace/types";
 import {
   useSubscription,
   useCheckout,

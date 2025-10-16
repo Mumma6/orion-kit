@@ -6,6 +6,7 @@ import {
 } from "@workspace/payment/webhooks";
 import { logger } from "@workspace/observability/server";
 import { NextResponse } from "next/server";
+import type { ApiResponse, ApiErrorResponse } from "@workspace/types";
 
 export const runtime = "nodejs";
 
@@ -84,7 +85,11 @@ export async function POST(req: Request) {
 
     if (!signature) {
       logger.warn("Missing stripe-signature header");
-      return NextResponse.json({ error: "Missing signature" }, { status: 400 });
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Missing signature",
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     const event = verifyWebhookSignature(body, signature, webhookSecret);
@@ -103,7 +108,13 @@ export async function POST(req: Request) {
       duration,
     });
 
-    return NextResponse.json({ received: true });
+    const response: ApiResponse<{ received: boolean }> = {
+      success: true,
+      data: { received: true },
+      message: "Webhook processed successfully",
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     const duration = Date.now() - startTime;
     logger.error("Webhook processing failed", {
@@ -111,9 +122,12 @@ export async function POST(req: Request) {
       duration,
     });
 
-    return NextResponse.json(
-      { error: "Webhook handler failed" },
-      { status: 400 }
-    );
+    const errorResponse: ApiErrorResponse = {
+      success: false,
+      error: "Webhook handler failed",
+      details: error instanceof Error ? error.message : "Unknown error",
+    };
+
+    return NextResponse.json(errorResponse, { status: 400 });
   }
 }

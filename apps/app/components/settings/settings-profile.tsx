@@ -11,7 +11,7 @@ import {
 } from "@workspace/ui/components/card";
 import { Separator } from "@workspace/ui/components/separator";
 import { User as UserIcon } from "lucide-react";
-import type { AuthUser } from "@/hooks/use-auth";
+import type { AuthUser } from "@workspace/types";
 
 interface SettingsProfileProps {
   readonly user: AuthUser | null | undefined;
@@ -66,6 +66,17 @@ export function SettingsProfile({ user, onEditProfile }: SettingsProfileProps) {
             <span className="text-sm text-muted-foreground">Status</span>
             <Badge variant="default" className="bg-green-500">
               Active
+            </Badge>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">
+              Email Verified
+            </span>
+            <Badge
+              variant={user.emailVerified ? "default" : "destructive"}
+              className={user.emailVerified ? "bg-green-500" : "bg-red-500"}
+            >
+              {user.emailVerified ? "Yes" : "No"}
             </Badge>
           </div>
         </div>

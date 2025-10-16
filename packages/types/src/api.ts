@@ -9,8 +9,17 @@ export interface ApiResponse<T = unknown> {
   message?: string;
 }
 
+export interface ApiErrorResponse {
+  success: false;
+  error: string;
+  details?: unknown;
+}
+
 export interface ListResponse<T> {
   success: true;
   data: T[];
   total: number;
 }
+
+// Union type for all possible API responses
+export type ApiResult<T = unknown> = ApiResponse<T> | ApiErrorResponse;

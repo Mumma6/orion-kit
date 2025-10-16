@@ -1,22 +1,9 @@
+import { getAuthToken } from "@workspace/auth/client";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
-}
-
-function getAuthToken(): string | null {
-  if (typeof window === "undefined") return null;
-
-  // Try to get token from localStorage first
-  const token = localStorage.getItem("auth_token");
-  if (token) return token;
-
-  // Fallback to cookies
-  const cookies = document.cookie.split(";");
-  const authCookie = cookies.find((cookie) =>
-    cookie.trim().startsWith("auth=")
-  );
-  return authCookie ? authCookie.split("=")[1] || null : null;
 }
 
 async function fetcher<T>(

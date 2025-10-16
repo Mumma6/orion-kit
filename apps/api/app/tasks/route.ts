@@ -4,11 +4,12 @@ import type {
   Task,
   TasksListResponse,
   CreateTaskResponse,
+  ApiErrorResponse,
 } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@workspace/auth/server";
 
 function getStatusCount(userTasks: TasksListResponse["data"]) {
   const filterStatus = (status: Task["status"]) =>
@@ -28,7 +29,11 @@ export const GET = withAxiom(async (req) => {
 
     if (!user) {
       logger.warn("Unauthorized access to GET /tasks");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Unauthorized",
+      };
+      return NextResponse.json(errorResponse, { status: 401 });
     }
 
     const userId = user.id;
@@ -74,10 +79,11 @@ export const POST = withAxiom(async (req) => {
 
     if (!user) {
       logger.warn("Unauthorized access to POST /tasks");
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Unauthorized",
+      };
+      return NextResponse.json(errorResponse, { status: 401 });
     }
 
     const userId = user.id;

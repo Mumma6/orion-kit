@@ -1,10 +1,10 @@
 import { db, tasks, eq } from "@workspace/database";
 import { updateTaskInputSchema } from "@workspace/types";
-import type { UpdateTaskResponse } from "@workspace/types";
+import type { UpdateTaskResponse, ApiErrorResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@workspace/auth/server";
 import { z } from "zod";
 
 const taskIdSchema = z.object({
@@ -23,7 +23,10 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
 
     if (!user) {
       logger.warn("Unauthorized access to PUT /tasks/:id");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const userId = user.id;
@@ -115,7 +118,10 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
 
     if (!user) {
       logger.warn("Unauthorized access to PATCH /tasks/:id");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const userId = user.id;
@@ -207,7 +213,10 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const userId = user.id;

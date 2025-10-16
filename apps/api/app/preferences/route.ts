@@ -7,11 +7,12 @@ import {
 import type {
   PreferencesResponse,
   UpdatePreferencesResponse,
+  ApiErrorResponse,
 } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@workspace/auth/server";
 
 export const GET = withAxiom(async (req) => {
   const startTime = Date.now();
@@ -20,7 +21,10 @@ export const GET = withAxiom(async (req) => {
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const userId = user.id;
@@ -79,7 +83,10 @@ export const PUT = withAxiom(async (req) => {
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const userId = user.id;

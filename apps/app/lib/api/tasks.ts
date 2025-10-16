@@ -3,13 +3,11 @@ import type {
   TasksListResponse,
   CreateTaskResponse,
   CreateTaskInput,
+  DeleteTaskResponse,
 } from "@workspace/types";
 
 export async function getTasks(): Promise<TasksListResponse> {
-  console.log("getTasks");
   const response = await api.get<TasksListResponse>("/tasks");
-
-  console.log("response", response);
 
   return {
     ...response,
@@ -30,6 +28,6 @@ export async function updateTask(
   return api.patch<CreateTaskResponse>(`/tasks/${id}`, updates);
 }
 
-export async function deleteTask(id: number): Promise<{ success: boolean }> {
-  return api.delete<{ success: boolean }>(`/tasks/${id}`);
+export async function deleteTask(id: number): Promise<DeleteTaskResponse> {
+  return api.delete<DeleteTaskResponse>(`/tasks/${id}`);
 }
