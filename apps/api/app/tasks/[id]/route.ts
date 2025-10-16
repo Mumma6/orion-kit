@@ -1,9 +1,13 @@
 import { db, tasks, eq } from "@workspace/database";
 import { updateTaskInputSchema } from "@workspace/types";
-import type { UpdateTaskResponse, ApiErrorResponse } from "@workspace/types";
+import type {
+  UpdateTaskResponse,
+  ApiErrorResponse,
+  DeleteTaskResponse,
+} from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
-import { validationErrorResponse } from "@/lib/validation";
+import { formatZodError } from "@/lib/validation";
 import { getCurrentUser } from "@workspace/auth/server";
 import { z } from "zod";
 
@@ -15,10 +19,13 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export const PUT = withAxiom(async (req, context: RouteContext) => {
-  const startTime = Date.now();
+export const PUT = withAxiom(
+  async (
+    req,
+    context: RouteContext
+  ): Promise<NextResponse<UpdateTaskResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -48,7 +55,12 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
     const validation = updateTaskInputSchema.safeParse(body);
 
     if (!validation.success) {
-      return validationErrorResponse(validation.error.issues);
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Validation failed",
+        details: formatZodError(validation.error.issues),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     const validatedData = validation.data;
@@ -87,7 +99,11 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
     const updatedTask = updatedTasks[0];
 
     if (!updatedTask) {
-      throw new Error("Failed to update task");
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Failed to update task",
+      };
+      return NextResponse.json(errorResponse, { status: 500 });
     }
 
     const duration = Date.now() - startTime;
@@ -104,16 +120,16 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    logger.error("Failed to update task", error as Error);
-    throw error;
   }
-});
+);
 
-export const PATCH = withAxiom(async (req, context: RouteContext) => {
-  const startTime = Date.now();
+export const PATCH = withAxiom(
+  async (
+    req,
+    context: RouteContext
+  ): Promise<NextResponse<UpdateTaskResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -143,7 +159,12 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
     const validation = updateTaskInputSchema.safeParse(body);
 
     if (!validation.success) {
-      return validationErrorResponse(validation.error.issues);
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Validation failed",
+        details: formatZodError(validation.error.issues),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     const validatedData = validation.data;
@@ -182,7 +203,11 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
     const updatedTask = updatedTasks[0];
 
     if (!updatedTask) {
-      throw new Error("Failed to update task");
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Failed to patch task",
+      };
+      return NextResponse.json(errorResponse, { status: 500 });
     }
 
     const duration = Date.now() - startTime;
@@ -200,21 +225,24 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    logger.error("Failed to patch task", error as Error);
-    throw error;
   }
-});
+);
 
-export const DELETE = withAxiom(async (req, context: RouteContext) => {
-  const startTime = Date.now();
+export const DELETE = withAxiom(
+  async (
+    req,
+    context: RouteContext
+  ): Promise<NextResponse<DeleteTaskResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
+        {
+          success: false,
+          error: "Unauthorized",
+        },
         { status: 401 }
       );
     }
@@ -226,7 +254,11 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
 
     if (!paramsValidation.success) {
       return NextResponse.json(
-        { success: false, error: "Invalid task ID" },
+        {
+          success: false,
+          error: "Invalid task ID",
+          details: formatZodError(paramsValidation.error.issues),
+        },
         { status: 400 }
       );
     }
@@ -264,13 +296,12 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
       duration,
     });
 
-    return NextResponse.json({
+    const response: DeleteTaskResponse = {
       success: true,
       message: "Task deleted successfully",
-      deletedId: taskId,
-    });
-  } catch (error) {
-    logger.error("Failed to delete task", error as Error);
-    throw error;
+      data: { deleted: true },
+    };
+
+    return NextResponse.json(response);
   }
-});
+);

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@workspace/database";
 import { users, eq } from "@workspace/database";
 import { createToken } from "@workspace/auth/server";
@@ -7,67 +7,90 @@ import type {
   ApiErrorResponse,
   AuthUser,
 } from "@workspace/types";
+import { LoginInputSchema } from "@workspace/types";
+import { withAxiom, logger } from "@workspace/observability";
+import { formatZodError } from "@/lib/validation";
+
 // @ts-ignore
 import bcrypt from "bcryptjs";
 
-export async function POST(req: Request) {
-  const { email, password } = await req.json();
-  if (!email || !password) {
-    const errorResponse: ApiErrorResponse = {
-      success: false,
-      error: "Missing credentials",
+export const POST = withAxiom(
+  async (
+    req: NextRequest
+  ): Promise<NextResponse<LoginResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
+
+    const body = await req.json();
+
+    const validation = LoginInputSchema.safeParse(body);
+
+    if (!validation.success) {
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Validation failed",
+        details: formatZodError(validation.error.issues),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
+
+    const { email, password } = validation.data;
+
+    const rows = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    const user = rows[0];
+    if (!user || !user.password) {
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Invalid credentials",
+      };
+      return NextResponse.json(errorResponse, { status: 401 });
+    }
+
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) {
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Invalid credentials",
+      };
+      return NextResponse.json(errorResponse, { status: 401 });
+    }
+
+    const authUser: AuthUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name || "",
+      image: user.image || undefined,
+      emailVerified: user.emailVerified || undefined,
     };
-    return NextResponse.json(errorResponse, { status: 400 });
-  }
 
-  const row = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, email))
-    .limit(1);
+    const token = await createToken(authUser);
 
-  const user = row[0];
-  if (!user || !user.password) {
-    const errorResponse: ApiErrorResponse = {
-      success: false,
-      error: "Invalid credentials",
+    const duration = Date.now() - startTime;
+    logger.info("User logged in", {
+      userId: user.id,
+      email,
+      duration,
+    });
+
+    const response: LoginResponse = {
+      success: true,
+      message: "Login successful",
+      token,
+      user: authUser,
     };
-    return NextResponse.json(errorResponse, { status: 401 });
+
+    const res = NextResponse.json(response);
+    res.cookies.set("auth", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    return res;
   }
-
-  const ok = await bcrypt.compare(password, user.password);
-  if (!ok) {
-    const errorResponse: ApiErrorResponse = {
-      success: false,
-      error: "Invalid credentials",
-    };
-    return NextResponse.json(errorResponse, { status: 401 });
-  }
-
-  const authUser: AuthUser = {
-    id: user.id,
-    email: user.email,
-    name: user.name || "",
-    image: user.image || undefined,
-    emailVerified: user.emailVerified || undefined,
-  };
-
-  const token = await createToken(authUser);
-
-  const response: LoginResponse = {
-    success: true,
-    message: "Login successful",
-    token,
-    user: authUser,
-  };
-
-  const res = NextResponse.json(response);
-  res.cookies.set("auth", token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
-  return res;
-}
+);

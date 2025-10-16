@@ -1,14 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@workspace/auth/server";
-import type { AuthResponse } from "@workspace/types";
+import type { AuthResponse, ApiErrorResponse } from "@workspace/types";
+import { withAxiom, logger } from "@workspace/observability";
 
-export async function GET(req: NextRequest) {
-  const user = await getCurrentUser(req);
+export const GET = withAxiom(
+  async (
+    req: NextRequest
+  ): Promise<NextResponse<AuthResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  const response: AuthResponse = {
-    success: true,
-    data: user,
-  };
+    const user = await getCurrentUser(req);
 
-  return NextResponse.json(response);
-}
+    const duration = Date.now() - startTime;
+    logger.info("User profile requested", {
+      userId: user?.id,
+      duration,
+    });
+
+    const response: AuthResponse = {
+      success: true,
+      data: user,
+    };
+
+    return NextResponse.json(response);
+  }
+);

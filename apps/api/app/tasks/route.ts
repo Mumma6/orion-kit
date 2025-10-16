@@ -8,7 +8,7 @@ import type {
 } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
-import { validationErrorResponse } from "@/lib/validation";
+import { formatZodError } from "@/lib/validation";
 import { getCurrentUser } from "@workspace/auth/server";
 
 function getStatusCount(userTasks: TasksListResponse["data"]) {
@@ -21,10 +21,10 @@ function getStatusCount(userTasks: TasksListResponse["data"]) {
   };
 }
 
-export const GET = withAxiom(async (req) => {
-  const startTime = Date.now();
+export const GET = withAxiom(
+  async (req): Promise<NextResponse<TasksListResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -58,23 +58,20 @@ export const GET = withAxiom(async (req) => {
       data: userTasks,
       total: userTasks.length,
       userId,
-      userName: ``.trim(),
+      userName: user.name || "",
       completed,
       inProgress,
       todo,
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    logger.error("Failed to fetch tasks", error as Error);
-    throw error;
   }
-});
+);
 
-export const POST = withAxiom(async (req) => {
-  const startTime = Date.now();
+export const POST = withAxiom(
+  async (req): Promise<NextResponse<CreateTaskResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -93,7 +90,12 @@ export const POST = withAxiom(async (req) => {
     const validation = createTaskInputSchema.safeParse(body);
 
     if (!validation.success) {
-      return validationErrorResponse(validation.error.issues);
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Validation failed",
+        details: formatZodError(validation.error.issues),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     const validatedData = validation.data;
@@ -118,7 +120,11 @@ export const POST = withAxiom(async (req) => {
 
     const newTask = newTasks[0];
     if (!newTask) {
-      throw new Error("Failed to create task");
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Failed to create task",
+      };
+      return NextResponse.json(errorResponse, { status: 500 });
     }
 
     const duration = Date.now() - startTime;
@@ -135,8 +141,5 @@ export const POST = withAxiom(async (req) => {
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    logger.error("Failed to create task", error as Error);
-    throw error;
   }
-});
+);

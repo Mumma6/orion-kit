@@ -8,8 +8,9 @@
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "DATABASE_URL",
-        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-        "CLERK_SECRET_KEY",
+        "AUTH_JWT_SECRET",
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_API_URL",
         "STRIPE_SECRET_KEY",
         "STRIPE_WEBHOOK_SECRET",
         "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
@@ -18,19 +19,7 @@
         "NEXT_PUBLIC_POSTHOG_KEY",
         "NEXT_PUBLIC_POSTHOG_HOST",
         "NEXT_PUBLIC_AXIOM_TOKEN",
-        "NEXT_PUBLIC_AXIOM_DATASET",
-        "NEXT_PUBLIC_APP_URL",
-        "NEXT_PUBLIC_API_URL",
-        "NEXT_PUBLIC_LINK_URL",
-        "NEXT_PUBLIC_DOCS_URL",
-        "KINDE_CLIENT_ID",
-        "KINDE_CLIENT_SECRET",
-        "KINDE_ISSUER_URL",
-        "KINDE_SITE_URL",
-        "KINDE_POST_LOGOUT_REDIRECT_URL",
-        "KINDE_POST_LOGIN_REDIRECT_URL",
-        "KINDE_CLIENT_SECRET",
-        "KINDE_ISSUER_URL"
+        "NEXT_PUBLIC_AXIOM_DATASET"
       ]
       
     },

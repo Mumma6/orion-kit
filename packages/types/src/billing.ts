@@ -52,3 +52,6 @@ export type SubscriptionResponse = ApiResponse<{
 export type CreatePortalSessionResponse = ApiResponse<{
   url: string;
 }>;
+export type DeleteSubscriptionResponse = ApiResponse<{
+  deleted: boolean;
+}>;

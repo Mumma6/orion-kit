@@ -5,13 +5,15 @@ import type {
   ApiErrorResponse,
 } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@workspace/auth/server";
 
-export const POST = withAxiom(async (req) => {
-  const startTime = Date.now();
+export const POST = withAxiom(
+  async (
+    req
+  ): Promise<NextResponse<CreatePortalSessionResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -72,35 +74,5 @@ export const POST = withAxiom(async (req) => {
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    const duration = Date.now() - startTime;
-
-    logger.error("Failed to create billing portal session", {
-      error: error as Error,
-      duration,
-    });
-
-    if (errorMessage.includes("customer portal")) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Stripe Customer Portal is not activated. Please enable it in your Stripe Dashboard.",
-          code: "PORTAL_NOT_ACTIVATED",
-        },
-        { status: 503 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to create billing portal session. Please try again.",
-        code: "PORTAL_ERROR",
-      },
-      { status: 500 }
-    );
   }
-});
+);

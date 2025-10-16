@@ -6,13 +6,17 @@ import type {
 } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
-import { validationErrorResponse } from "@/lib/validation";
 import { getCurrentUser } from "@workspace/auth/server";
+import { formatZodError } from "@/lib/validation";
 
-export const POST = withAxiom(async (req) => {
-  const startTime = Date.now();
+export const POST = withAxiom(
+  async (
+    req
+  ): Promise<
+    NextResponse<CreateCheckoutSessionResponse | ApiErrorResponse>
+  > => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -26,7 +30,12 @@ export const POST = withAxiom(async (req) => {
     const validation = createCheckoutSessionInputSchema.safeParse(body);
 
     if (!validation.success) {
-      return validationErrorResponse(validation.error.issues);
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Validation failed",
+        details: formatZodError(validation.error.issues),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     const { priceId, successUrl, cancelUrl } = validation.data;
@@ -53,11 +62,5 @@ export const POST = withAxiom(async (req) => {
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    logger.error("Failed to create checkout session", error as Error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create checkout session" },
-      { status: 500 }
-    );
   }
-});
+);

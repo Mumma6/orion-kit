@@ -1,14 +1,20 @@
 import { db, userPreferences, eq } from "@workspace/database";
 import { getSubscription, cancelSubscription } from "@workspace/payment/server";
-import type { SubscriptionResponse, ApiErrorResponse } from "@workspace/types";
+import type {
+  SubscriptionResponse,
+  ApiErrorResponse,
+  DeleteSubscriptionResponse,
+} from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@workspace/auth/server";
 
-export const GET = withAxiom(async (req) => {
-  const startTime = Date.now();
+export const GET = withAxiom(
+  async (
+    req
+  ): Promise<NextResponse<SubscriptionResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -74,19 +80,15 @@ export const GET = withAxiom(async (req) => {
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    logger.error("Failed to fetch subscription", error as Error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch subscription" },
-      { status: 500 }
-    );
   }
-});
+);
 
-export const DELETE = withAxiom(async (req) => {
-  const startTime = Date.now();
+export const DELETE = withAxiom(
+  async (
+    req
+  ): Promise<NextResponse<DeleteSubscriptionResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -132,15 +134,12 @@ export const DELETE = withAxiom(async (req) => {
       duration,
     });
 
-    return NextResponse.json({
+    const response: DeleteSubscriptionResponse = {
       success: true,
       message: "Subscription canceled successfully",
-    });
-  } catch (error) {
-    logger.error("Failed to cancel subscription", error as Error);
-    return NextResponse.json(
-      { success: false, error: "Failed to cancel subscription" },
-      { status: 500 }
-    );
+      data: { deleted: true },
+    };
+
+    return NextResponse.json(response);
   }
-});
+);

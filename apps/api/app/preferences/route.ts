@@ -11,13 +11,15 @@ import type {
 } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
-import { validationErrorResponse } from "@/lib/validation";
 import { getCurrentUser } from "@workspace/auth/server";
+import { formatZodError } from "@/lib/validation";
 
-export const GET = withAxiom(async (req) => {
-  const startTime = Date.now();
+export const GET = withAxiom(
+  async (
+    req
+  ): Promise<NextResponse<PreferencesResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -70,16 +72,15 @@ export const GET = withAxiom(async (req) => {
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    logger.error("Failed to fetch preferences", error as Error);
-    throw error;
   }
-});
+);
 
-export const PUT = withAxiom(async (req) => {
-  const startTime = Date.now();
+export const PUT = withAxiom(
+  async (
+    req
+  ): Promise<NextResponse<UpdatePreferencesResponse | ApiErrorResponse>> => {
+    const startTime = Date.now();
 
-  try {
     const user = await getCurrentUser(req);
 
     if (!user) {
@@ -96,7 +97,12 @@ export const PUT = withAxiom(async (req) => {
     const validation = updateUserPreferencesSchema.safeParse(body);
 
     if (!validation.success) {
-      return validationErrorResponse(validation.error.issues);
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Validation failed",
+        details: formatZodError(validation.error.issues),
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     const validatedData = validation.data;
@@ -127,7 +133,11 @@ export const PUT = withAxiom(async (req) => {
     const updatedPref = result[0];
 
     if (!updatedPref) {
-      throw new Error("Failed to update preferences");
+      const errorResponse: ApiErrorResponse = {
+        success: false,
+        error: "Failed to update preferences",
+      };
+      return NextResponse.json(errorResponse, { status: 500 });
     }
 
     const duration = Date.now() - startTime;
@@ -140,8 +150,5 @@ export const PUT = withAxiom(async (req) => {
     };
 
     return NextResponse.json(response);
-  } catch (error) {
-    logger.error("Failed to update preferences", error as Error);
-    throw error;
   }
-});
+);
