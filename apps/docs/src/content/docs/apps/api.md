@@ -9,13 +9,20 @@ The API application (`apps/api`) is the backend server that handles all business
 **Framework**: Serverless Next.js 15 with App Router  
 **Port**: `3002` (development)  
 **Database**: Neon PostgreSQL with Drizzle ORM  
-**Authentication**: Clerk server-side integration
+**Authentication**: Custom JWT-based authentication
 
 ## Structure
 
 ```
 apps/api/
 ├── app/
+│   ├── auth/
+│   │   ├── login/route.ts         # User login endpoint
+│   │   ├── logout/route.ts        # User logout endpoint
+│   │   ├── me/route.ts            # Get current user
+│   │   └── register/route.ts      # User registration endpoint
+│   ├── account/
+│   │   └── delete/route.ts        # Delete user account
 │   ├── billing-portal/route.ts    # Stripe Customer Portal
 │   ├── checkout/route.ts          # Stripe Checkout Sessions
 │   ├── health/route.ts            # Health check endpoint
@@ -31,6 +38,46 @@ apps/api/
 ```
 
 ## API Endpoints
+
+### **Authentication**
+
+```http
+POST /auth/register  # Create new user account
+POST /auth/login     # Sign in with email/password
+GET  /auth/me        # Get current user info
+POST /auth/logout    # Sign out (clear cookie)
+```
+
+**Example Registration:**
+
+```typescript
+// POST /auth/register
+const response = await fetch("/api/auth/register", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    name: "John Doe",
+    email: "john@example.com",
+    password: "securepassword123",
+  }),
+});
+```
+
+**Example Login:**
+
+```typescript
+// POST /auth/login
+const response = await fetch("/api/auth/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    email: "john@example.com",
+    password: "securepassword123",
+  }),
+});
+
+// Returns: { success: true, token: "...", user: {...} }
+```
 
 ### **Health Check**
 
@@ -52,18 +99,13 @@ DELETE /tasks/[id]      # Delete task
 **Example Request:**
 
 ```typescript
-// GET /tasks
-const response = await fetch("/api/tasks", {
-  headers: { Authorization: `Bearer ${token}` },
-});
+// GET /tasks (uses httpOnly cookie for auth)
+const response = await fetch("/api/tasks");
 
 // POST /tasks
 const response = await fetch("/api/tasks", {
   method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     title: "Complete project",
     description: "Finish the Orion Kit documentation",
@@ -112,10 +154,7 @@ DELETE /subscription    # Cancel subscription
 // POST /checkout
 const response = await fetch("/api/checkout", {
   method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     priceId: "price_1234567890",
   }),
@@ -140,24 +179,32 @@ Handles Stripe events:
 
 ## Authentication
 
-All endpoints require authentication via Clerk:
+All protected endpoints require authentication via JWT tokens stored in httpOnly cookies:
 
 ```typescript
-import { auth } from "@workspace/auth/server";
+import { getCurrentUser } from "@workspace/auth/server";
 
-export async function GET() {
-  const { userId } = await auth();
+export async function GET(req: NextRequest) {
+  const user = await getCurrentUser(req);
 
-  if (!userId) {
+  if (!user) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
       { status: 401 }
     );
   }
 
-  // Authenticated logic here
+  // Authenticated logic here - user.id is available
 }
 ```
+
+### Authentication Flow
+
+1. **Login/Register** - User submits credentials
+2. **JWT Creation** - Server creates signed JWT token
+3. **Cookie Storage** - Token stored in httpOnly cookie
+4. **Automatic Verification** - Middleware verifies token on protected routes
+5. **User Context** - `getCurrentUser()` extracts user info from token
 
 ## Database Operations
 
@@ -232,13 +279,14 @@ Consistent error responses:
 
 ```bash
 # apps/api/.env.local
-CLERK_SECRET_KEY=sk_test_...
 DATABASE_URL=postgresql://...
+AUTH_JWT_SECRET=your-super-secret-key-min-32-chars
+NEXT_PUBLIC_APP_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:3002
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
-AXIOM_TOKEN=...
-AXIOM_DATASET=orion-kit
-TRIGGER_API_KEY=tr_...
+NEXT_PUBLIC_AXIOM_TOKEN=xaat-...
+NEXT_PUBLIC_AXIOM_DATASET=orion-kit
 ```
 
 ## Development
@@ -258,8 +306,19 @@ Server runs on `http://localhost:3002`
 # Health check
 curl http://localhost:3002/health
 
-# Get tasks (requires auth)
-curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/tasks
+# Register user
+curl -X POST http://localhost:3002/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test User","email":"test@example.com","password":"password123"}'
+
+# Login (sets httpOnly cookie)
+curl -X POST http://localhost:3002/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}' \
+  -c cookies.txt
+
+# Get tasks (uses cookie for auth)
+curl -b cookies.txt http://localhost:3002/tasks
 ```
 
 ### **Database Studio**
@@ -273,12 +332,14 @@ pnpm db:studio
 
 Set production environment variables in Vercel dashboard:
 
-- `CLERK_SECRET_KEY` - Clerk server key
+- `AUTH_JWT_SECRET` - JWT signing secret (32+ characters)
 - `DATABASE_URL` - Production database URL
+- `NEXT_PUBLIC_APP_URL` - Production app URL
+- `NEXT_PUBLIC_API_URL` - Production API URL
 - `STRIPE_SECRET_KEY` - Stripe live key
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret
-- `AXIOM_TOKEN` - Axiom logging token
-- `TRIGGER_API_KEY` - Trigger.dev API key
+- `NEXT_PUBLIC_AXIOM_TOKEN` - Axiom logging token
+- `NEXT_PUBLIC_AXIOM_DATASET` - Axiom dataset name
 
 ### **Webhook Configuration**
 

@@ -6,21 +6,19 @@ Quick reference for all required environment variables.
 
 ## Required Variables
 
-| App          | Variables                                                            |
-| ------------ | -------------------------------------------------------------------- |
-| **web**      | Clerk keys (optional), PostHog (optional)                            |
-| **app**      | Clerk keys, `NEXT_PUBLIC_API_URL`, Stripe pub key (optional)         |
-| **api**      | Clerk keys, `DATABASE_URL`, Stripe keys (optional), Axiom (optional) |
-| **database** | `DATABASE_URL`                                                       |
-| **studio**   | `DATABASE_URL`                                                       |
+| App          | Variables                                                                             |
+| ------------ | ------------------------------------------------------------------------------------- |
+| **web**      | PostHog (optional)                                                                    |
+| **app**      | `NEXT_PUBLIC_API_URL`, Stripe pub key (optional), PostHog (optional)                  |
+| **api**      | `AUTH_JWT_SECRET`, `DATABASE_URL`, App URLs, Stripe keys (optional), Axiom (optional) |
+| **database** | `DATABASE_URL`                                                                        |
+| **studio**   | `DATABASE_URL`                                                                        |
 
 ## By App
 
 ### apps/web/.env.local
 
 ```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_POSTHOG_KEY=phc_...  # Optional
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com  # Optional
 ```
@@ -28,26 +26,27 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com  # Optional
 ### apps/app/.env.local
 
 ```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_API_URL=http://localhost:3002
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...  # Optional
+NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...  # Optional
+NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_...  # Optional
 NEXT_PUBLIC_POSTHOG_KEY=phc_...  # Optional
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com  # Optional
+NEXT_PUBLIC_AXIOM_TOKEN=xaat-...  # Optional
+NEXT_PUBLIC_AXIOM_DATASET=orion-kit  # Optional
 ```
 
 ### apps/api/.env.local
 
 ```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
 DATABASE_URL=postgresql://...
+AUTH_JWT_SECRET=your-super-secret-key-min-32-chars
+NEXT_PUBLIC_APP_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:3002
 STRIPE_SECRET_KEY=sk_test_...  # Optional
 STRIPE_WEBHOOK_SECRET=whsec_...  # Optional
-NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...  # Optional
-NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_...  # Optional
-NEXT_PUBLIC_APP_URL=http://localhost:3001
-AXIOM_TOKEN=xaat-...  # Optional
-AXIOM_DATASET=orion-logs  # Optional
+NEXT_PUBLIC_AXIOM_TOKEN=xaat-...  # Optional
+NEXT_PUBLIC_AXIOM_DATASET=orion-kit  # Optional
 ```
 
 ### packages/database/.env + apps/studio/.env.local
@@ -58,15 +57,15 @@ DATABASE_URL=postgresql://...
 
 ## Key Formats
 
-| Variable       | Format                             | Where to Get                                                  |
-| -------------- | ---------------------------------- | ------------------------------------------------------------- |
-| Clerk keys     | `pk_test_*` / `sk_test_*`          | [Clerk Dashboard](https://dashboard.clerk.com) → API Keys     |
-| Database URL   | `postgresql://...?sslmode=require` | [Neon Console](https://console.neon.tech) → Pooled Connection |
-| Stripe keys    | `sk_test_*` / `pk_test_*`          | [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys) |
-| Stripe webhook | `whsec_*`                          | `stripe listen` output                                        |
-| Stripe prices  | `price_*`                          | Stripe Dashboard → Products → Pricing                         |
-| Axiom          | `xaat_*`                           | [Axiom](https://axiom.co/settings/api-tokens) → API Tokens    |
-| PostHog        | `phc_*`                            | [PostHog](https://posthog.com/settings/project) → API Keys    |
+| Variable       | Format                               | Where to Get                                                  |
+| -------------- | ------------------------------------ | ------------------------------------------------------------- |
+| JWT Secret     | `your-super-secret-key-min-32-chars` | Generate your own secure random string (32+ characters)       |
+| Database URL   | `postgresql://...?sslmode=require`   | [Neon Console](https://console.neon.tech) → Pooled Connection |
+| Stripe keys    | `sk_test_*` / `pk_test_*`            | [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys) |
+| Stripe webhook | `whsec_*`                            | `stripe listen` output                                        |
+| Stripe prices  | `price_*`                            | Stripe Dashboard → Products → Pricing                         |
+| Axiom          | `xaat_*`                             | [Axiom](https://axiom.co/settings/api-tokens) → API Tokens    |
+| PostHog        | `phc_*`                              | [PostHog](https://posthog.com/settings/project) → API Keys    |
 
 ⚠️ **Important:**
 

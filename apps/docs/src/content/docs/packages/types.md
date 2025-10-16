@@ -26,6 +26,7 @@ This package is the **type hub** for Orion Kit:
     ┌──────────────────────┐
     │  @workspace/types    │
     │  src/api.ts          │  Generic responses
+    │  src/auth.ts         │  Auth domain (JWT)
     │  src/tasks.ts        │  Task domain
     │  src/preferences.ts  │  Preferences domain
     │  src/billing.ts      │  Billing domain
@@ -36,6 +37,26 @@ This package is the **type hub** for Orion Kit:
   API Routes      Frontend Hooks
 ```
 
+## Typed Routes with NextResponse
+
+All API routes use **typed return values** for complete type safety:
+
+```typescript
+// API route with typed response
+export async function POST(
+  req: NextRequest
+): Promise<NextResponse<CreateTaskResponse | ApiErrorResponse>> {
+  // Implementation...
+  return NextResponse.json(response);
+}
+```
+
+This ensures:
+
+- ✅ **Compile-time safety** - TypeScript catches type mismatches
+- ✅ **IDE autocomplete** - Full intellisense for response data
+- ✅ **Runtime consistency** - Responses match their declared types
+
 ## Type Ownership
 
 | Type Category                 | Owner                 | Example                                     |
@@ -43,15 +64,16 @@ This package is the **type hub** for Orion Kit:
 | **Database entities**         | `@workspace/database` | `Task`, `UserPreference`                    |
 | **Zod schemas**               | `@workspace/database` | `createTaskInputSchema`                     |
 | **Payment domain**            | `@workspace/payment`  | `CheckoutSession`, `SubscriptionData`       |
+| **Auth domain**               | `@workspace/types`    | `AuthUser`, `LoginInput`, `RegisterInput`   |
 | **Generic API responses**     | `@workspace/types`    | `ApiResponse<T>`, `ListResponse<T>`         |
-| **Domain-specific responses** | `@workspace/types`    | `CreateTaskResponse`, `TasksListResponse`   |
+| **Domain-specific responses** | `@workspace/types`    | `CreateTaskResponse`, `LoginResponse`       |
 | **Input types**               | `@workspace/types`    | `CreateTaskInput`, `UpdatePreferencesInput` |
 
 ## Generic API Responses
 
 These are the **building blocks** used across all domains:
 
-```typescript
+````typescript
 // packages/types/src/api.ts
 
 /** Standard API response with optional message */
@@ -61,13 +83,19 @@ export interface ApiResponse<T = unknown> {
   message?: string;
 }
 
+/** Error response with optional details */
+export interface ApiErrorResponse {
+  success: false;
+  error: string;
+  details?: unknown;
+}
+
 /** List response with total count */
 export interface ListResponse<T> {
   success: true;
   data: T[];
   total: number;
 }
-```
 
 **When to use:**
 
@@ -137,7 +165,7 @@ export type UpdateTaskResponse = ApiResponse<Task>;
 
 /** Delete response */
 export type DeleteTaskResponse = ApiResponse<{ deleted: true }>;
-```
+````
 
 ### Why This Pattern?
 
@@ -196,17 +224,28 @@ export type CreateTaskInput = Omit<
 export type CreateTaskResponse = ApiResponse<Task>;
 ```
 
-**3. API route uses types:**
+**3. API route uses types with typed returns:**
 
 ```typescript
 // apps/api/app/tasks/route.ts
 import { createTaskInputSchema } from "@workspace/types";
-import type { CreateTaskResponse } from "@workspace/types";
+import type { CreateTaskResponse, ApiErrorResponse } from "@workspace/types";
 import { db, tasks } from "@workspace/database";
+import { getCurrentUser } from "@workspace/auth/server";
 
-export async function POST(request: Request) {
-  const { userId } = await auth();
-  const body = await request.json();
+export async function POST(
+  req: NextRequest
+): Promise<NextResponse<CreateTaskResponse | ApiErrorResponse>> {
+  const user = await getCurrentUser(req);
+
+  if (!user) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  const body = await req.json();
 
   // Validate with Zod
   const validated = createTaskInputSchema.parse(body);
@@ -214,7 +253,7 @@ export async function POST(request: Request) {
   // Insert to database
   const [newTask] = await db
     .insert(tasks)
-    .values({ ...validated, userId: userId })
+    .values({ ...validated, userId: user.id })
     .returning();
 
   // Return typed response
@@ -277,6 +316,58 @@ export function CreateTaskDialog() {
 ```
 
 ## Domain Examples
+
+### Auth (Custom JWT System)
+
+Combines JWT authentication types with API responses:
+
+```typescript
+// packages/types/src/auth.ts
+
+// Zod schemas for validation
+export const LoginInputSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export const RegisterInputSchema = z.object({
+  name: z.string().min(1, "Name is required").max(255, "Name too long"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+// Input types (from Zod schemas)
+export type LoginInput = z.infer<typeof LoginInputSchema>;
+export type RegisterInput = z.infer<typeof RegisterInputSchema>;
+
+// Auth user type
+export type AuthUser = {
+  id: string;
+  email: string;
+  name?: string;
+  image?: string;
+  emailVerified?: boolean;
+};
+
+// Special response types (include token)
+export interface LoginResponse {
+  success: true;
+  message: string;
+  token: string;
+  user: AuthUser;
+}
+
+export interface RegisterResponse {
+  success: true;
+  message: string;
+  token: string;
+  user: AuthUser;
+}
+
+// Standard ApiResponse types
+export type AuthResponse = ApiResponse<AuthUser | null>;
+export type LogoutResponse = ApiResponse<{ loggedOut: true }>;
+```
 
 ### Tasks (Database Entity)
 

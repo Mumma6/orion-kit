@@ -3,27 +3,33 @@ title: Authentication System
 description: Custom JWT-based authentication without vendor lock-in
 ---
 
-Orion Kit uses a **custom JWT-based authentication system** that's secure, simple, and completely vendor-independent. No more cloud provider lock-ins!
+Orion Kit provides a **custom JWT-based authentication system** out of the box, designed to be simple, secure, and vendor-neutral. The boilerplate intentionally avoids vendor lock-in from the start, making it easy to integrate any authentication provider you prefer.
 
-## Why Custom Auth Instead of Clerk/Auth0?
+## Why Start Vendor-Neutral?
 
-### ❌ **Problems with Cloud Providers:**
+### 🎯 **Boilerplate Philosophy:**
 
-- **Vendor lock-in** - Hard to migrate away, expensive to switch
-- **Cost scaling** - $25+/month and grows with users
-- **Limited customization** - Stuck with their UI/UX decisions
-- **Complex setup** - Multiple API keys, webhooks, domain configuration
-- **Privacy concerns** - User data stored in third-party hands
-- **Dependency risk** - Service outages affect your app
+- **No vendor lock-in** - Start with full control and migrate to any provider later
+- **Easy integration** - Simple to add Clerk, Auth0, Supabase Auth, or any provider
+- **Learning-friendly** - Understand authentication fundamentals without abstraction layers
+- **Cost-effective** - No monthly fees while building and testing
+- **Privacy-first** - All user data stays in your database by default
 
-### ✅ **Our Custom Solution:**
+### 🔄 **Migration Path:**
 
-- **Zero vendor lock-in** - Own your authentication completely
-- **Free forever** - No monthly costs or user limits
-- **Full control** - Custom UI, logic, and data storage
-- **Simple setup** - Just JWT + httpOnly cookies
-- **Privacy-first** - All data stays in your database
-- **No dependencies** - Works even if third-party services are down
+Orion Kit's architecture makes it trivial to switch authentication providers:
+
+```typescript
+// Current: Custom JWT (included)
+const user = await getCurrentUser(req);
+
+// Easy migration to any provider:
+// const user = await clerk.auth().getUser(req);
+// const user = await auth0.getUser(req);
+// const user = await supabase.auth.getUser(req);
+```
+
+The database schema, API routes, and frontend components remain unchanged regardless of your auth provider choice.
 
 ## How It Works
 
@@ -243,72 +249,131 @@ if (isProtectedRoute) {
 }
 ```
 
-## Cost Comparison
+## Integration Options
 
-### **Cloud Providers:**
+### **Option 1: Keep Custom JWT (Recommended for MVP)**
 
-- **Clerk**: $25/month = $300/year (Pro plan)
-- **Auth0**: $23/month = $276/year (Essentials)
-- **Supabase Auth**: $25/month = $300/year (Pro plan)
-- **Firebase Auth**: Pay per user after free tier
+- **Cost**: $0/month - Perfect for bootstrapping
+- **Control**: Complete ownership of auth logic
+- **Features**: Login, register, JWT tokens, httpOnly cookies
+- **Best for**: MVPs, prototypes, and learning
 
-### **Custom JWT Auth:**
+### **Option 2: Add Cloud Provider Later**
 
-- **Cost**: $0/month = $0/year 💰
-- **Scalability**: Unlimited users
-- **Features**: Everything you need
-- **Control**: Complete ownership
+When you're ready for advanced features:
 
-## Migration Benefits
+- **Clerk**: $25/month - Great UI components and user management
+- **Auth0**: $23/month - Enterprise features and compliance
+- **Supabase Auth**: $25/month - Open source with Row Level Security
+- **Firebase Auth**: Pay per user - Google ecosystem integration
 
-### **From Clerk/Auth0/Supabase:**
+### **Migration Benefits:**
 
-1. **Remove vendor dependency** - Delete cloud provider packages
-2. **Keep existing database** - Users table already exists
-3. **Update auth calls** - Replace cloud provider hooks with custom hooks
-4. **Deploy** - Zero downtime migration
-5. **Save money** - No more monthly auth bills
+- **Database stays the same** - No schema changes needed
+- **API routes unchanged** - Same authentication patterns
+- **Gradual migration** - Switch one feature at a time
+- **Zero downtime** - Maintain existing user sessions
+
+## Adding Authentication Providers
+
+### **Adding Clerk (Example):**
+
+```bash
+# 1. Install Clerk
+pnpm add @clerk/nextjs
+
+# 2. Update environment variables
+# Add to .env.local:
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# 3. Replace auth function
+# In API routes:
+import { auth } from "@clerk/nextjs";
+const { userId } = await auth();
+```
+
+### **Adding Auth0 (Example):**
+
+```bash
+# 1. Install Auth0
+pnpm add @auth0/nextjs-auth0
+
+# 2. Update environment variables
+# Add to .env.local:
+AUTH0_SECRET=your-secret
+AUTH0_BASE_URL=http://localhost:3000
+AUTH0_ISSUER_BASE_URL=https://your-domain.auth0.com
+AUTH0_CLIENT_ID=your-client-id
+AUTH0_CLIENT_SECRET=your-client-secret
+
+# 3. Replace auth function
+# In API routes:
+import { getSession } from "@auth0/nextjs-auth0";
+const session = await getSession(req);
+const user = session?.user;
+```
 
 ### **Migration Steps:**
 
 ```bash
-# 1. Remove cloud provider packages
-pnpm remove @clerk/nextjs
+# 1. Install your preferred provider
+pnpm add @clerk/nextjs  # or @auth0/nextjs-auth0, etc.
 
-# 2. Update imports
-# From: import { useUser } from "@clerk/nextjs"
-# To:   import { useAuth } from "@/hooks/use-auth"
+# 2. Update environment variables
+# Add provider-specific keys to .env.local
 
-# 3. Update environment variables
-# Remove: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-# Keep:   AUTH_JWT_SECRET, DATABASE_URL
+# 3. Update auth imports
+# Replace: import { getCurrentUser } from "@workspace/auth/server"
+# With:    import { auth } from "@clerk/nextjs"
+
+# 4. Database stays the same!
+# No schema changes needed - users table works with any provider
 ```
 
 ## Setup Guide
 
-### 1. **Environment Variables:**
+### **Option 1: Use Built-in JWT Auth (Default)**
 
 ```bash
+# 1. Environment Variables
 # .env.local
 AUTH_JWT_SECRET=your-super-secret-key-min-32-chars
 NEXT_PUBLIC_APP_URL=http://localhost:3001
 NEXT_PUBLIC_API_URL=http://localhost:3002
 DATABASE_URL=postgresql://...
+
+# 2. Start development
+pnpm dev
+# ✅ Auth is ready to use!
 ```
 
-### 2. **Database Migration:**
+### **Option 2: Add Your Preferred Provider**
 
 ```bash
-# Remove unused OAuth tables
-pnpm db:generate
-pnpm db:migrate
+# 1. Install provider
+pnpm add @clerk/nextjs  # or your preferred auth provider
+
+# 2. Add environment variables
+# See provider-specific setup above
+
+# 3. Update auth imports in API routes
+# Replace getCurrentUser() with provider's auth function
+
+# 4. Database stays the same!
+# No migration needed - users table works with any provider
 ```
 
-### 3. **Dependencies:**
+### **Dependencies:**
 
 ```bash
-# Already included in Orion Kit
-pnpm add jose bcryptjs
+# JWT auth (included):
+jose bcryptjs
+
+# Or add your preferred provider:
+# pnpm add @clerk/nextjs
+# pnpm add @auth0/nextjs-auth0
+# pnpm add @supabase/auth-helpers-nextjs
 ```
 
 ## Common Patterns
@@ -399,7 +464,7 @@ const session = await db
 
 ## Best Practices
 
-### **DO:**
+### **For Custom JWT Auth:**
 
 - ✅ Use strong JWT secrets (32+ characters)
 - ✅ Set appropriate token expiration (7 days)
@@ -407,13 +472,21 @@ const session = await db
 - ✅ Use httpOnly cookies for token storage
 - ✅ Hash passwords with bcrypt (salt rounds: 12)
 
-### **DON'T:**
+### **When Migrating to Cloud Providers:**
+
+- ✅ **Gradual migration** - Switch one feature at a time
+- ✅ **Keep existing users** - Database schema stays the same
+- ✅ **Test thoroughly** - Verify auth flows work correctly
+- ✅ **Update environment variables** - Add provider keys
+- ✅ **Monitor costs** - Understand pricing before scaling
+
+### **General Guidelines:**
 
 - ❌ Store tokens in localStorage (XSS risk)
-- ❌ Use weak JWT secrets
-- ❌ Skip token validation
-- ❌ Store sensitive data in JWT payload
-- ❌ Use short token expiration (bad UX)
+- ❌ Use weak secrets or API keys
+- ❌ Skip authentication validation
+- ❌ Store sensitive data in JWT payloads
+- ❌ Rush migration - take time to test properly
 
 ## Troubleshooting
 

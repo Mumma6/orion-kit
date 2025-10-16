@@ -20,6 +20,3 @@ export interface ListResponse<T> {
   data: T[];
   total: number;
 }
-
-// Union type for all possible API responses
-export type ApiResult<T = unknown> = ApiResponse<T> | ApiErrorResponse;
