@@ -14,6 +14,7 @@
   "dependencies": {
     "@workspace/database": "workspace:*",
     "@workspace/payment": "workspace:*",
+   
     "zod": "^3.25.76"
   },
   "devDependencies": {

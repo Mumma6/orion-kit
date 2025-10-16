@@ -13,11 +13,12 @@
   },
   "dependencies": {
     "@axiomhq/nextjs": "^0.1.5",
-    "@workspace/auth": "workspace:*",
     "@workspace/database": "workspace:*",
     "@workspace/observability": "workspace:*",
     "@workspace/payment": "workspace:*",
     "@workspace/types": "workspace:*",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.8.0",
     "next": "^15.4.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

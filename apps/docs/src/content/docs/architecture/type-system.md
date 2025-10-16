@@ -66,7 +66,7 @@ export const tasks = pgTable("tasks", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   title: varchar({ length: 255 }).notNull(),
   status: varchar({ length: 50 }).notNull().default("todo"),
-  clerkUserId: varchar({ length: 255 }).notNull(),
+  userId: varchar({ length: 255 }).notNull(),
   createdAt: timestamp().notNull().defaultNow(),
 });
 
@@ -80,7 +80,7 @@ export const createTaskInputSchema = createInsertSchema(tasks, {
   status: z.enum(["todo", "in-progress", "completed"]).optional(),
 }).omit({
   id: true,
-  clerkUserId: true,
+  userId: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -110,7 +110,7 @@ export { createTaskInputSchema } from "@workspace/database/schema";
 // ============================================
 export type CreateTaskInput = Omit<
   InsertTask,
-  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+  "id" | "userId" | "createdAt" | "updatedAt"
 >;
 
 // ============================================
@@ -152,7 +152,7 @@ export async function POST(req: Request) {
   const [newTask] = await db
     .insert(tasks)
     .values({
-      clerkUserId: userId,
+      userId: userId,
       ...validation.data,
     })
     .returning();

@@ -24,7 +24,7 @@ import {
 
 type CreateTaskInput = Omit<
   InsertTask,
-  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+  "id" | "userId" | "createdAt" | "updatedAt"
 >;
 
 export function CreateTaskForm() {

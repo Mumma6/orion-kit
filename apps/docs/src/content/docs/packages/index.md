@@ -22,7 +22,6 @@ Shared packages in the Orion Kit monorepo.
 ```json
 {
   "dependencies": {
-    "@workspace/auth": "workspace:*",
     "@workspace/database": "workspace:*"
   }
 }

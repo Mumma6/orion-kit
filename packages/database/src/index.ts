@@ -17,6 +17,10 @@ export {
   selectTaskSchema,
   createTaskInputSchema,
   updateTaskInputSchema,
+  users,
+  accounts,
+  sessions,
+  verificationTokens,
 } from "./schema";
 
 export { eq, and, or, not, isNull, isNotNull, desc, asc } from "drizzle-orm";

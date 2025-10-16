@@ -1,15 +1,15 @@
-import { auth, currentUser } from "@workspace/auth/server";
 import { db, userPreferences, eq } from "@workspace/database";
 import { createBillingPortalSession } from "@workspace/payment/server";
 import type { CreatePortalSessionResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth";
 
-export const POST = withAxiom(async () => {
+export const POST = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,7 +19,7 @@ export const POST = withAxiom(async () => {
     const preferences = await db
       .select()
       .from(userPreferences)
-      .where(eq(userPreferences.clerkUserId, userId))
+      .where(eq(userPreferences.userId, userId))
       .limit(1);
 
     const userPref = preferences[0];

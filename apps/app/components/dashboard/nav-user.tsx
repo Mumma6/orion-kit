@@ -27,19 +27,18 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
-import { useKindeAuth } from "@workspace/auth/client";
-import { useRouter } from "next/navigation";
+import { useUser, useLogout } from "@/hooks/use-auth";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { user, isLoading } = useKindeAuth();
-  const router = useRouter();
+  const { data: user, isPending } = useUser();
+  const logoutMutation = useLogout();
 
-  const handleSignOut = async () => {
-    router.push("/");
+  const handleSignOut = () => {
+    logoutMutation.mutate();
   };
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
@@ -60,10 +59,9 @@ export function NavUser() {
     return null;
   }
 
-  const userName =
-    `${user.given_name || ""} ${user.family_name || ""}`.trim() || "User";
+  const userName = user.name || "User";
   const userEmail = user.email || "";
-  const userAvatar = user.picture || "";
+  const userAvatar = user.image || "";
   const userInitials = userName
     .split(" ")
     .map((n) => n[0])
@@ -126,9 +124,10 @@ export function NavUser() {
             <DropdownMenuItem
               onClick={handleSignOut}
               className="cursor-pointer"
+              disabled={logoutMutation.isPending}
             >
               <LogOut />
-              Log out
+              {logoutMutation.isPending ? "Logging out..." : "Log out"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

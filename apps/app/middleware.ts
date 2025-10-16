@@ -1,12 +1,20 @@
-import { withAuth } from "@workspace/auth/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export default withAuth(async function middleware() {}, {
-  publicPaths: ["/"],
-});
+export default function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Protect dashboard routes
+  if (pathname.startsWith("/dashboard")) {
+    const token = request.cookies.get("auth")?.value;
+
+    if (!token) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    // Run on everything but Next internals and static files
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-  ],
+  matcher: ["/dashboard/:path*"],
 };

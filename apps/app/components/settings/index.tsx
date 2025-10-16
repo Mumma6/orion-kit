@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Settings } from "lucide-react";
-import { useKindeAuth } from "@workspace/auth/client";
+import { useUser } from "@/hooks/use-auth";
 import { usePreferences, useUpdatePreferences } from "@/hooks/use-settings";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { SettingsProfile } from "./settings-profile";
@@ -12,7 +12,7 @@ import { SettingsNotifications } from "./settings-notifications";
 import type { UpdatePreferencesInput } from "@workspace/types";
 
 export function SettingsContent() {
-  const { user } = useKindeAuth();
+  const { data: user, isPending } = useUser();
 
   const { data: preferences, isLoading } = usePreferences();
   const updatePreferences = useUpdatePreferences();
@@ -65,7 +65,7 @@ export function SettingsContent() {
     await updatePreferences.mutateAsync(data);
   };
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return (
       <div className="flex flex-1 flex-col gap-6 p-6">
         <div className="flex items-center gap-4">

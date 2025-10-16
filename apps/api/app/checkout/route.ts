@@ -1,29 +1,19 @@
-import { auth, currentUser } from "@workspace/auth/server";
 import { createCheckoutSession } from "@workspace/payment/server";
 import { createCheckoutSessionInputSchema } from "@workspace/payment";
 import type { CreateCheckoutSessionResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
+import { getCurrentUser } from "@/lib/auth";
 
 export const POST = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const userId = user.id;
-
-    const userEmail = user?.email;
-
-    if (!userEmail) {
-      return NextResponse.json(
-        { success: false, error: "User email not found" },
-        { status: 400 }
-      );
     }
 
     const body = await req.json();
@@ -35,14 +25,14 @@ export const POST = withAxiom(async (req) => {
 
     const { priceId, successUrl, cancelUrl } = validation.data;
 
-    const session = await createCheckoutSession(userId, userEmail, priceId, {
+    const session = await createCheckoutSession(user.id, user.email, priceId, {
       successUrl,
       cancelUrl,
     });
 
     const duration = Date.now() - startTime;
     logger.info("Checkout session created", {
-      userId,
+      userId: user.id,
       priceId,
       sessionId: session.id,
       duration,

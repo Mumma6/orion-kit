@@ -14,7 +14,7 @@ async function seed() {
     const [prefs] = await db
       .insert(userPreferences)
       .values({
-        clerkUserId: exampleUserId,
+        userId: exampleUserId,
         theme: "dark",
         language: "en",
         timezone: "UTC",
@@ -28,34 +28,34 @@ async function seed() {
 
     const exampleTasks = [
       {
-        clerkUserId: exampleUserId,
+        userId: exampleUserId,
         title: "Set up authentication",
         description: "Configure Clerk for user authentication",
         status: "completed" as const,
         completedAt: new Date("2024-01-15"),
       },
       {
-        clerkUserId: exampleUserId,
+        userId: exampleUserId,
         title: "Create API routes",
         description: "Set up protected API endpoints",
         status: "completed" as const,
         completedAt: new Date("2024-01-16"),
       },
       {
-        clerkUserId: exampleUserId,
+        userId: exampleUserId,
         title: "Build dashboard",
         description: "Create a beautiful dashboard interface",
         status: "in-progress" as const,
       },
       {
-        clerkUserId: exampleUserId,
+        userId: exampleUserId,
         title: "Add database",
         description: "Connect to Neon and create schemas with Drizzle",
         status: "completed" as const,
         completedAt: new Date(),
       },
       {
-        clerkUserId: exampleUserId,
+        userId: exampleUserId,
         title: "Deploy to production",
         description: "Deploy the application to Vercel",
         status: "todo" as const,

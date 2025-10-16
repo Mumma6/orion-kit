@@ -14,7 +14,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.90.2",
-    "@workspace/auth": "workspace:*",
+   
     "@workspace/database": "workspace:*",
     "@workspace/payment": "workspace:*",
     "@workspace/types": "workspace:*",
@@ -23,6 +23,8 @@
     "@workspace/observability": "workspace:*",
     "lucide-react": "^0.475.0",
     "next": "^15.4.5",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.8.0",
     "next-themes": "^0.4.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

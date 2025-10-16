@@ -110,7 +110,7 @@ export {
 // ============================================
 export type CreateTaskInput = Omit<
   InsertTask,
-  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+  "id" | "userId" | "createdAt" | "updatedAt"
 >;
 
 export type UpdateTaskInput = Partial<CreateTaskInput>;
@@ -156,7 +156,7 @@ export type DeleteTaskResponse = ApiResponse<{ deleted: true }>;
 // packages/database/src/schema.ts
 export const tasks = pgTable("tasks", {
   id: integer().primaryKey(),
-  clerkUserId: varchar("clerk_user_id").notNull(),
+  userId: varchar("clerk_user_id").notNull(),
   title: varchar({ length: 255 }).notNull(),
   status: taskStatusEnum().default("todo"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -189,7 +189,7 @@ export { createTaskInputSchema };
 // Create input type (omit auto-generated fields)
 export type CreateTaskInput = Omit<
   InsertTask,
-  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+  "id" | "userId" | "createdAt" | "updatedAt"
 >;
 
 // Compose response using generic
@@ -214,7 +214,7 @@ export async function POST(request: Request) {
   // Insert to database
   const [newTask] = await db
     .insert(tasks)
-    .values({ ...validated, clerkUserId: userId })
+    .values({ ...validated, userId: userId })
     .returning();
 
   // Return typed response
@@ -291,7 +291,7 @@ import type { Task, InsertTask } from "@workspace/database/schema";
 // Input type (omits auto-generated fields)
 export type CreateTaskInput = Omit<
   InsertTask,
-  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+  "id" | "userId" | "createdAt" | "updatedAt"
 >;
 
 // List response with extra metadata

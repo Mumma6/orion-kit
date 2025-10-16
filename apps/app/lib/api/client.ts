@@ -4,23 +4,46 @@ interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
 }
 
+function getAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
+
+  // Try to get token from localStorage first
+  const token = localStorage.getItem("auth_token");
+  if (token) return token;
+
+  // Fallback to cookies
+  const cookies = document.cookie.split(";");
+  const authCookie = cookies.find((cookie) =>
+    cookie.trim().startsWith("auth=")
+  );
+  return authCookie ? authCookie.split("=")[1] || null : null;
+}
+
 async function fetcher<T>(
   endpoint: string,
   options: FetchOptions = {}
 ): Promise<T> {
   const { params, ...fetchOptions } = options;
+  const token = getAuthToken();
 
   const url = params
     ? `${API_BASE_URL}${endpoint}?${new URLSearchParams(params).toString()}`
     : `${API_BASE_URL}${endpoint}`;
 
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(fetchOptions.headers as Record<string, string>),
+  };
+
+  // Add auth token to headers if available
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const response = await fetch(url, {
     ...fetchOptions,
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...fetchOptions.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {

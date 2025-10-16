@@ -1,15 +1,15 @@
-import { auth, currentUser } from "@workspace/auth/server";
 import { db, userPreferences, eq } from "@workspace/database";
 import { getSubscription, cancelSubscription } from "@workspace/payment/server";
 import type { SubscriptionResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth";
 
-export const GET = withAxiom(async () => {
+export const GET = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,7 +20,7 @@ export const GET = withAxiom(async () => {
     const preferences = await db
       .select()
       .from(userPreferences)
-      .where(eq(userPreferences.clerkUserId, userId))
+      .where(eq(userPreferences.userId, userId))
       .limit(1);
 
     const userPref = preferences[0];
@@ -80,11 +80,11 @@ export const GET = withAxiom(async () => {
   }
 });
 
-export const DELETE = withAxiom(async () => {
+export const DELETE = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       logger.warn("Unauthorized access to DELETE /subscription");
@@ -96,7 +96,7 @@ export const DELETE = withAxiom(async () => {
     const preferences = await db
       .select()
       .from(userPreferences)
-      .where(eq(userPreferences.clerkUserId, userId))
+      .where(eq(userPreferences.userId, userId))
       .limit(1);
 
     const userPref = preferences[0];
@@ -116,7 +116,7 @@ export const DELETE = withAxiom(async () => {
         stripeSubscriptionStatus: "canceled",
         updatedAt: new Date(),
       })
-      .where(eq(userPreferences.clerkUserId, userId));
+      .where(eq(userPreferences.userId, userId));
 
     const duration = Date.now() - startTime;
     logger.info("Subscription canceled", {

@@ -6,7 +6,7 @@ export type { UserPreference } from "@workspace/database/schema";
 export { updateUserPreferencesSchema } from "@workspace/database/schema";
 
 export type UpdatePreferencesInput = Partial<
-  Omit<UserPreference, "id" | "clerkUserId" | "createdAt" | "updatedAt">
+  Omit<UserPreference, "id" | "userId" | "createdAt" | "updatedAt">
 >;
 
 export type PreferencesResponse = ApiResponse<UserPreference>;

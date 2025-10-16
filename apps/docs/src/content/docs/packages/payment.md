@@ -233,13 +233,13 @@ export async function POST(request: Request) {
       await db
         .update(userPreferences)
         .set(data)
-        .where(eq(userPreferences.clerkUserId, data.userId));
+        .where(eq(userPreferences.userId, data.userId));
     },
     cancelUserSubscription: async (userId) => {
       await db
         .update(userPreferences)
         .set({ plan: "free" })
-        .where(eq(userPreferences.clerkUserId, userId));
+        .where(eq(userPreferences.userId, userId));
     },
   });
 

@@ -10,7 +10,7 @@ export {
 
 export type CreateTaskInput = Omit<
   InsertTask,
-  "id" | "clerkUserId" | "createdAt" | "updatedAt"
+  "id" | "userId" | "createdAt" | "updatedAt"
 >;
 
 export type UpdateTaskInput = Partial<CreateTaskInput>;

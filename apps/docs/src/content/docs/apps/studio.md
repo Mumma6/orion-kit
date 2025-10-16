@@ -109,10 +109,10 @@ DATABASE_URL=postgresql://username:password@host:port/database
 
 ### **Tables Overview**
 
-| Table              | Purpose         | Key Fields                                |
-| ------------------ | --------------- | ----------------------------------------- |
-| `tasks`            | Task management | `id`, `title`, `status`, `clerkUserId`    |
-| `user_preferences` | User settings   | `clerkUserId`, `plan`, `stripeCustomerId` |
+| Table              | Purpose         | Key Fields                           |
+| ------------------ | --------------- | ------------------------------------ |
+| `tasks`            | Task management | `id`, `title`, `status`, `userId`    |
+| `user_preferences` | User settings   | `userId`, `plan`, `stripeCustomerId` |
 
 ### **Tasks Table**
 
@@ -220,18 +220,18 @@ export async function seedDatabase() {
       title: "Setup project",
       description: "Initialize Orion Kit project",
       status: "completed",
-      clerkUserId: "user_123",
+      userId: "user_123",
     },
     {
       title: "Add authentication",
       description: "Integrate Clerk authentication",
       status: "in-progress",
-      clerkUserId: "user_123",
+      userId: "user_123",
     },
   ]);
 
   await db.insert(userPreferences).values({
-    clerkUserId: "user_123",
+    userId: "user_123",
     plan: "free",
     defaultStatus: "todo",
   });

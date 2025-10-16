@@ -1,10 +1,10 @@
-import { auth, currentUser } from "@workspace/auth/server";
 import { db, tasks, eq } from "@workspace/database";
 import { updateTaskInputSchema } from "@workspace/types";
 import type { UpdateTaskResponse } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
+import { getCurrentUser } from "@/lib/auth";
 import { z } from "zod";
 
 const taskIdSchema = z.object({
@@ -19,7 +19,7 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       logger.warn("Unauthorized access to PUT /tasks/:id");
@@ -65,7 +65,7 @@ export const PUT = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    if (existingTask.clerkUserId !== userId) {
+    if (existingTask.userId !== userId) {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
         { status: 403 }
@@ -111,7 +111,7 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       logger.warn("Unauthorized access to PATCH /tasks/:id");
@@ -157,7 +157,7 @@ export const PATCH = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    if (existingTask.clerkUserId !== userId) {
+    if (existingTask.userId !== userId) {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
         { status: 403 }
@@ -204,7 +204,7 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -239,7 +239,7 @@ export const DELETE = withAxiom(async (req, context: RouteContext) => {
       );
     }
 
-    if (existingTask.clerkUserId !== userId) {
+    if (existingTask.userId !== userId) {
       return NextResponse.json(
         { success: false, error: "Forbidden" },
         { status: 403 }

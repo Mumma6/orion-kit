@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     const [task] = await db
       .insert(tasks)
-      .values({ ...validated, clerkUserId: userId })
+      .values({ ...validated, userId: userId })
       .returning();
 
     return NextResponse.json({ success: true, data: task });

@@ -2,15 +2,18 @@ import { NextResponse } from "next/server";
 import type { NextFetchEvent, NextRequest } from "next/server";
 import { transformMiddlewareRequest } from "@axiomhq/nextjs";
 import { logger } from "@workspace/observability/server";
+import { getUserId } from "./lib/auth";
 
-export function middleware(req: NextRequest, event: NextFetchEvent) {
+export async function middleware(req: NextRequest, event: NextFetchEvent) {
+  const origin = process.env.NEXT_PUBLIC_APP_URL!;
+
   // Handle CORS preflight requests FIRST - before any auth checks
   if (req.method === "OPTIONS") {
     return new NextResponse(null, {
       status: 200,
       headers: {
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "https://orion-kit-app.vercel.app",
+        "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET,DELETE,PATCH,POST,PUT,OPTIONS",
         "Access-Control-Allow-Headers":
           "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, Cookie",
@@ -19,14 +22,37 @@ export function middleware(req: NextRequest, event: NextFetchEvent) {
     });
   }
 
+  // Check if this is a protected route
+  const protectedRoutes = [
+    "/tasks",
+    "/preferences",
+    "/subscription",
+    "/checkout",
+    "/billing-portal",
+  ];
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    req.nextUrl.pathname.startsWith(route)
+  );
+
+  if (isProtectedRoute) {
+    const userId = await getUserId(req);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Allow-Origin": origin,
+        },
+      });
+    }
+  }
+
   // For all other requests, add CORS headers
   const res = NextResponse.next();
 
   res.headers.append("Access-Control-Allow-Credentials", "true");
-  res.headers.append(
-    "Access-Control-Allow-Origin",
-    "https://orion-kit-app.vercel.app"
-  );
+  res.headers.append("Access-Control-Allow-Origin", origin);
   res.headers.append(
     "Access-Control-Allow-Methods",
     "GET,DELETE,PATCH,POST,PUT,OPTIONS"

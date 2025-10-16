@@ -30,14 +30,11 @@ pnpm db:studio
 import { db, tasks, userPreferences, eq } from "@workspace/database";
 
 // Query
-const userTasks = await db
-  .select()
-  .from(tasks)
-  .where(eq(tasks.clerkUserId, userId));
+const userTasks = await db.select().from(tasks).where(eq(tasks.userId, userId));
 
 // Insert
 await db.insert(tasks).values({
-  clerkUserId: userId,
+  userId: userId,
   title: "Deploy",
   status: "todo",
 });
@@ -46,7 +43,7 @@ await db.insert(tasks).values({
 await db
   .update(userPreferences)
   .set({ theme: "dark" })
-  .where(eq(userPreferences.clerkUserId, userId));
+  .where(eq(userPreferences.userId, userId));
 ```
 
 ## Validation with Drizzle-Zod
@@ -62,7 +59,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 // 1. Define Drizzle table
 export const tasks = pgTable("tasks", {
   id: integer().primaryKey(),
-  clerkUserId: varchar({ length: 255 }).notNull(),
+  userId: varchar({ length: 255 }).notNull(),
   title: varchar({ length: 255 }).notNull(),
   status: varchar({ length: 50 }).notNull().default("todo"),
 });
@@ -77,7 +74,7 @@ export const createTaskInputSchema = createInsertSchema(tasks, {
   status: (schema) => schema.regex(/^(todo|in-progress|completed)$/),
 }).omit({
   id: true,
-  clerkUserId: true,
+  userId: true,
 });
 ```
 
@@ -99,7 +96,7 @@ const validated = createTaskInputSchema.parse(userInput);
 // Insert validated data
 await db.insert(tasks).values({
   ...validated,
-  clerkUserId: userId,
+  userId: userId,
 });
 ```
 

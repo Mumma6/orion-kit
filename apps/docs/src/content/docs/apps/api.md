@@ -168,16 +168,13 @@ import { db, tasks, userPreferences } from "@workspace/database";
 import { eq } from "drizzle-orm";
 
 // Get user's tasks
-const userTasks = await db
-  .select()
-  .from(tasks)
-  .where(eq(tasks.clerkUserId, userId));
+const userTasks = await db.select().from(tasks).where(eq(tasks.userId, userId));
 
 // Update user preferences
 await db
   .update(userPreferences)
   .set({ plan: "pro" })
-  .where(eq(userPreferences.clerkUserId, userId));
+  .where(eq(userPreferences.userId, userId));
 ```
 
 ## Validation

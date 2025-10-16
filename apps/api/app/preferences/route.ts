@@ -1,4 +1,3 @@
-import { auth, currentUser } from "@workspace/auth/server";
 import {
   db,
   userPreferences,
@@ -12,12 +11,13 @@ import type {
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
+import { getCurrentUser } from "@/lib/auth";
 
-export const GET = withAxiom(async () => {
+export const GET = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,7 +28,7 @@ export const GET = withAxiom(async () => {
     const preferences = await db
       .select()
       .from(userPreferences)
-      .where(eq(userPreferences.clerkUserId, userId))
+      .where(eq(userPreferences.userId, userId))
       .limit(1);
 
     const userPref = preferences[0];
@@ -36,7 +36,7 @@ export const GET = withAxiom(async () => {
     if (!userPref) {
       const [newPref] = await db
         .insert(userPreferences)
-        .values({ clerkUserId: userId })
+        .values({ userId: userId })
         .returning();
 
       if (!newPref) {
@@ -76,7 +76,7 @@ export const PUT = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
+    const user = await getCurrentUser(req);
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -97,7 +97,7 @@ export const PUT = withAxiom(async (req) => {
     const existing = await db
       .select()
       .from(userPreferences)
-      .where(eq(userPreferences.clerkUserId, userId))
+      .where(eq(userPreferences.userId, userId))
       .limit(1);
 
     const result = existing[0]
@@ -107,12 +107,12 @@ export const PUT = withAxiom(async (req) => {
             ...validatedData,
             updatedAt: new Date(),
           })
-          .where(eq(userPreferences.clerkUserId, userId))
+          .where(eq(userPreferences.userId, userId))
           .returning()
       : await db
           .insert(userPreferences)
           .values({
-            clerkUserId: userId,
+            userId: userId,
             ...validatedData,
           })
           .returning();

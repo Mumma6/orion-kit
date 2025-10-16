@@ -20,12 +20,12 @@ const dbAdapter: WebhookDatabaseAdapter = {
     const existing = await db
       .select()
       .from(userPreferences)
-      .where(eq(userPreferences.clerkUserId, data.userId))
+      .where(eq(userPreferences.userId, data.userId))
       .limit(1);
 
     if (existing.length === 0) {
       await db.insert(userPreferences).values({
-        clerkUserId: data.userId,
+        userId: data.userId,
         plan: data.plan,
         stripeCustomerId: data.stripeCustomerId,
         stripeSubscriptionId: data.stripeSubscriptionId,
@@ -51,7 +51,7 @@ const dbAdapter: WebhookDatabaseAdapter = {
           stripeCurrentPeriodEnd: data.stripeCurrentPeriodEnd,
           updatedAt: new Date(),
         })
-        .where(eq(userPreferences.clerkUserId, data.userId));
+        .where(eq(userPreferences.userId, data.userId));
 
       logger.info("Subscription updated in database", {
         userId: data.userId,
@@ -69,7 +69,7 @@ const dbAdapter: WebhookDatabaseAdapter = {
         stripeSubscriptionStatus: "canceled",
         updatedAt: new Date(),
       })
-      .where(eq(userPreferences.clerkUserId, userId));
+      .where(eq(userPreferences.userId, userId));
 
     logger.info("Subscription canceled in database", { userId });
   },

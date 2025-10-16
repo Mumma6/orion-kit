@@ -1,4 +1,3 @@
-import { auth, currentUser } from "@workspace/auth/server";
 import { db, tasks, eq, desc, userPreferences } from "@workspace/database";
 import { createTaskInputSchema } from "@workspace/types";
 import type {
@@ -9,6 +8,7 @@ import type {
 import { withAxiom, logger } from "@workspace/observability";
 import { NextResponse } from "next/server";
 import { validationErrorResponse } from "@/lib/validation";
+import { getCurrentUser } from "@/lib/auth";
 
 function getStatusCount(userTasks: TasksListResponse["data"]) {
   const filterStatus = (status: Task["status"]) =>
@@ -20,24 +20,23 @@ function getStatusCount(userTasks: TasksListResponse["data"]) {
   };
 }
 
-export const GET = withAxiom(async () => {
-  console.log("GET /tasks");
+export const GET = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
-    console.log("user", user);
-    const userId = user?.id;
+    const user = await getCurrentUser(req);
 
-    if (!userId) {
+    if (!user) {
       logger.warn("Unauthorized access to GET /tasks");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = user.id;
+
     const userTasks = await db
       .select()
       .from(tasks)
-      .where(eq(tasks.clerkUserId, userId))
+      .where(eq(tasks.userId, userId))
       .orderBy(desc(tasks.createdAt));
 
     const duration = Date.now() - startTime;
@@ -54,7 +53,7 @@ export const GET = withAxiom(async () => {
       data: userTasks,
       total: userTasks.length,
       userId,
-      userName: `${user?.given_name || ""} ${user?.family_name || ""}`.trim(),
+      userName: ``.trim(),
       completed,
       inProgress,
       todo,
@@ -71,16 +70,17 @@ export const POST = withAxiom(async (req) => {
   const startTime = Date.now();
 
   try {
-    const user = await currentUser();
-    const userId = user?.id;
+    const user = await getCurrentUser(req);
 
-    if (!userId) {
+    if (!user) {
       logger.warn("Unauthorized access to POST /tasks");
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }
       );
     }
+
+    const userId = user.id;
 
     const body = await req.json();
 
@@ -95,7 +95,7 @@ export const POST = withAxiom(async (req) => {
     const userPreferencesStatus = await db
       .select({ defaultTaskStatus: userPreferences.defaultTaskStatus })
       .from(userPreferences)
-      .where(eq(userPreferences.clerkUserId, userId))
+      .where(eq(userPreferences.userId, userId))
       .limit(1);
 
     const defaultTaskStatus =
@@ -104,7 +104,7 @@ export const POST = withAxiom(async (req) => {
     const newTasks = await db
       .insert(tasks)
       .values({
-        clerkUserId: userId,
+        userId: userId,
         ...validatedData,
         status: defaultTaskStatus,
       })

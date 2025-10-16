@@ -83,7 +83,7 @@ describe("Database Schemas", () => {
   describe("insertUserPreferenceSchema", () => {
     it("should validate valid user preferences", () => {
       const validInput = {
-        clerkUserId: "user_123",
+        userId: "user_123",
         theme: "dark",
         language: "en",
       };
@@ -92,7 +92,7 @@ describe("Database Schemas", () => {
       expect(result.success).toBe(true);
     });
 
-    it("should require clerkUserId", () => {
+    it("should require userId", () => {
       const invalidInput = {
         theme: "dark",
       };

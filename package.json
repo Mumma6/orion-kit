@@ -27,6 +27,7 @@
     "db:studio": "pnpm --filter studio dev",
     "db:check": "pnpm --filter @workspace/database db:check",
     "db:seed": "pnpm --filter @workspace/database db:seed",
+    "auth:generate": "pnpm --filter @workspace/database auth:generate",
     "stripe:listen-dev": "stripe listen --forward-to localhost:3002/webhooks/stripe",
     "typecheck": "turbo typecheck",
     "prepare": "husky"
