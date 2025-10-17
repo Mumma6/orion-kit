@@ -5,8 +5,13 @@
   "private": true,
   "exports": {
     "./base": "./base.js",
+    "./library": "./library.js",
+    "./node": "./node.js",
     "./next-js": "./next.js",
     "./react-internal": "./react-internal.js"
+  },
+  "dependencies": {
+    "globals": "^15.15.0"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.4.5",
@@ -18,7 +23,6 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-turbo": "^2.5.5",
-    "globals": "^15.15.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.0"
   }

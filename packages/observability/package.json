@@ -30,8 +30,10 @@
     "react": "^19.1.1"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "typescript": "^5.3.3"
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "@types/node": "^20.19.9",
+    "typescript": "^5.9.2"
   }
 }
 

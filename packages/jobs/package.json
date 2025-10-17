@@ -1,16 +1,26 @@
 {
   "name": "@workspace/jobs",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
+  "exports": {
+    ".": "./trigger/example.ts",
+    "./trigger/example": "./trigger/example.ts",
+    "./trigger/schedule": "./trigger/schedule.ts"
+  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "lint": "biome check .",
+    "lint": "eslint . --max-warnings 0",
     "jobs": "npx trigger.dev@latest dev",
-    "format": "biome format --write .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@trigger.dev/sdk": "4.0.4",
     "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "typescript": "^5.9.2"
   }
 }

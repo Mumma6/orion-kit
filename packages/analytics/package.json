@@ -1,9 +1,15 @@
 {
   "name": "@workspace/analytics",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
+  "exports": {
+    ".": "./src/provider.tsx",
+    "./src/provider": "./src/provider.tsx"
+  },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
@@ -15,12 +21,17 @@
     "react": "19.2.0",
     "server-only": "^0.0.1",
     "dotenv": "^16.4.7"
- 
   },
   "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "@types/node": "24.7.0",
-    "@types/react": "19.2.1",
-    "@types/react-dom": "19.2.0"
+    "@types/node": "^20.19.9",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
   }
 }
