@@ -3,12 +3,11 @@ title: Main Application
 description: User dashboard with tasks, billing, analytics, and settings
 ---
 
-The main application (`apps/app`) is the user-facing dashboard where users manage their tasks, view analytics, handle billing, and configure settings.
+The main application (`apps/app`) is the user-facing dashboard for task management, analytics, billing, and settings.
 
-**Purpose**: User dashboard and task management interface  
 **Framework**: Next.js 15 with App Router  
 **Port**: `3001` (development)  
-**Authentication**: Clerk client-side integration  
+**Authentication**: Custom JWT with httpOnly cookies  
 **Styling**: Tailwind CSS with shadcn/ui components
 
 ## Structure
@@ -23,8 +22,8 @@ apps/app/
 │   │   ├── tasks/page.tsx         # Task management
 │   │   ├── layout.tsx             # Dashboard layout
 │   │   └── page.tsx               # Dashboard home
-│   ├── sign-in/[[...sign-in]]/    # Clerk sign-in pages
-│   ├── sign-up/[[...sign-up]]/    # Clerk sign-up pages
+│   ├── sign-in/page.tsx           # Sign-in page
+│   ├── sign-up/page.tsx           # Sign-up page
 │   ├── error.tsx                  # Error boundary
 │   ├── global-error.tsx           # Global error handler
 │   ├── layout.tsx                 # Root layout
@@ -52,60 +51,49 @@ apps/app/
 
 ### **Dashboard Home** (`/dashboard`)
 
-Main dashboard with overview stats and recent activity:
-
-- **Welcome message** with user's first name
-- **Task statistics** (total, completed, in progress, todo)
-- **Recent tasks** preview with status indicators
-- **Quick actions** to create new tasks
+- Welcome message with user's first name
+- Task statistics (total, completed, in progress, todo)
+- Recent tasks preview with status indicators
+- Quick actions to create new tasks
 
 ### **Tasks** (`/dashboard/tasks`)
 
-Full task management interface:
-
-- **Task list** with filtering and search
-- **Status management** (todo, in-progress, completed)
-- **Create task** dialog with form validation
-- **Edit task** sheet with inline editing
-- **Delete tasks** with confirmation
-- **Task statistics** and progress tracking
+- Task list with filtering and search
+- Status management (todo, in-progress, completed)
+- Create task dialog with form validation
+- Edit task sheet with inline editing
+- Delete tasks with confirmation
+- Task statistics and progress tracking
 
 ### **Analytics** (`/dashboard/analytics`)
 
-Productivity analytics and insights:
-
-- **Task completion rate** over time
-- **Weekly/monthly statistics**
-- **Status breakdown** with visual charts
-- **Recent activity** timeline
-- **Productivity insights** and trends
+- Task completion rate over time
+- Weekly/monthly statistics
+- Status breakdown with visual charts
+- Recent activity timeline
+- Productivity insights and trends
 
 ### **Billing** (`/dashboard/billing`)
 
-Subscription and payment management:
-
-- **Current plan** display with features
-- **Pricing cards** for plan upgrades
-- **Stripe Checkout** integration
-- **Billing portal** for subscription management
-- **Webhook status** indicator
-- **Payment history** and invoices
+- Current plan display with features
+- Pricing cards for plan upgrades
+- Stripe Checkout integration
+- Billing portal for subscription management
+- Webhook status indicator
+- Payment history and invoices
 
 ### **Settings** (`/dashboard/settings`)
 
-User preferences and configuration:
-
-- **Profile management** (name, email, avatar)
-- **Task preferences** (default status, notifications)
-- **Notification settings** (email, reminders, digest)
-- **Account settings** and preferences
+- Profile management (name, email, avatar)
+- Task preferences (default status, notifications)
+- Notification settings (email, reminders, digest)
+- Account settings and preferences
 
 ## Components
 
 ### **Dashboard Layout**
 
 ```typescript
-// apps/app/components/dashboard/index.tsx
 export function DashboardContent({ user }: DashboardContentProps) {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -120,7 +108,6 @@ export function DashboardContent({ user }: DashboardContentProps) {
 ### **Task Management**
 
 ```typescript
-// apps/app/components/tasks/index.tsx
 export function TasksContent() {
   const { data: tasks, isLoading, error } = useTasks();
   const createTask = useCreateTask();
@@ -145,7 +132,6 @@ export function TasksContent() {
 ### **Billing Interface**
 
 ```typescript
-// apps/app/components/billing/index.tsx
 export function BillingContent() {
   const { data: subscription } = useSubscription();
   const checkout = useCheckout();
@@ -173,7 +159,6 @@ export function BillingContent() {
 Uses TanStack Query for server state management:
 
 ```typescript
-// apps/app/hooks/use-tasks.ts
 export function useTasks() {
   return useQuery({
     queryKey: ["tasks"],
@@ -203,7 +188,6 @@ export function useCreateTask() {
 Uses React Hook Form with Zod validation:
 
 ```typescript
-// apps/app/components/tasks/create-task-dialog.tsx
 export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
   const form = useForm<CreateTaskInput>({
     resolver: zodResolver(createTaskInputSchema),
@@ -254,7 +238,6 @@ export function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) 
 Comprehensive error handling with fallbacks:
 
 ```typescript
-// apps/app/components/error-fallback.tsx
 export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
@@ -275,38 +258,35 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
 
 ## Authentication
 
-Clerk integration for user management:
+Custom JWT authentication with automatic login after registration:
 
 ```typescript
-// apps/app/app/dashboard/layout.tsx
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { userId } = await auth();
+export function useRegister() {
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
-  if (!userId) {
-    redirect('/sign-in');
-  }
-
-  return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-      <main className="flex-1 overflow-hidden">
-        <DashboardHeader />
-        {children}
-      </main>
-    </div>
-  );
+  return useMutation({
+    mutationFn: async (input: RegisterInput) => {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+        credentials: "include",
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: authKeys.user() });
+      router.push("/dashboard");
+    },
+  });
 }
 ```
 
 ## Environment Variables
 
 ```bash
-# apps/app/.env.local
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 NEXT_PUBLIC_API_URL=http://localhost:3002
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...
@@ -330,15 +310,12 @@ Application runs on `http://localhost:3001`
 
 1. Visit `http://localhost:3001`
 2. Redirected to `/sign-in` if not authenticated
-3. Sign in with Clerk
-4. Redirected to `/dashboard` after authentication
+3. Sign in with email/password or register new account
+4. Automatically redirected to `/dashboard` after authentication
 
 ### **API Integration**
 
-The app communicates with the API server:
-
 ```typescript
-// apps/app/lib/api/client.ts
 const api = {
   get: <T>(endpoint: string) =>
     fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`).then((res) =>
@@ -367,7 +344,6 @@ vercel --prod
 
 Set production environment variables in Vercel:
 
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk publishable key
 - `NEXT_PUBLIC_API_URL` - Production API URL
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
 - `NEXT_PUBLIC_STRIPE_PRICE_ID_PRO` - Pro plan price ID
@@ -376,11 +352,7 @@ Set production environment variables in Vercel:
 
 ### **Custom Domain**
 
-Configure custom domain in Vercel:
-
-```
-app.orion-kit.dev → Main application
-```
+Configure custom domain in Vercel: `app.orion-kit.dev`
 
 ## Performance
 
@@ -389,7 +361,6 @@ app.orion-kit.dev → Main application
 Automatic code splitting with Next.js App Router:
 
 ```typescript
-// Lazy load heavy components
 const AnalyticsChart = lazy(() => import('./analytics-chart'));
 
 export function AnalyticsPage() {

@@ -30,13 +30,13 @@ pnpm dev
 
 **Required accounts** (all have generous free tiers):
 
-| Service                        | Purpose        | Free Tier |
-| ------------------------------ | -------------- | --------- |
-| [Clerk](https://clerk.com)     | Authentication | 10k users |
-| [Neon](https://neon.tech)      | Database       | 0.5GB     |
-| [Stripe](https://stripe.com)   | Payments       | No fees   |
-| [PostHog](https://posthog.com) | Analytics      | 1M events |
-| [Axiom](https://axiom.co)      | Logging        | 500MB/mo  |
+| Service                        | Purpose   | Free Tier |
+| ------------------------------ | --------- | --------- |
+| [Neon](https://neon.tech)      | Database  | 0.5GB     |
+| [Stripe](https://stripe.com)   | Payments  | No fees   |
+| [Resend](https://resend.com)   | Email     | 3k emails |
+| [PostHog](https://posthog.com) | Analytics | 1M events |
+| [Axiom](https://axiom.co)      | Logging   | 500MB/mo  |
 
 ## 🛠️ Environment Setup
 
@@ -53,10 +53,6 @@ cp packages/database/.env.example packages/database/.env
 **`apps/app/.env.local`:**
 
 ```bash
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
 # API
 NEXT_PUBLIC_API_URL=http://localhost:3002
 
@@ -71,16 +67,19 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 **`apps/api/.env.local`:**
 
 ```bash
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
 # Database
 DATABASE_URL=postgresql://...
+
+# JWT Authentication
+AUTH_JWT_SECRET=your-jwt-secret-key-here
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Email (Resend)
+RESEND_API_KEY=re_...
+FROM_EMAIL=onboarding@resend.dev
 
 # Axiom
 AXIOM_TOKEN=xaat-...
@@ -95,9 +94,10 @@ DATABASE_URL=postgresql://...
 
 ## 🎯 What's Included
 
-- 🔐 **Authentication** - Clerk with protected routes
+- 🔐 **Authentication** - Custom JWT with protected routes
 - 🗄️ **Database** - Neon Postgres + Drizzle ORM
 - 💳 **Payments** - Stripe subscriptions + webhooks
+- 📧 **Email** - Resend with React Email templates
 - 🎨 **UI** - Shadcn/ui + Tailwind CSS v4
 - 📊 **Analytics** - PostHog + Axiom logging
 - ⚡ **Jobs** - Trigger.dev background tasks
@@ -115,16 +115,17 @@ DATABASE_URL=postgresql://...
 | `api`  | 3002 | API backend            |
 | `docs` | 3004 | Documentation          |
 
-| Package                    | Description                      |
-| -------------------------- | -------------------------------- |
-| `@workspace/auth`          | Clerk authentication             |
-| `@workspace/database`      | Drizzle ORM + Neon + Zod schemas |
-| `@workspace/types`         | Shared TypeScript types          |
-| `@workspace/ui`            | Shadcn/ui + Radix UI components  |
-| `@workspace/payment`       | Stripe payments + subscriptions  |
-| `@workspace/analytics`     | PostHog + Vercel Analytics       |
-| `@workspace/observability` | Axiom logging + Web Vitals       |
-| `@workspace/jobs`          | Trigger.dev background jobs      |
+| Package                    | Description                          |
+| -------------------------- | ------------------------------------ |
+| `@workspace/auth`          | JWT authentication + user management |
+| `@workspace/database`      | Drizzle ORM + Neon + Zod schemas     |
+| `@workspace/email`         | Resend + React Email templates       |
+| `@workspace/types`         | Shared TypeScript types              |
+| `@workspace/ui`            | Shadcn/ui + Radix UI components      |
+| `@workspace/payment`       | Stripe payments + subscriptions      |
+| `@workspace/analytics`     | PostHog + Vercel Analytics           |
+| `@workspace/observability` | Axiom logging + Web Vitals           |
+| `@workspace/jobs`          | Trigger.dev background jobs          |
 
 ## 🚀 Commands
 
@@ -141,7 +142,7 @@ pnpm build             # Build for production
 Need more? We've got guides for popular integrations:
 
 - **[AI Features](http://localhost:3004/reference/integrations/ai/)** - OpenAI, streaming, chat
-- **[Email](http://localhost:3004/reference/integrations/email/)** - Resend, transactional emails
+- **[Email](http://localhost:3004/reference/integrations/email/)** - Resend, already included!
 - **[File Uploads](http://localhost:3004/reference/integrations/file-uploads/)** - UploadThing, S3
 - **[i18n](http://localhost:3004/reference/integrations/i18n/)** - next-intl, translations
 - **[CMS](http://localhost:3004/reference/integrations/cms/)** - Sanity, Contentful
@@ -156,6 +157,7 @@ Need more? We've got guides for popular integrations:
 | "Unauthorized"   | Sign in at http://localhost:3001/sign-in      |
 | CORS errors      | Check `NEXT_PUBLIC_API_URL` in app/.env.local |
 | DB connection    | Verify `DATABASE_URL` uses pooled connection  |
+| Email not sent   | Check `RESEND_API_KEY` and `FROM_EMAIL`       |
 | Missing env vars | Check all services are configured             |
 
 ## 📚 Documentation

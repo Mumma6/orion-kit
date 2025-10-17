@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import type {
-  AuthUser,
   AuthResponse,
   LoginInput,
   RegisterInput,
@@ -23,7 +22,6 @@ async function fetchAuthUser(): Promise<AuthResponse> {
     "Content-Type": "application/json",
   };
 
-  // Add auth token to headers if available
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
@@ -88,6 +86,9 @@ export function useLogin() {
 }
 
 export function useRegister() {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
   return useMutation({
     mutationFn: async (input: RegisterInput): Promise<RegisterResponse> => {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -104,6 +105,13 @@ export function useRegister() {
       }
 
       return response.json();
+    },
+    onSuccess: () => {
+      // Invalidate and refetch user data
+      queryClient.invalidateQueries({ queryKey: authKeys.user() });
+
+      // Redirect to dashboard
+      router.push("/dashboard");
     },
   });
 }

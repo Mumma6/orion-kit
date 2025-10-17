@@ -5,31 +5,12 @@ description: Custom JWT-based authentication without vendor lock-in
 
 Orion Kit provides a **custom JWT-based authentication system** out of the box, designed to be simple, secure, and vendor-neutral. The boilerplate intentionally avoids vendor lock-in from the start, making it easy to integrate any authentication provider you prefer.
 
-## Why Start Vendor-Neutral?
+## Why Custom JWT?
 
-### 🎯 **Boilerplate Philosophy:**
-
-- **No vendor lock-in** - Start with full control and migrate to any provider later
-- **Easy integration** - Simple to add Clerk, Auth0, Supabase Auth, or any provider
-- **Learning-friendly** - Understand authentication fundamentals without abstraction layers
-- **Cost-effective** - No monthly fees while building and testing
-- **Privacy-first** - All user data stays in your database by default
-
-### 🔄 **Migration Path:**
-
-Orion Kit's architecture makes it trivial to switch authentication providers:
-
-```typescript
-// Current: Custom JWT (included)
-const user = await getCurrentUser(req);
-
-// Easy migration to any provider:
-// const user = await clerk.auth().getUser(req);
-// const user = await auth0.getUser(req);
-// const user = await supabase.auth.getUser(req);
-```
-
-The database schema, API routes, and frontend components remain unchanged regardless of your auth provider choice.
+- **No vendor lock-in** - Full control, migrate to any provider later
+- **Cost-effective** - No monthly fees while building
+- **Learning-friendly** - Understand auth fundamentals
+- **Privacy-first** - All user data stays in your database
 
 ## How It Works
 
@@ -125,15 +106,6 @@ CREATE TABLE tasks (
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
-```
-
-### ❌ **Removed OAuth Tables:**
-
-```sql
--- These were NOT used (OAuth leftovers):
--- accounts (OAuth providers like Google, GitHub)
--- sessions (session management)
--- verification_tokens (email verification)
 ```
 
 ## API Routes
@@ -249,131 +221,44 @@ if (isProtectedRoute) {
 }
 ```
 
-## Integration Options
+## Migration to Cloud Providers
 
-### **Option 1: Keep Custom JWT (Recommended for MVP)**
+When ready for advanced features, easily migrate to:
 
-- **Cost**: $0/month - Perfect for bootstrapping
-- **Control**: Complete ownership of auth logic
-- **Features**: Login, register, JWT tokens, httpOnly cookies
-- **Best for**: MVPs, prototypes, and learning
-
-### **Option 2: Add Cloud Provider Later**
-
-When you're ready for advanced features:
-
-- **Clerk**: $25/month - Great UI components and user management
-- **Auth0**: $23/month - Enterprise features and compliance
-- **Supabase Auth**: $25/month - Open source with Row Level Security
-- **Firebase Auth**: Pay per user - Google ecosystem integration
-
-### **Migration Benefits:**
-
-- **Database stays the same** - No schema changes needed
-- **API routes unchanged** - Same authentication patterns
-- **Gradual migration** - Switch one feature at a time
-- **Zero downtime** - Maintain existing user sessions
-
-## Adding Authentication Providers
-
-### **Adding Clerk (Example):**
-
-```bash
-# 1. Install Clerk
-pnpm add @clerk/nextjs
-
-# 2. Update environment variables
-# Add to .env.local:
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
-# 3. Replace auth function
-# In API routes:
-import { auth } from "@clerk/nextjs";
-const { userId } = await auth();
-```
-
-### **Adding Auth0 (Example):**
-
-```bash
-# 1. Install Auth0
-pnpm add @auth0/nextjs-auth0
-
-# 2. Update environment variables
-# Add to .env.local:
-AUTH0_SECRET=your-secret
-AUTH0_BASE_URL=http://localhost:3000
-AUTH0_ISSUER_BASE_URL=https://your-domain.auth0.com
-AUTH0_CLIENT_ID=your-client-id
-AUTH0_CLIENT_SECRET=your-client-secret
-
-# 3. Replace auth function
-# In API routes:
-import { getSession } from "@auth0/nextjs-auth0";
-const session = await getSession(req);
-const user = session?.user;
-```
+- **Clerk**: $25/month - Great UI components
+- **Auth0**: $23/month - Enterprise features
+- **Supabase Auth**: $25/month - Open source
+- **Firebase Auth**: Pay per user
 
 ### **Migration Steps:**
 
 ```bash
-# 1. Install your preferred provider
-pnpm add @clerk/nextjs  # or @auth0/nextjs-auth0, etc.
+# 1. Install provider
+pnpm add @clerk/nextjs
 
-# 2. Update environment variables
-# Add provider-specific keys to .env.local
+# 2. Add environment variables
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
 
-# 3. Update auth imports
-# Replace: import { getCurrentUser } from "@workspace/auth/server"
-# With:    import { auth } from "@clerk/nextjs"
+# 3. Replace auth function
+import { auth } from "@clerk/nextjs";
+const { userId } = await auth();
 
 # 4. Database stays the same!
-# No schema changes needed - users table works with any provider
 ```
 
-## Setup Guide
-
-### **Option 1: Use Built-in JWT Auth (Default)**
+## Setup
 
 ```bash
-# 1. Environment Variables
-# .env.local
+# Environment Variables
 AUTH_JWT_SECRET=your-super-secret-key-min-32-chars
 NEXT_PUBLIC_APP_URL=http://localhost:3001
 NEXT_PUBLIC_API_URL=http://localhost:3002
 DATABASE_URL=postgresql://...
 
-# 2. Start development
+# Start development
 pnpm dev
 # ✅ Auth is ready to use!
-```
-
-### **Option 2: Add Your Preferred Provider**
-
-```bash
-# 1. Install provider
-pnpm add @clerk/nextjs  # or your preferred auth provider
-
-# 2. Add environment variables
-# See provider-specific setup above
-
-# 3. Update auth imports in API routes
-# Replace getCurrentUser() with provider's auth function
-
-# 4. Database stays the same!
-# No migration needed - users table works with any provider
-```
-
-### **Dependencies:**
-
-```bash
-# JWT auth (included):
-jose bcryptjs
-
-# Or add your preferred provider:
-# pnpm add @clerk/nextjs
-# pnpm add @auth0/nextjs-auth0
-# pnpm add @supabase/auth-helpers-nextjs
 ```
 
 ## Common Patterns
@@ -441,74 +326,23 @@ if (!validation.success) {
 }
 ```
 
-## Performance Benefits
+## Performance
 
-### **JWT vs Sessions:**
-
-```typescript
-// JWT: ~0.1ms per request (no database lookup)
-const userId = await verifyToken(req);
-
-// Sessions: ~10-50ms per request (database query)
-const session = await db
-  .select()
-  .from(sessions)
-  .where(eq(sessions.token, token));
-```
-
-### **Serverless Friendly:**
-
-- **Cold starts**: JWT verification is instant
-- **No database connections**: Reduces lambda execution time
+- **JWT**: ~0.1ms per request (no database lookup)
+- **Serverless friendly**: Instant verification, no database connections
 - **Stateless**: Perfect for serverless architecture
 
 ## Best Practices
 
-### **For Custom JWT Auth:**
-
 - ✅ Use strong JWT secrets (32+ characters)
 - ✅ Set appropriate token expiration (7 days)
-- ✅ Validate tokens on every protected route
 - ✅ Use httpOnly cookies for token storage
 - ✅ Hash passwords with bcrypt (salt rounds: 12)
-
-### **When Migrating to Cloud Providers:**
-
-- ✅ **Gradual migration** - Switch one feature at a time
-- ✅ **Keep existing users** - Database schema stays the same
-- ✅ **Test thoroughly** - Verify auth flows work correctly
-- ✅ **Update environment variables** - Add provider keys
-- ✅ **Monitor costs** - Understand pricing before scaling
-
-### **General Guidelines:**
-
 - ❌ Store tokens in localStorage (XSS risk)
 - ❌ Use weak secrets or API keys
-- ❌ Skip authentication validation
-- ❌ Store sensitive data in JWT payloads
-- ❌ Rush migration - take time to test properly
 
 ## Troubleshooting
 
-### **Common Issues:**
-
-```typescript
-// Issue: "Invalid token"
-// Solution: Check JWT secret matches between apps
-const secret = process.env.AUTH_JWT_SECRET;
-
-// Issue: "Token expired"
-// Solution: User needs to login again
-// Or implement refresh token flow
-
-// Issue: "CORS errors"
-// Solution: Check NEXT_PUBLIC_APP_URL in API middleware
-const origin = process.env.NEXT_PUBLIC_APP_URL;
-```
-
-## Further Reading
-
-- [JWT Best Practices](https://auth0.com/blog/a-look-at-the-latest-draft-for-jwt-bcp/)
-- [httpOnly Cookies Security](https://owasp.org/www-community/HttpOnly)
-- [bcrypt Password Hashing](https://auth0.com/blog/hashing-in-action-understanding-bcrypt/)
-- [Next.js Authentication Patterns](https://nextjs.org/docs/authentication)
+- **"Invalid token"**: Check JWT secret matches between apps
+- **"Token expired"**: User needs to login again
+- **"CORS errors"**: Check `NEXT_PUBLIC_APP_URL` in API middleware

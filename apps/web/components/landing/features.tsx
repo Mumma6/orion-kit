@@ -4,6 +4,7 @@ import {
   Sparkles,
   Layers,
   BookOpen,
+  Mail,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,6 +28,12 @@ const features: Feature[] = [
       "Custom JWT authentication, background jobs with Trigger.dev, analytics with PostHog, and logging with Axiom.",
   },
   {
+    icon: Mail,
+    title: "Email System",
+    description:
+      "Resend integration with React Email templates, automatic welcome emails, and database tracking for email delivery.",
+  },
+  {
     icon: Layers,
     title: "Modern Stack",
     description:
@@ -44,7 +51,7 @@ export function Features() {
   return (
     <section className="relative bg-muted/30 py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {features.map((feature) => (
             <Card key={feature.title} className="p-8">
               <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-muted">

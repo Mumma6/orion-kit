@@ -3,111 +3,103 @@ title: Adding Email
 description: Resend for transactional emails
 ---
 
-Transactional emails with **Resend** + **React Email** templates.
+Transactional emails with **Resend** + **React Email** templates. Already included in Orion Kit!
 
 ## Setup
 
 ```bash
-pnpm add resend @react-email/components
-
 # apps/api/.env.local
 RESEND_API_KEY=re_...
-RESEND_FROM_EMAIL=onboarding@resend.dev  # or your domain
+FROM_EMAIL=onboarding@resend.dev  # or your domain
 ```
 
-Get API key from [resend.com](https://resend.com)
+Get API key from [resend.dev](https://resend.dev)
 
-## Email Package
+## Already Included
 
-Create `packages/email/`:
+Orion Kit comes with a complete email package:
 
-**`package.json`:**
-
-```json
-{
-  "name": "@workspace/email",
-  "dependencies": {
-    "resend": "latest",
-    "@react-email/components": "latest"
-  }
-}
-```
-
-## Email Template
-
-`packages/email/src/templates/welcome.tsx`:
-
-```typescript
-import { Html, Button, Container, Heading, Text } from "@react-email/components";
-
-interface WelcomeEmailProps {
-  userName: string;
-  dashboardUrl: string;
-}
-
-export function WelcomeEmail({ userName, dashboardUrl }: WelcomeEmailProps) {
-  return (
-    <Html>
-      <Container>
-        <Heading>Welcome to Orion Kit!</Heading>
-        <Text>Hi {userName}, thanks for signing up!</Text>
-        <Button href={dashboardUrl}>Go to Dashboard</Button>
-      </Container>
-    </Html>
-  );
-}
-```
-
-## Email Service
-
-`packages/email/src/index.ts`:
-
-```typescript
-import { Resend } from "resend";
-import { WelcomeEmail } from "./templates/welcome";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-export async function sendWelcomeEmail({
-  to,
-  userName,
-  dashboardUrl,
-}: {
-  to: string;
-  userName: string;
-  dashboardUrl: string;
-}) {
-  const { data, error } = await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL!,
-    to,
-    subject: "Welcome!",
-    react: WelcomeEmail({ userName, dashboardUrl }),
-  });
-
-  if (error) throw new Error("Failed to send email");
-  return data;
-}
-```
+- ✅ **`@workspace/email`** - Email package with Resend
+- ✅ **Welcome email template** - Beautiful React Email template
+- ✅ **Automatic sending** - Welcome emails on user registration
+- ✅ **Database tracking** - `welcomeMailSent` field in users table
 
 ## Usage
 
 ```typescript
 import { sendWelcomeEmail } from "@workspace/email";
 
-// Fire and forget (don't block requests)
-sendWelcomeEmail({
-  to: user.email,
-  userName: user.name,
-  dashboardUrl: "https://app.com/dashboard",
-}).catch(console.error);
+// Send welcome email (already integrated in registration)
+await sendWelcomeEmail("user@example.com", "John Doe");
 ```
 
-## Production
+## Customizing Templates
 
-1. Verify domain in Resend dashboard
-2. Add DNS records (SPF, DKIM)
-3. Use `no-reply@yourdomain.com`
+Edit `packages/email/src/templates/welcome-email.tsx`:
 
-**Pricing:** Free 3k emails/mo, $20/mo for 50k
+```typescript
+import { Html, Body, Container, Heading, Text } from "@react-email/components";
 
-[Resend docs](https://resend.com/docs) · [React Email](https://react.email/docs)
+export const WelcomeEmail = ({ name }: { name: string }) => (
+  <Html>
+    <Body>
+      <Container>
+        <Heading>Welcome {name}! 🚀</Heading>
+        <Text>Thanks for joining Orion Kit!</Text>
+        <Text>You can now access your dashboard.</Text>
+      </Container>
+    </Body>
+  </Html>
+);
+```
+
+## Adding More Email Types
+
+```typescript
+// packages/email/src/templates/password-reset.tsx
+export const PasswordResetEmail = ({ resetUrl }: { resetUrl: string }) => (
+  <Html>
+    <Body>
+      <Container>
+        <Heading>Reset your password</Heading>
+        <Button href={resetUrl}>Reset Password</Button>
+      </Container>
+    </Body>
+  </Html>
+);
+
+// packages/email/src/client.ts
+export async function sendPasswordResetEmail(email: string, resetUrl: string) {
+  return sendEmail({
+    to: email,
+    subject: "Reset your password",
+    react: PasswordResetEmail({ resetUrl }),
+  });
+}
+```
+
+## Production Setup
+
+1. **Verify domain** in Resend dashboard
+2. **Add DNS records** (SPF, DKIM)
+3. **Update FROM_EMAIL** to your domain:
+   ```bash
+   FROM_EMAIL=hello@yourdomain.com
+   ```
+
+## Pricing
+
+- **Free tier:** 3,000 emails/month
+- **Pro:** $20/month for 50,000 emails
+- **Enterprise:** Custom pricing
+
+## Development vs Production
+
+- **Development:** Use `onboarding@resend.dev` (works immediately)
+- **Production:** Verify your domain for better deliverability
+
+## Resources
+
+- [Resend Documentation](https://resend.dev/docs)
+- [React Email Components](https://react.email/docs)
+- [Email Best Practices](https://resend.dev/docs/send-with-react)

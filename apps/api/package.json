@@ -15,6 +15,7 @@
     "@axiomhq/nextjs": "^0.1.5",
     "@workspace/auth": "workspace:*",
     "@workspace/database": "workspace:*",
+    "@workspace/email": "workspace:*",
     "@workspace/observability": "workspace:*",
     "@workspace/payment": "workspace:*",
     "@workspace/types": "workspace:*",

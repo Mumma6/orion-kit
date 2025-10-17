@@ -7,27 +7,34 @@ import { useRegister } from "@/hooks/use-auth";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { AlertCircle, Loader2, CheckCircle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-const signupSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const signupSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
   const registerMutation = useRegister();
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -47,14 +54,6 @@ export default function SignupPage() {
     });
   };
 
-  // Handle registration success
-  useEffect(() => {
-    if (registerMutation.isSuccess) {
-      setIsSuccess(true);
-      form.reset();
-    }
-  }, [registerMutation.isSuccess, form]);
-
   // Handle registration errors
   useEffect(() => {
     if (registerMutation.isError) {
@@ -63,34 +62,6 @@ export default function SignupPage() {
       });
     }
   }, [registerMutation.isError, registerMutation.error, form]);
-
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-              <CheckCircle className="h-6 w-6 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl">Account created!</CardTitle>
-            <CardDescription>
-              Your account has been created successfully. You can now sign in.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Link href="/login">
-              <Button className="w-full">Sign In</Button>
-            </Link>
-            <div className="text-center">
-              <Link href="/" className="text-sm text-muted-foreground hover:underline">
-                ← Back to home
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -189,14 +160,19 @@ export default function SignupPage() {
           </form>
 
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Already have an account? </span>
+            <span className="text-muted-foreground">
+              Already have an account?{" "}
+            </span>
             <Link href="/login" className="text-primary hover:underline">
               Sign in
             </Link>
           </div>
 
           <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-muted-foreground hover:underline">
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:underline"
+            >
               ← Back to home
             </Link>
           </div>

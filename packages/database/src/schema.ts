@@ -107,6 +107,7 @@ export const users = pgTable("users", {
   emailVerified: boolean("email_verified").default(false),
   image: varchar("image", { length: 255 }),
   password: varchar("password", { length: 255 }),
+  welcomeMailSent: boolean("welcome_mail_sent").default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

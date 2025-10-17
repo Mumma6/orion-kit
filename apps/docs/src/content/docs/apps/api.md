@@ -22,7 +22,8 @@ apps/api/
 │   │   ├── me/route.ts            # Get current user
 │   │   └── register/route.ts      # User registration endpoint
 │   ├── account/
-│   │   └── delete/route.ts        # Delete user account
+│   │   ├── delete/route.ts        # Delete user account
+│   │   └── profile/route.ts       # User profile management
 │   ├── billing-portal/route.ts    # Stripe Customer Portal
 │   ├── checkout/route.ts          # Stripe Checkout Sessions
 │   ├── health/route.ts            # Health check endpoint
@@ -46,6 +47,14 @@ POST /auth/register  # Create new user account
 POST /auth/login     # Sign in with email/password
 GET  /auth/me        # Get current user info
 POST /auth/logout    # Sign out (clear cookie)
+```
+
+### **Account Management**
+
+```http
+GET    /account/profile  # Get user profile
+PATCH  /account/profile  # Update user profile
+DELETE /account/delete   # Delete user account
 ```
 
 **Example Registration:**

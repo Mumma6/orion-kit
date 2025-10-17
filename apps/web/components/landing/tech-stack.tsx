@@ -56,6 +56,11 @@ const techStack: Tech[] = [
     description: "Payment processing for subscriptions and payments.",
   },
   {
+    emoji: "📧",
+    title: "Resend",
+    description: "Transactional emails with React Email templates.",
+  },
+  {
     emoji: "✅",
     title: "Zod",
     description: "Runtime validation and type inference for forms & APIs.",

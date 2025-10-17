@@ -10,6 +10,7 @@ import { RegisterInputSchema } from "@workspace/types";
 import { withAxiom, logger } from "@workspace/observability";
 import { createToken } from "@workspace/auth/server";
 import { formatZodError } from "@/lib/validation";
+import { sendWelcomeEmail } from "@workspace/email";
 
 // @ts-ignore
 import bcrypt from "bcryptjs";
@@ -53,7 +54,13 @@ export const POST = withAxiom(
     const hash = await bcrypt.hash(password, 12);
     const newUsers = await db
       .insert(users)
-      .values({ email, name, password: hash, id: crypto.randomUUID() })
+      .values({
+        email,
+        name,
+        password: hash,
+        id: crypto.randomUUID(),
+        welcomeMailSent: false,
+      })
       .returning();
 
     const newUser = newUsers[0];
@@ -75,6 +82,22 @@ export const POST = withAxiom(
     };
 
     const token = await createToken(authUser);
+
+    const emailResult = await sendWelcomeEmail(email, name);
+    if (emailResult.success) {
+      await db
+        .update(users)
+        .set({ welcomeMailSent: true })
+        .where(eq(users.id, newUser.id));
+
+      logger.info("Welcome email sent", { userId: newUser.id, email });
+    } else {
+      logger.warn("Failed to send welcome email", {
+        userId: newUser.id,
+        email,
+        error: emailResult.error,
+      });
+    }
 
     const duration = Date.now() - startTime;
     logger.info("User registered", {

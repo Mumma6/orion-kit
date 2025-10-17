@@ -95,7 +95,7 @@ const features: Feature[] = [
   {
     icon: Shield,
     title: 'Authentication',
-    description: 'Clerk integration with sign-in, sign-up, and user management',
+    description: 'Custom JWT authentication with automatic login after registration',
   },
   {
     icon: CreditCard,
@@ -173,8 +173,8 @@ const technologies: Tech[] = [
   },
   {
     emoji: '🔐',
-    title: 'Clerk',
-    description: 'Authentication and user management',
+    title: 'JWT Auth',
+    description: 'Custom authentication with httpOnly cookies',
   },
   {
     emoji: '💳',
@@ -246,7 +246,7 @@ export const metadata: Metadata = {
     "authentication",
     "payments",
     "Stripe",
-    "Clerk",
+    "JWT",
     "PostgreSQL",
     "Drizzle",
     "PostHog",

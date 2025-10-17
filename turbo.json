@@ -19,7 +19,9 @@
         "NEXT_PUBLIC_POSTHOG_KEY",
         "NEXT_PUBLIC_POSTHOG_HOST",
         "NEXT_PUBLIC_AXIOM_TOKEN",
-        "NEXT_PUBLIC_AXIOM_DATASET"
+        "NEXT_PUBLIC_AXIOM_DATASET",
+        "RESEND_API_KEY",
+        "FROM_EMAIL"
       ]
       
     },
