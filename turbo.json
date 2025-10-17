@@ -21,7 +21,8 @@
         "NEXT_PUBLIC_AXIOM_TOKEN",
         "NEXT_PUBLIC_AXIOM_DATASET",
         "RESEND_API_KEY",
-        "FROM_EMAIL"
+        "FROM_EMAIL",
+        "RESEND_TOKEN"
       ]
       
     },

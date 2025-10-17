@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { WelcomeEmail } from "./templates/welcome-email";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_TOKEN);
 
 export interface SendEmailOptions {
   to: string;
@@ -11,7 +11,7 @@ export interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, react }: SendEmailOptions) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!process.env.RESEND_TOKEN) {
     console.warn("RESEND_API_KEY not set, skipping email send");
     return { success: false, error: "Email service not configured" };
   }
