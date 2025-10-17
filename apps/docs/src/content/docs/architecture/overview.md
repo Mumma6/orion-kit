@@ -7,9 +7,10 @@ title: Architecture Overview
 | Layer             | Technology            | Purpose                                 |
 | ----------------- | --------------------- | --------------------------------------- |
 | **Frontend**      | Next.js 15 App Router | React 19, SSR, RSC                      |
-| **Auth**          | Clerk                 | User management                         |
+| **Auth**          | Custom JWT            | User management                         |
 | **Database**      | Neon + Drizzle ORM    | Serverless Postgres + type-safe queries |
 | **Payments**      | Stripe                | Subscriptions + checkout                |
+| **Email**         | Resend                | Transactional emails                    |
 | **Validation**    | Zod                   | Runtime validation                      |
 | **Data Fetching** | TanStack Query        | Server state + caching                  |
 | **Forms**         | React Hook Form       | Form management                         |
@@ -47,7 +48,7 @@ TanStack Query checks cache
   ↓
 If stale, fetch from API
   ↓
-Clerk auth
+JWT auth verification
   ↓
 Drizzle queries Neon
   ↓

@@ -225,24 +225,27 @@ if (isProtectedRoute) {
 
 When ready for advanced features, easily migrate to:
 
-- **Clerk**: $25/month - Great UI components
 - **Auth0**: $23/month - Enterprise features
 - **Supabase Auth**: $25/month - Open source
 - **Firebase Auth**: Pay per user
+- **Clerk**: $25/month - Great UI components
 
 ### **Migration Steps:**
 
 ```bash
 # 1. Install provider
-pnpm add @clerk/nextjs
+pnpm add @auth0/nextjs-auth0
 
 # 2. Add environment variables
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
+AUTH0_SECRET=your-secret
+AUTH0_BASE_URL=http://localhost:3001
+AUTH0_ISSUER_BASE_URL=https://your-domain.auth0.com
+AUTH0_CLIENT_ID=your-client-id
+AUTH0_CLIENT_SECRET=your-client-secret
 
 # 3. Replace auth function
-import { auth } from "@clerk/nextjs";
-const { userId } = await auth();
+import { getSession } from "@auth0/nextjs-auth0";
+const session = await getSession(req);
 
 # 4. Database stays the same!
 ```

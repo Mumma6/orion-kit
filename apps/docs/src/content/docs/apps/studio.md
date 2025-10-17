@@ -122,7 +122,7 @@ CREATE TABLE tasks (
   title VARCHAR(255) NOT NULL,
   description TEXT,
   status VARCHAR(50) DEFAULT 'todo',
-  clerk_user_id VARCHAR(255) NOT NULL,
+  user_id VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -133,7 +133,7 @@ CREATE TABLE tasks (
 ```sql
 CREATE TABLE user_preferences (
   id SERIAL PRIMARY KEY,
-  clerk_user_id VARCHAR(255) UNIQUE NOT NULL,
+  user_id VARCHAR(255) UNIQUE NOT NULL,
   plan VARCHAR(50) DEFAULT 'free',
   default_status VARCHAR(50) DEFAULT 'todo',
   email_notifications BOOLEAN DEFAULT true,
@@ -162,13 +162,13 @@ CREATE TABLE user_preferences (
 
 ```sql
 -- Insert test tasks
-INSERT INTO tasks (title, description, status, clerk_user_id) VALUES
+INSERT INTO tasks (title, description, status, user_id) VALUES
 ('Complete documentation', 'Finish the Orion Kit docs', 'in-progress', 'user_123'),
 ('Setup production', 'Deploy to production environment', 'todo', 'user_123'),
 ('Review code', 'Code review for new features', 'completed', 'user_123');
 
 -- Insert test user preferences
-INSERT INTO user_preferences (clerk_user_id, plan, default_status) VALUES
+INSERT INTO user_preferences (user_id, plan, default_status) VALUES
 ('user_123', 'pro', 'todo');
 ```
 
@@ -183,7 +183,7 @@ WHERE id = 1;
 -- Update user plan
 UPDATE user_preferences
 SET plan = 'enterprise', updated_at = NOW()
-WHERE clerk_user_id = 'user_123';
+WHERE user_id = 'user_123';
 ```
 
 ### **Delete Records**
@@ -193,7 +193,7 @@ WHERE clerk_user_id = 'user_123';
 DELETE FROM tasks WHERE status = 'completed';
 
 -- Delete user preferences
-DELETE FROM user_preferences WHERE clerk_user_id = 'user_123';
+DELETE FROM user_preferences WHERE user_id = 'user_123';
 ```
 
 ## Development Workflow
@@ -224,7 +224,7 @@ export async function seedDatabase() {
     },
     {
       title: "Add authentication",
-      description: "Integrate Clerk authentication",
+      description: "Integrate JWT authentication",
       status: "in-progress",
       userId: "user_123",
     },

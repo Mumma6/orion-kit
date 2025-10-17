@@ -23,7 +23,6 @@
     "dotenv": "^16.4.7"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "@types/node": "^20.19.9",
     "@types/react": "^19.1.9",

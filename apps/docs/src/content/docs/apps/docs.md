@@ -63,7 +63,7 @@ apps/docs/
 ### **Packages**
 
 - **Analytics** - PostHog integration
-- **Auth** - Clerk authentication
+- **Auth** - Custom JWT authentication
 - **Database** - Drizzle ORM and Neon
 - **Jobs** - Trigger.dev background jobs
 - **Observability** - Axiom logging

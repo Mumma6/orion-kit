@@ -6,13 +6,13 @@ Quick reference for all required environment variables.
 
 ## Required Variables
 
-| App          | Variables                                                                             |
-| ------------ | ------------------------------------------------------------------------------------- |
-| **web**      | PostHog (optional)                                                                    |
-| **app**      | `NEXT_PUBLIC_API_URL`, Stripe pub key (optional), PostHog (optional)                  |
-| **api**      | `AUTH_JWT_SECRET`, `DATABASE_URL`, App URLs, Stripe keys (optional), Axiom (optional) |
-| **database** | `DATABASE_URL`                                                                        |
-| **studio**   | `DATABASE_URL`                                                                        |
+| App          | Variables                                                                                                |
+| ------------ | -------------------------------------------------------------------------------------------------------- |
+| **web**      | PostHog (optional)                                                                                       |
+| **app**      | `NEXT_PUBLIC_API_URL`, Stripe pub key (optional), PostHog (optional)                                     |
+| **api**      | `AUTH_JWT_SECRET`, `DATABASE_URL`, App URLs, Stripe keys (optional), Resend (optional), Axiom (optional) |
+| **database** | `DATABASE_URL`                                                                                           |
+| **studio**   | `DATABASE_URL`                                                                                           |
 
 ## By App
 
@@ -45,6 +45,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3001
 NEXT_PUBLIC_API_URL=http://localhost:3002
 STRIPE_SECRET_KEY=sk_test_...  # Optional
 STRIPE_WEBHOOK_SECRET=whsec_...  # Optional
+RESEND_API_KEY=re_...  # Optional
+FROM_EMAIL=onboarding@resend.dev  # Optional
 NEXT_PUBLIC_AXIOM_TOKEN=xaat-...  # Optional
 NEXT_PUBLIC_AXIOM_DATASET=orion-kit  # Optional
 ```
@@ -64,6 +66,7 @@ DATABASE_URL=postgresql://...
 | Stripe keys    | `sk_test_*` / `pk_test_*`            | [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys) |
 | Stripe webhook | `whsec_*`                            | `stripe listen` output                                        |
 | Stripe prices  | `price_*`                            | Stripe Dashboard → Products → Pricing                         |
+| Resend API     | `re_*`                               | [Resend](https://resend.com/api-keys) → API Keys              |
 | Axiom          | `xaat_*`                             | [Axiom](https://axiom.co/settings/api-tokens) → API Tokens    |
 | PostHog        | `phc_*`                              | [PostHog](https://posthog.com/settings/project) → API Keys    |
 

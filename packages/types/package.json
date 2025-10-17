@@ -18,7 +18,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "typescript": "^5.9.2"
   }

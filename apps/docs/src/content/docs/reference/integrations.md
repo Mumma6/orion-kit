@@ -115,7 +115,7 @@ Every integration adds ongoing costs:
 
 | Service     | Free Tier | Paid Plans | Monthly Cost |
 | ----------- | --------- | ---------- | ------------ |
-| **Clerk**   | 10k users | $25/mo     | $0-25        |
+| **Resend**  | 3k emails | $20/mo     | $0-20        |
 | **Neon**    | 512MB     | $19/mo     | $0-19        |
 | **Stripe**  | 0.3% fee  | 0.3% fee   | $0 + fees    |
 | **PostHog** | 1M events | $20/mo     | $0-20        |

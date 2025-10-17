@@ -19,7 +19,6 @@
     "dotenv": "^16.4.7"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "typescript": "^5.9.2"
   }

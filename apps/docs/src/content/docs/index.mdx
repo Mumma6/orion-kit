@@ -3,7 +3,7 @@ title: Orion Kit
 description: A modern, production-ready SaaS starter kit with Next.js, TypeScript, Drizzle ORM, and more.
 template: splash
 hero:
-  tagline: Modern, type-safe SaaS starter kit. Built with Next.js 15, TypeScript, Drizzle ORM, Clerk, and TanStack Query.
+  tagline: Modern, type-safe SaaS starter kit. Built with Next.js 15, TypeScript, Drizzle ORM, Custom JWT Auth, and TanStack Query.
   image:
     file: ../../assets/undraw_outer-space_qey5.svg
   actions:
@@ -55,8 +55,8 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 
 <CardGrid stagger>
   <Card title="🔐 Authentication" icon="lock">
-    Clerk integration with protected routes, middleware, and beautiful pre-built
-    UI.
+    Custom JWT authentication with protected routes, middleware, and secure
+    httpOnly cookies.
   </Card>
   <Card title="🗄️ Database" icon="setting">
     Type-safe Drizzle ORM with Neon Postgres, automatic migrations, and Studio

@@ -36,7 +36,6 @@
     "@playwright/test": "^1.56.0",
     "@types/node": "^24.7.2",
     "@vitest/ui": "^3.2.4",
-    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.4",

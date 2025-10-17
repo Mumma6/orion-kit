@@ -4,7 +4,7 @@ title: Guide
 
 ## Getting Started
 
-- **[Accounts Setup](/guide/accounts-setup)** - Cloud services setup (Clerk, Neon, Stripe)
+- **[Accounts Setup](/guide/accounts-setup)** - Cloud services setup (Neon, Stripe)
 - **[Environment Variables](/guide/environment-variables)** - All env vars reference
 - **[Cloud Services](/guide/cloud-services)** - Service overview
 - **[Deployment](/guide/deployment)** - Deploy to Vercel

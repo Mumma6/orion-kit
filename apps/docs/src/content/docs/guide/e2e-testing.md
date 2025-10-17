@@ -28,7 +28,7 @@ pnpm test:e2e:debug   # Pause execution
 - Settings access
 - Billing flow
 
-_Enable by setting up Clerk test mode in_
+_Enable by setting up test environment in_
 
 ## Test Structure
 

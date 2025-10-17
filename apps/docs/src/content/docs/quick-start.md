@@ -7,9 +7,9 @@ description: Get up and running with Orion Kit
 
 - Node.js 20+ + pnpm (`npm install -g pnpm`)
 - Cloud accounts (all have free tiers):
-  - [Clerk](https://clerk.com) - Authentication
   - [Neon](https://neon.tech) - PostgreSQL database
   - [Stripe](https://stripe.com) - Payments
+  - [Resend](https://resend.com) - Email service
   - [PostHog](https://posthog.com) - Analytics
   - [Axiom](https://axiom.co) - Logging
   - [Trigger.dev](https://trigger.dev) - Background jobs
@@ -25,9 +25,9 @@ pnpm install
 
 # 2. Get API keys from all services
 # See /accounts-setup for detailed instructions:
-# - Clerk (auth)
 # - Neon (database)
 # - Stripe (payments)
+# - Resend (email)
 # - PostHog (analytics)
 # - Axiom (logging)
 # - Trigger.dev (jobs)
@@ -54,10 +54,6 @@ pnpm dev
 **`apps/app/.env.local`:**
 
 ```bash
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
 # API
 NEXT_PUBLIC_API_URL=http://localhost:3002
 
@@ -67,14 +63,15 @@ NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 
 # Stripe
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+NEXT_PUBLIC_STRIPE_PRICE_ID_PRO=price_...
+NEXT_PUBLIC_STRIPE_PRICE_ID_ENTERPRISE=price_...
 ```
 
 **`apps/api/.env.local`:**
 
 ```bash
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
+# JWT Authentication
+AUTH_JWT_SECRET=your-super-secret-key-min-32-chars
 
 # Database
 DATABASE_URL=postgresql://...
@@ -82,6 +79,10 @@ DATABASE_URL=postgresql://...
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Email (Resend)
+RESEND_API_KEY=re_...
+FROM_EMAIL=onboarding@resend.dev
 
 # Axiom
 AXIOM_TOKEN=xaat-...

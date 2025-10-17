@@ -184,7 +184,7 @@ export type DeleteTaskResponse = ApiResponse<{ deleted: true }>;
 // packages/database/src/schema.ts
 export const tasks = pgTable("tasks", {
   id: integer().primaryKey(),
-  userId: varchar("clerk_user_id").notNull(),
+  userId: varchar("user_id").notNull(),
   title: varchar({ length: 255 }).notNull(),
   status: taskStatusEnum().default("todo"),
   createdAt: timestamp("created_at").defaultNow(),
