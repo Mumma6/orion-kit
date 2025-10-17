@@ -13,7 +13,7 @@ export default function RootPage() {
 
   // Redirect to dashboard if user is logged in
   useEffect(() => {
-    if (!isPending && authData?.user) {
+    if (!isPending && authData?.data) {
       router.push("/dashboard");
     }
   }, [authData, isPending, router]);
@@ -31,7 +31,7 @@ export default function RootPage() {
   }
 
   // Don't render if user is logged in (will redirect)
-  if (authData?.user) {
+  if (authData?.data) {
     return null;
   }
 
