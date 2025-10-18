@@ -18,6 +18,7 @@ import { AlertCircle, Loader2, GalleryVerticalEnd } from "lucide-react";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import Link from "next/link";
 import { useEffect } from "react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -51,6 +52,9 @@ export default function LoginPage() {
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
+      <div className="absolute top-4 right-4 z-10">
+        <ModeToggle />
+      </div>
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="/" className="flex items-center gap-2 font-medium">
@@ -61,7 +65,7 @@ export default function LoginPage() {
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
+          <div className="w-full max-w-sm">
             <Card>
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Welcome back</CardTitle>

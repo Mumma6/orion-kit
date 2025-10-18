@@ -6,6 +6,7 @@ import { Button } from "@workspace/ui/components/button";
 import { OrionLogo } from "@workspace/ui/components/orion-logo";
 import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function RootPage() {
   const { data: authData, isPending } = useAuth();
@@ -22,6 +23,9 @@ export default function RootPage() {
   if (isPending) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-4">
+        <div className="absolute top-4 right-4">
+          <ModeToggle />
+        </div>
         <div className="mb-8 flex flex-col items-center gap-4">
           <OrionLogo size="lg" />
           <p className="text-muted-foreground">Loading...</p>
@@ -38,6 +42,9 @@ export default function RootPage() {
   // Show landing page
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="absolute top-4 right-4">
+        <ModeToggle />
+      </div>
       <div className="mb-8 flex flex-col items-center gap-4">
         <OrionLogo size="lg" />
         <h1 className="text-4xl font-bold text-center">Welcome to Orion Kit</h1>
