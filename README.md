@@ -2,6 +2,20 @@
 
 **Production-ready SaaS boilerplate** built with Next.js 15, TypeScript, and modern tools. Get from zero to deployed in minutes.
 
+## 🎯 What's Included
+
+- 🔐 **Authentication** - Custom JWT with protected routes
+- 🗄️ **Database** - Neon Postgres + Drizzle ORM
+- 💳 **Payments** - Stripe subscriptions + webhooks
+- 📧 **Email** - Resend with React Email templates
+- 🎨 **UI** - Shadcn/ui + Tailwind CSS v4
+- 📊 **Analytics** - PostHog + Axiom logging
+- ⚡ **Jobs** - Trigger.dev background tasks
+- 🧪 **Testing** - Vitest + Playwright E2E
+- 📚 **Documentation** - Complete guides & API docs
+
+**Type-safe stack:** Database Schema → Auto-generated Types → Shared Packages → API + Frontend
+
 ## ⚡ Quick Start
 
 ```bash
@@ -12,10 +26,17 @@ pnpm install
 
 # 2. Set up environment variables (see below)
 
-# 3. Initialize database
+# 3. Rename the project
+Change "orion-kit" to your own project name in:
+- `package.json` files
+- Documentation
+- Environment variables
+- GitHub repository name
+
+# 4. Initialize database
 pnpm db:push
 
-# 4. Start everything
+# 5. Start everything
 pnpm dev
 ```
 
@@ -26,7 +47,6 @@ pnpm dev
 - 🔌 **API:** http://localhost:3002
 - 🎨 **Studio:** https://local.drizzle.studio?port=3003
 - 📚 **Docs:** http://localhost:3004
--
 
 ## 🔧 What You Need
 
@@ -93,20 +113,6 @@ AXIOM_DATASET=orion
 ```bash
 DATABASE_URL=postgresql://...
 ```
-
-## 🎯 What's Included
-
-- 🔐 **Authentication** - Custom JWT with protected routes
-- 🗄️ **Database** - Neon Postgres + Drizzle ORM
-- 💳 **Payments** - Stripe subscriptions + webhooks
-- 📧 **Email** - Resend with React Email templates
-- 🎨 **UI** - Shadcn/ui + Tailwind CSS v4
-- 📊 **Analytics** - PostHog + Axiom logging
-- ⚡ **Jobs** - Trigger.dev background tasks
-- 🧪 **Testing** - Vitest + Playwright E2E
-- 📚 **Documentation** - Complete guides & API docs
-
-**Type-safe stack:** Database Schema → Auto-generated Types → Shared Packages → API + Frontend
 
 ## 📦 Monorepo Structure
 
