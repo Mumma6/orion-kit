@@ -16,7 +16,8 @@ export const authKeys = {
 };
 
 async function fetchAuthUser(): Promise<AuthResponse> {
-  const token = getAuthToken();
+  // Get token from localStorage first, then fallback to cookies
+  const token = localStorage.getItem("auth_token") || getAuthToken();
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -73,8 +74,8 @@ export function useLogin() {
       return response.json();
     },
     onSuccess: (data) => {
-      // Token is automatically stored in httpOnly cookie by API
-      // No need for localStorage
+      // Store token in localStorage for cross-origin compatibility
+      localStorage.setItem("auth_token", data.token);
 
       // Invalidate and refetch user data
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
@@ -106,7 +107,10 @@ export function useRegister() {
 
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Store token in localStorage for cross-origin compatibility
+      localStorage.setItem("auth_token", data.token);
+
       // Invalidate and refetch user data
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
 
@@ -135,8 +139,8 @@ export function useLogout() {
       return response.json();
     },
     onSuccess: () => {
-      // Cookie is automatically cleared by API logout endpoint
-      // No need to manually clear localStorage
+      // Clear token from localStorage
+      localStorage.removeItem("auth_token");
 
       // Clear all auth-related queries
       queryClient.setQueryData(authKeys.user(), { user: null });

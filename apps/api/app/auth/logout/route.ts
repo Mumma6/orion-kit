@@ -19,17 +19,7 @@ export const POST = withAxiom(
       message: "Logged out successfully",
     };
 
-    const response = NextResponse.json(responseData);
-
-    // Clear the auth cookie for cross-origin requests
-    response.cookies.set("auth", "", {
-      httpOnly: true,
-      sameSite: "none", // Required for cross-origin cookies
-      secure: true, // Required when sameSite is "none"
-      path: "/",
-      maxAge: 0, // Expire immediately
-    });
-
-    return response;
+    // Return response without clearing cookies - client will clear localStorage
+    return NextResponse.json(responseData);
   }
 );

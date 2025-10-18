@@ -83,16 +83,7 @@ export const POST = withAxiom(
       user: authUser,
     };
 
-    const res = NextResponse.json(response);
-
-    // Set cookie for cross-origin requests
-    res.cookies.set("auth", token, {
-      httpOnly: true,
-      sameSite: "none", // Required for cross-origin cookies
-      secure: true, // Required when sameSite is "none"
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    });
-    return res;
+    // Return response without setting cookies - client will store token in localStorage
+    return NextResponse.json(response);
   }
 );

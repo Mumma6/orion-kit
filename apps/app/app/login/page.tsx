@@ -155,12 +155,12 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
+      <div className="relative hidden lg:block">
         <div className="absolute inset-0 flex items-center justify-center p-8">
           <img
             src="/assets/undraw_launching_szjw.svg"
             alt="Login"
-            className="h-full w-full object-contain"
+            className="h-3/4 w-3/4 max-w-md object-contain"
           />
         </div>
       </div>
