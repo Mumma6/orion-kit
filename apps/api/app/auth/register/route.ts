@@ -114,10 +114,12 @@ export const POST = withAxiom(
     };
 
     const res = NextResponse.json(response);
+
+    // Set cookie for cross-origin requests
     res.cookies.set("auth", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "none", // Required for cross-origin cookies
+      secure: true, // Required when sameSite is "none"
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     });

@@ -5,7 +5,16 @@ import { logger } from "@workspace/observability/server";
 import { getUserId } from "@workspace/auth/server";
 
 export async function middleware(req: NextRequest, event: NextFetchEvent) {
-  const origin = process.env.NEXT_PUBLIC_APP_URL!;
+  // Determine allowed origin based on environment
+  const allowedOrigins = [
+    "https://orion-kit-app.vercel.app",
+    "http://localhost:3001",
+    "http://localhost:3000",
+  ];
+
+  const origin = req.headers.get("origin");
+  const isAllowedOrigin = origin && allowedOrigins.includes(origin);
+  const corsOrigin = isAllowedOrigin ? origin : allowedOrigins[0]!;
 
   // Handle CORS preflight requests FIRST - before any auth checks
   if (req.method === "OPTIONS") {
@@ -13,7 +22,7 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
       status: 200,
       headers: {
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Origin": corsOrigin,
         "Access-Control-Allow-Methods": "GET,DELETE,PATCH,POST,PUT,OPTIONS",
         "Access-Control-Allow-Headers":
           "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, Cookie",
@@ -42,7 +51,7 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Credentials": "true",
-          "Access-Control-Allow-Origin": origin,
+          "Access-Control-Allow-Origin": corsOrigin,
         },
       });
     }
@@ -51,13 +60,13 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
   // For all other requests, add CORS headers
   const res = NextResponse.next();
 
-  res.headers.append("Access-Control-Allow-Credentials", "true");
-  res.headers.append("Access-Control-Allow-Origin", origin);
-  res.headers.append(
+  res.headers.set("Access-Control-Allow-Credentials", "true");
+  res.headers.set("Access-Control-Allow-Origin", corsOrigin);
+  res.headers.set(
     "Access-Control-Allow-Methods",
     "GET,DELETE,PATCH,POST,PUT,OPTIONS"
   );
-  res.headers.append(
+  res.headers.set(
     "Access-Control-Allow-Headers",
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, Cookie"
   );

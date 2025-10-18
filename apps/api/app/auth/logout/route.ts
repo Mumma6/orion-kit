@@ -21,11 +21,11 @@ export const POST = withAxiom(
 
     const response = NextResponse.json(responseData);
 
-    // Clear the auth cookie
+    // Clear the auth cookie for cross-origin requests
     response.cookies.set("auth", "", {
       httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "none", // Required for cross-origin cookies
+      secure: true, // Required when sameSite is "none"
       path: "/",
       maxAge: 0, // Expire immediately
     });
