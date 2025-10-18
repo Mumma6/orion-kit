@@ -178,4 +178,4 @@ Orion Kit gives you a solid foundation. Add features when you have:
 
 ---
 
-Need help with a specific integration? [Open an issue](https://github.com/orion-kit/orion/issues) or check our [community discussions](https://github.com/orion-kit/orion/discussions).
+Need help with a specific integration? [Open an issue](https://github.com/Mumma6/orion-kit/issues) or check our [community discussions](https://github.com/Mumma6/orion-kit/discussions).

@@ -55,7 +55,7 @@ Choose your path based on what you want to do:
 ## 🆘 Need Help?
 
 - **Stuck?** Check our [Troubleshooting Guide](/getting-started/troubleshooting)
-- **Questions?** [Open an issue on GitHub](https://github.com/orion-kit/orion/issues)
+- **Questions?** [Open an issue on GitHub](https://github.com/Mumma6/orion-kit/issues)
 - **Want to learn more?** Browse our [Complete Documentation](/guide)
 
 ---

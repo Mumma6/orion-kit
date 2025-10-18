@@ -145,4 +145,4 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 ---
 
-**Need help?** Check our [Complete Deployment Guide](/guide/deployment) or [open an issue](https://github.com/orion-kit/orion/issues).
+**Need help?** Check our [Complete Deployment Guide](/guide/deployment) or [open an issue](https://github.com/Mumma6/orion-kit/issues).

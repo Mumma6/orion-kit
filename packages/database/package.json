@@ -6,8 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./client": "./src/client.ts",
-    "./schema": "./src/schema.ts",
-    "./auth": "./auth.ts"
+    "./schema": "./src/schema.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
@@ -18,12 +17,10 @@
     "db:check": "drizzle-kit check",
     "db:seed": "tsx src/seed.ts",
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "tsc --noEmit",
-    "auth:generate": "npx @better-auth/cli@latest generate"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
-    "better-auth": "^1.0.0",
     "drizzle-orm": "^0.38.3",
     "drizzle-zod": "^0.8.3",
     "zod": "^3.25.76"

@@ -219,8 +219,8 @@ pnpm install
 ### Get Help
 
 1. **Check logs:** Look at browser console and server logs
-2. **Search issues:** Check [GitHub issues](https://github.com/orion-kit/orion/issues)
-3. **Open issue:** [Create new issue](https://github.com/orion-kit/orion/issues/new) with:
+2. **Search issues:** Check [GitHub issues](https://github.com/Mumma6/orion-kit/issues)
+3. **Open issue:** [Create new issue](https://github.com/Mumma6/orion-kit/issues/new) with:
    - Error message
    - Steps to reproduce
    - Environment details
@@ -258,4 +258,4 @@ pnpm --filter app dev
 
 ---
 
-**Need more help?** Check our [Complete Documentation](/guide) or [open an issue](https://github.com/orion-kit/orion/issues).
+**Need more help?** Check our [Complete Documentation](/guide) or [open an issue](https://github.com/Mumma6/orion-kit/issues).

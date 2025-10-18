@@ -17,7 +17,7 @@ export default defineConfig({
 			  ],
 			title: 'Orion Kit',
 			
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/orion-kit/orion' }],
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/Mumma6/orion-kit' }],
 			sidebar: [
 			{
 				label: 'Getting Started',

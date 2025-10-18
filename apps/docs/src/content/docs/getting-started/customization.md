@@ -207,4 +207,4 @@ pnpm test:e2e
 
 ---
 
-**Need help with customization?** [Open an issue](https://github.com/orion-kit/orion/issues) or check our [Complete Documentation](/guide).
+**Need help with customization?** [Open an issue](https://github.com/Mumma6/orion-kit/issues) or check our [Complete Documentation](/guide).

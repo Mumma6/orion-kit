@@ -202,4 +202,4 @@ Track usage before integrating:
 
 ---
 
-**Need help with a specific integration?** [Open an issue](https://github.com/orion-kit/orion/issues) or check our [Complete Integration Guides](/reference/integrations).
+**Need help with a specific integration?** [Open an issue](https://github.com/Mumma6/orion-kit/issues) or check our [Complete Integration Guides](/reference/integrations).

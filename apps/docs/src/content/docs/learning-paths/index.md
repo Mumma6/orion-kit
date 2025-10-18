@@ -146,8 +146,8 @@ Choose the path that best fits your experience and goals with Orion Kit.
 
 1. [Troubleshooting](/getting-started/troubleshooting) - Common issues
 2. [Complete Guide](/guide) - Detailed explanations
-3. [GitHub Issues](https://github.com/orion-kit/orion/issues) - Community help
-4. [Open New Issue](https://github.com/orion-kit/orion/issues/new) - Get support
+3. [GitHub Issues](https://github.com/Mumma6/orion-kit/issues) - Community help
+4. [Open New Issue](https://github.com/Mumma6/orion-kit/issues/new) - Get support
 
 **Time:** Varies
 

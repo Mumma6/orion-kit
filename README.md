@@ -20,8 +20,8 @@
 
 ```bash
 # 1. Clone & install
-git clone <your-repo>
-cd orion
+git clone https://github.com/Mumma6/orion-kit
+cd orion-kit
 pnpm install
 
 # 2. Set up environment variables (see below)
