@@ -7,6 +7,9 @@ import starlightThemeNova from 'starlight-theme-nova'
 export default defineConfig({
 	output: 'static',
 	outDir: 'dist',
+	build: {
+		inlineStylesheets: 'auto',
+	},
 	integrations: [
 		starlight({
 			plugins: [

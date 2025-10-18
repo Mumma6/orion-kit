@@ -6,6 +6,7 @@
     "dev": "astro dev --turbopack --port 3004",
     "start": "astro dev",
     "build": "astro build",
+    "build:retry": "astro build || (sleep 5 && astro build)",
     "preview": "astro preview",
     "astro": "astro"
   },

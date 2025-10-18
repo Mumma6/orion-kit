@@ -1,3 +1,5 @@
 {
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "buildCommand": "cd ../../ && pnpm turbo build --filter=docs",
+  "installCommand": "cd ../../ && pnpm install"
 }
