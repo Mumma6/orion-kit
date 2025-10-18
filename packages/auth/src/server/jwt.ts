@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import type { AuthUser } from "@workspace/types";
 
 const getSecret = () => {
-  const secret = process.env.AUTH_JWT_SECRET || "123";
+  const secret = process.env.AUTH_JWT_SECRET;
   if (!secret) throw new Error("AUTH_JWT_SECRET is not set");
   return new TextEncoder().encode(secret);
 };

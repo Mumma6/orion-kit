@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, GalleryVerticalEnd } from "lucide-react";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -50,90 +50,116 @@ export default function LoginPage() {
   }, [loginMutation.isError, loginMutation.error, form]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>
-            Enter your credentials to sign in to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {loginMutation.isError && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  {form.formState.errors.root?.message || "Login failed"}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                {...form.register("email")}
-              />
-              {form.formState.errors.email && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.email.message}
-                </p>
-              )}
+    <div className="grid min-h-svh lg:grid-cols-2">
+      <div className="flex flex-col gap-4 p-6 md:p-10">
+        <div className="flex justify-center gap-2 md:justify-start">
+          <a href="/" className="flex items-center gap-2 font-medium">
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+              <GalleryVerticalEnd className="size-4" />
             </div>
+            Orion Kit
+          </a>
+        </div>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-xs">
+            <Card>
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl">Welcome back</CardTitle>
+                <CardDescription>
+                  Enter your credentials to sign in to your account
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
+                  {loginMutation.isError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        {form.formState.errors.root?.message || "Login failed"}
+                      </AlertDescription>
+                    </Alert>
+                  )}
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                {...form.register("password")}
-              />
-              {form.formState.errors.password && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.password.message}
-                </p>
-              )}
-            </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      {...form.register("email")}
+                    />
+                    {form.formState.errors.email && (
+                      <p className="text-sm text-destructive">
+                        {form.formState.errors.email.message}
+                      </p>
+                    )}
+                  </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loginMutation.isPending}
-            >
-              {loginMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
-          </form>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      {...form.register("password")}
+                    />
+                    {form.formState.errors.password && (
+                      <p className="text-sm text-destructive">
+                        {form.formState.errors.password.message}
+                      </p>
+                    )}
+                  </div>
 
-          <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">
-              Don't have an account?{" "}
-            </span>
-            <Link href="/signup" className="text-primary hover:underline">
-              Sign up
-            </Link>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={loginMutation.isPending}
+                  >
+                    {loginMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      "Sign In"
+                    )}
+                  </Button>
+                </form>
+
+                <div className="mt-6 text-center text-sm">
+                  <span className="text-muted-foreground">
+                    Don't have an account?{" "}
+                  </span>
+                  <Link href="/signup" className="text-primary hover:underline">
+                    Sign up
+                  </Link>
+                </div>
+
+                <div className="mt-4 text-center">
+                  <Link
+                    href="/"
+                    className="text-sm text-muted-foreground hover:underline"
+                  >
+                    ← Back to home
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-
-          <div className="mt-4 text-center">
-            <Link
-              href="/"
-              className="text-sm text-muted-foreground hover:underline"
-            >
-              ← Back to home
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+      <div className="bg-muted relative hidden lg:block">
+        <div className="absolute inset-0 flex items-center justify-center p-8">
+          <img
+            src="/assets/undraw_launching_szjw.svg"
+            alt="Login"
+            className="h-full w-full object-contain"
+          />
+        </div>
+      </div>
     </div>
   );
 }
