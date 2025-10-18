@@ -23,7 +23,7 @@ export default defineConfig({
 				label: 'Getting Started',
 				items: [
 					{ label: 'Introduction', slug: 'introduction' },
-					{ label: 'Quick Start', slug: 'getting-started' },
+					{ label: 'Quick Start', slug: 'quick-start' },
 					{ label: 'Learning Paths', slug: 'learning-paths' },
 					{ label: 'Customization', slug: 'getting-started/customization' },
 					{ label: 'Deployment', slug: 'getting-started/deployment' },
@@ -63,7 +63,7 @@ export default defineConfig({
 				items: [
 					{ label: 'Integrations Overview', slug: 'reference/integrations' },
 					{ label: 'Adding AI Features', slug: 'reference/integrations/ai' },
-					{ label: 'Adding Email', slug: 'reference/integrations/email' },
+					{ label: 'Adding Auth', slug: 'reference/integrations/auth' },
 					{ label: 'Adding i18n', slug: 'reference/integrations/i18n' },
 					{ label: 'Adding File Uploads', slug: 'reference/integrations/file-uploads' },
 					{ label: 'Adding CMS', slug: 'reference/integrations/cms' },
