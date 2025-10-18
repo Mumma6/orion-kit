@@ -5,21 +5,26 @@ description: Add features to Orion Kit
 
 # Integration Guides
 
-Orion Kit is a **production-ready boilerplate**, not a feature-complete platform. We've included the essential SaaS building blocks, but intentionally left out features that aren't needed by every project.
+:::tip[TL;DR]
+Orion Kit includes 90% of what you need. Add integrations only when you have real user demand and clear business value. Start simple, scale smart.
+:::
+
+Orion Kit is a **production-ready boilerplate** with essential SaaS features built-in. We've included what 90% of projects need, but left out features that are project-specific or can be easily swapped.
 
 ## Available Integrations
 
 Add these features **only when you need them**:
 
-| Feature                                                  | When to Add               | Difficulty | Cost Impact |
-| -------------------------------------------------------- | ------------------------- | ---------- | ----------- |
-| **[AI Features](/reference/integrations/ai)**            | Chat, text generation     | ⭐⭐⭐     | $20-100/mo  |
-| **[Email](/reference/integrations/email)**               | Onboarding, notifications | ⭐⭐       | $10-50/mo   |
-| **[i18n](/reference/integrations/i18n)**                 | Multi-language support    | ⭐⭐⭐     | Free        |
-| **[File Uploads](/reference/integrations/file-uploads)** | Avatars, documents        | ⭐⭐       | $5-20/mo    |
-| **[CMS](/reference/integrations/cms)**                   | Blog, marketing content   | ⭐⭐⭐     | $10-30/mo   |
-| **[Real-time](/reference/integrations/realtime)**        | Chat, live updates        | ⭐⭐⭐⭐   | $20-100/mo  |
-| **[Search](/reference/integrations/search)**             | Full-text search          | ⭐⭐⭐     | $20-200/mo  |
+| Feature                                                    | When to Add             | Difficulty | Cost Impact |
+| ---------------------------------------------------------- | ----------------------- | ---------- | ----------- |
+| **[Auth Providers](/reference/integrations/auth)**         | Replace custom JWT      | ⭐⭐⭐⭐   | $0-25/mo    |
+| **[AI Features](/reference/integrations/ai)**              | Chat, text generation   | ⭐⭐⭐     | $20-100/mo  |
+| **[i18n](/reference/integrations/i18n)**                   | Multi-language support  | ⭐⭐⭐     | Free        |
+| **[File Uploads](/reference/integrations/file-uploads)**   | Avatars, documents      | ⭐⭐       | $5-20/mo    |
+| **[CMS](/reference/integrations/cms)**                     | Blog, marketing content | ⭐⭐⭐     | $10-30/mo   |
+| **[Real-time](/reference/integrations/realtime)**          | Chat, live updates      | ⭐⭐⭐⭐   | $20-100/mo  |
+| **[Search](/reference/integrations/search)**               | Full-text search        | ⭐⭐⭐     | $20-200/mo  |
+| **[Rate Limiting](/reference/integrations/rate-limiting)** | API protection, caching | ⭐⭐       | $0-25/mo    |
 
 ## Why This Approach?
 
@@ -27,23 +32,26 @@ Add these features **only when you need them**:
 
 Orion Kit focuses on **universal SaaS needs** that 90% of projects require:
 
-- ✅ **Authentication** - Every SaaS needs user management
-- ✅ **Database** - Data persistence is fundamental
-- ✅ **Payments** - Most SaaS needs subscription billing
-- ✅ **Analytics** - Product insights are essential
-- ✅ **Background Jobs** - Most apps need async processing
-- ✅ **Type Safety** - Prevents bugs at scale
+- ✅ **Authentication** - Custom JWT system (can be swapped for providers)
+- ✅ **Database** - Neon PostgreSQL with Drizzle ORM
+- ✅ **Payments** - Stripe subscriptions with webhooks
+- ✅ **Email** - Resend with React Email templates
+- ✅ **Analytics** - PostHog for user behavior tracking
+- ✅ **Background Jobs** - Trigger.dev for async processing
+- ✅ **Type Safety** - End-to-end TypeScript from DB to UI
 
 ### 🚫 **What We Don't Include**
 
 Features that are **project-specific** and would bloat the boilerplate:
 
+- ❌ **Auth Providers** - Custom JWT works for most cases
 - ❌ **AI/ML** - Only some apps need chat, text generation
 - ❌ **File Uploads** - Not every app handles files
 - ❌ **Real-time** - Chat/live updates are niche
 - ❌ **i18n** - Many apps are single-language
 - ❌ **CMS** - Not every SaaS needs a blog
 - ❌ **Search** - Full-text search is optional
+- ❌ **Rate Limiting** - Not needed for MVP
 
 ### 💡 **The Problem with "Kitchen Sink" Boilerplates**
 
@@ -52,13 +60,14 @@ Most boilerplates try to include everything:
 ```typescript
 // ❌ Bloated boilerplate
 import {
+  Clerk,
   AI,
-  Email,
   i18n,
   FileUpload,
   CMS,
   Realtime,
   Search,
+  RateLimit,
 } from "kitchen-sink";
 
 // Result: 50+ dependencies, complex setup, unused code
@@ -82,12 +91,24 @@ Build your MVP with what's included:
 // ✅ Use what's already there
 import { auth } from "@workspace/auth/server";
 import { createCheckoutSession } from "@workspace/payment/server";
+import { sendEmail } from "@workspace/email/server";
 import { db } from "@workspace/database";
 
 // Build your unique features
 export async function createProject(data: CreateProjectInput) {
   const { userId } = await auth();
-  // Your business logic here
+
+  // Create project
+  const project = await db.insert(projects).values({ ...data, userId });
+
+  // Send welcome email
+  await sendEmail({
+    to: user.email,
+    template: "project-created",
+    data: { projectName: data.name },
+  });
+
+  return project;
 }
 ```
 
@@ -97,15 +118,15 @@ Only when you have real users asking for features:
 
 ```typescript
 // ✅ Add when needed
-import { sendEmail } from "@workspace/email"; // Only when you need emails
 import { generateText } from "@workspace/ai"; // Only when you need AI
+import { ClerkProvider } from "@clerk/nextjs"; // Only when you need auth providers
 ```
 
 ### 3. **Measure Before Adding**
 
 Track usage before integrating:
 
-- **Email**: Do users actually need notifications?
+- **Auth Providers**: Do you need SSO, social login, or enterprise features?
 - **AI**: Is there real demand for AI features?
 - **File Uploads**: Are users asking for file sharing?
 
@@ -115,9 +136,9 @@ Every integration adds ongoing costs:
 
 | Service     | Free Tier | Paid Plans | Monthly Cost |
 | ----------- | --------- | ---------- | ------------ |
-| **Resend**  | 3k emails | $20/mo     | $0-20        |
 | **Neon**    | 512MB     | $19/mo     | $0-19        |
 | **Stripe**  | 0.3% fee  | 0.3% fee   | $0 + fees    |
+| **Resend**  | 3k emails | $20/mo     | $0-20        |
 | **PostHog** | 1M events | $20/mo     | $0-20        |
 | **Axiom**   | 1GB logs  | $25/mo     | $0-25        |
 | **Trigger** | 100k runs | $29/mo     | $0-29        |
@@ -141,54 +162,6 @@ Adding integrations can easily double this cost.
 - **"Other apps have it"** - Copying without validation
 - **"It's cool"** - Technology for technology's sake
 - **"Easy to add"** - Easy to add, hard to maintain
-
-## Migration Strategy
-
-When you do add integrations:
-
-### 1. **Start with MVP**
-
-```typescript
-// Phase 1: Basic email
-import { sendEmail } from "resend";
-
-export async function sendWelcomeEmail(email: string) {
-  await sendEmail({
-    to: email,
-    subject: "Welcome!",
-    html: "<h1>Welcome to our app</h1>",
-  });
-}
-```
-
-### 2. **Add Templates**
-
-```typescript
-// Phase 2: Email templates
-import { renderEmailTemplate } from "@workspace/email/templates";
-
-export async function sendWelcomeEmail(email: string, name: string) {
-  const html = await renderEmailTemplate("welcome", { name });
-  await sendEmail({ to: email, subject: "Welcome!", html });
-}
-```
-
-### 3. **Add Advanced Features**
-
-```typescript
-// Phase 3: Advanced features
-import { EmailProvider } from "@workspace/email";
-
-export async function sendWelcomeEmail(email: string, name: string) {
-  await EmailProvider.send({
-    template: "welcome",
-    to: email,
-    data: { name },
-    track: true, // Analytics
-    schedule: "immediate",
-  });
-}
-```
 
 ## Philosophy
 

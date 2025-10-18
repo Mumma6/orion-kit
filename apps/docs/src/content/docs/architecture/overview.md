@@ -2,6 +2,10 @@
 title: Architecture Overview
 ---
 
+:::tip[TL;DR]
+Orion Kit is a monorepo with 5 apps sharing packages. Database schema drives everything with end-to-end type safety. Built for production with authentication, payments, analytics, and monitoring.
+:::
+
 ## Tech Stack
 
 | Layer             | Technology            | Purpose                                 |

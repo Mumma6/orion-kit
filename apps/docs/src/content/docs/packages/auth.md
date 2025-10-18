@@ -3,7 +3,7 @@ title: Authentication System
 description: Custom JWT-based authentication without vendor lock-in
 ---
 
-Orion Kit provides a **custom JWT-based authentication system** out of the box, designed to be simple, secure, and vendor-neutral. The boilerplate intentionally avoids vendor lock-in from the start, making it easy to integrate any authentication provider you prefer.
+Orion Kit provides a **custom JWT-based authentication system** out of the box, designed to be simple, secure, and vendor-neutral. This gives you a solid foundation that works for most SaaS apps, with the flexibility to upgrade to auth providers when needed.
 
 ## Why Custom JWT?
 
@@ -79,17 +79,7 @@ const headers = {
 export async function getCurrentUser(req: NextRequest) {
   // Try Authorization header first, then fallback to cookie
   const authHeader = req.headers.get("authorization");
-  let token = authHeader?.replace("Bearer ", "");
-
-  if (!token) {
-    // Fallback to cookie for backward compatibility
-    const cookieHeader = req.headers.get("cookie") || "";
-    token = cookieHeader
-      .split(";")
-      .map((c: string) => c.trim())
-      .find((c: string) => c.startsWith("auth="))
-      ?.split("=")[1];
-  }
+  const token = authHeader?.replace("Bearer ", "");
 
   const userId = await verifyToken(token);
   if (!userId) return null;
@@ -163,7 +153,7 @@ CREATE TABLE tasks (
 POST /auth/register  - Create new user account
 POST /auth/login     - Sign in with email/password
 GET  /auth/me        - Get current user info
-POST /auth/logout    - Sign out (clear cookie)
+POST /auth/logout    - Sign out (clear token)
 ```
 
 ### **Protected Endpoints:**
@@ -236,13 +226,13 @@ export default async function DashboardPage() {
 - **Secret key** - Only your server can verify tokens
 - **Issuer/Audience validation** - Prevents token reuse across domains
 
-### 🍪 **Cookie Security:**
+### 🔐 **localStorage Security:**
 
-- **httpOnly** - No JavaScript access (XSS protection)
-- **Secure** - HTTPS only in production
-- **SameSite** - CSRF protection
-- **Automatic expiration** - Matches JWT expiration
-- **Path restriction** - Limited to your domain
+- **Cross-origin ready** - Works with separate API and frontend domains
+- **Authorization headers** - Sent with every API request
+- **Automatic cleanup** - Cleared on logout
+- **No httpOnly** - Accessible to JavaScript (trade-off for cross-origin)
+- **HTTPS only** - Secure in production
 
 ### 🛡️ **Middleware Protection:**
 
@@ -267,36 +257,63 @@ if (isProtectedRoute) {
 }
 ```
 
-## Migration to Cloud Providers
+## When to Upgrade to Auth Providers
 
-When ready for advanced features, easily migrate to:
+Custom JWT works great for most SaaS apps, but consider upgrading when you need:
 
-- **Auth0**: $23/month - Enterprise features
-- **Supabase Auth**: $25/month - Open source
-- **Firebase Auth**: Pay per user
-- **Clerk**: $25/month - Great UI components
+### ✅ **Upgrade When You Need:**
 
-### **Migration Steps:**
+- **Enterprise SSO** - SAML, OIDC, Active Directory
+- **Social Login** - Google, GitHub, Apple, Microsoft
+- **Advanced Security** - MFA, device management, audit logs
+- **Compliance** - SOC2, GDPR, HIPAA requirements
+- **Team Management** - Organizations, roles, permissions
+
+### ❌ **Keep Custom JWT When:**
+
+- **Simple SaaS** - email/password is enough
+- **Cost is a concern** - auth providers cost $25+/mo
+- **Full control** - over user data and flows
+- **MVP stage** - don't over-engineer from day one
+
+## Available Auth Providers
+
+| Provider                                       | Best For                 | Free Tier | Pricing | Difficulty |
+| ---------------------------------------------- | ------------------------ | --------- | ------- | ---------- |
+| **[Clerk](https://clerk.com)**                 | Modern apps, great DX    | 10k MAU   | $25/mo  | ⭐⭐⭐     |
+| **[Auth0](https://auth0.com)**                 | Enterprise, compliance   | 7k MAU    | $23/mo  | ⭐⭐⭐⭐   |
+| **[Better Auth](https://better-auth.com)**     | Open source, self-hosted | Unlimited | Free    | ⭐⭐⭐     |
+| **[Supabase Auth](https://supabase.com/auth)** | Database-first apps      | 50k MAU   | $25/mo  | ⭐⭐       |
+| **[NextAuth.js](https://next-auth.js.org)**    | Custom, flexible         | Unlimited | Free    | ⭐⭐⭐⭐   |
+
+## Migration Guide
+
+When ready to upgrade, see our **[Auth Providers integration guide](/reference/integrations/auth)** for:
+
+- **Step-by-step migration** from custom JWT
+- **Provider-specific setup** instructions
+- **Database schema changes** needed
+- **Cost comparison** and recommendations
+- **Migration checklist** to avoid issues
+
+### **Quick Migration Example:**
 
 ```bash
 # 1. Install provider
-pnpm add @auth0/nextjs-auth0
+pnpm add @clerk/nextjs
 
 # 2. Add environment variables
-AUTH0_SECRET=your-secret
-AUTH0_BASE_URL=http://localhost:3001
-AUTH0_ISSUER_BASE_URL=https://your-domain.auth0.com
-AUTH0_CLIENT_ID=your-client-id
-AUTH0_CLIENT_SECRET=your-client-secret
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
 
 # 3. Replace auth function
-import { getSession } from "@auth0/nextjs-auth0";
-const session = await getSession(req);
+import { auth } from "@clerk/nextjs/server";
+const { userId } = auth();
 
-# 4. Database stays the same!
+# 4. Database stays mostly the same!
 ```
 
-### **Alternative: Replace with TypeScript Frameworks**
+## Alternative: Replace Backend Framework
 
 You can also replace the Next.js API with other TypeScript frameworks:
 
@@ -344,8 +361,8 @@ const token = await new SignJWT({ email })
   .setExpirationTime("7d")
   .sign(secret);
 
-// 4. Set httpOnly cookie
-response.cookies.set("auth", token, { httpOnly: true });
+// 4. Return token to client (stored in localStorage)
+return NextResponse.json({ success: true, token });
 ```
 
 ### **API Authentication:**
@@ -397,13 +414,22 @@ if (!validation.success) {
 
 - ✅ Use strong JWT secrets (32+ characters)
 - ✅ Set appropriate token expiration (7 days)
-- ✅ Use httpOnly cookies for token storage
+- ✅ Store tokens in localStorage for cross-origin compatibility
 - ✅ Hash passwords with bcrypt (salt rounds: 12)
-- ❌ Store tokens in localStorage (XSS risk)
-- ❌ Use weak secrets or API keys
+- ✅ Use HTTPS in production for secure token transmission
 
 ## Troubleshooting
 
 - **"Invalid token"**: Check JWT secret matches between apps
 - **"Token expired"**: User needs to login again
 - **"CORS errors"**: Check `NEXT_PUBLIC_APP_URL` in API middleware
+- **"Unauthorized"**: Verify token is stored in localStorage and sent in Authorization header
+- **Cross-origin issues**: Ensure API and frontend domains are configured correctly
+
+## Next Steps
+
+Ready for advanced features? Check out our integration guides:
+
+- **[Auth Providers](/reference/integrations/auth)** - Upgrade to Clerk, Auth0, or Better Auth
+- **[Rate Limiting](/reference/integrations/rate-limiting)** - Add API protection with Upstash Redis
+- **[Email](/reference/integrations/email)** - Already included with Resend!

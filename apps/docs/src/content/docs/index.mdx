@@ -8,12 +8,12 @@ hero:
     file: ../../assets/undraw_outer-space_qey5.svg
   actions:
     - text: Get Started
-      link: /introduction/
+      link: /getting-started/
       icon: right-arrow
       variant: primary
-    - text: Quick Start
-      link: /quick-start/
-      icon: rocket
+    - text: Introduction
+      link: /introduction/
+      icon: open-book
     - text: View on GitHub
       link: https://github.com/orion-kit/orion
       icon: github
@@ -37,17 +37,17 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 ## Quick Links
 
 <CardGrid>
+  <Card title="Getting Started" icon="rocket">
+    Get up and running in minutes. [Get started →](/getting-started/)
+  </Card>
   <Card title="Introduction" icon="open-book">
     Learn about Orion Kit and its features. [Read more →](/introduction/)
-  </Card>
-  <Card title="Quick Start" icon="rocket">
-    Get up and running in 5 minutes. [Get started →](/quick-start/)
   </Card>
   <Card title="Architecture" icon="puzzle">
     Understand the system design. [Learn more →](/architecture/overview/)
   </Card>
-  <Card title="Guides" icon="document">
-    Learn best practices and patterns. [View guides →](/guide/)
+  <Card title="Complete Guide" icon="document">
+    Detailed guides and best practices. [View guides →](/guide/)
   </Card>
 </CardGrid>
 

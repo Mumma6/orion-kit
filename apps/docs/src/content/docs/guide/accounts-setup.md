@@ -2,16 +2,20 @@
 title: Cloud Accounts Setup
 ---
 
+:::tip[TL;DR]
+You need 5 services: Neon (database), Stripe (payments), Resend (email), PostHog (analytics), Axiom (logging). All have generous free tiers!
+:::
+
 Orion Kit uses cloud services for database, payments, and monitoring. Authentication is handled by our custom JWT system (no external dependencies!).
 
-| Service     | What It Does          | Used Where            | Free Tier    |
-| ----------- | --------------------- | --------------------- | ------------ |
-| **Neon**    | Postgres database     | API + Database schema | 0.5GB        |
-| **Stripe**  | Subscription payments | Billing page          | No fees      |
-| **Resend**  | Transactional emails  | Welcome emails        | 3k emails    |
-| **Axiom**   | Structured logging    | API error tracking    | 500MB/month  |
-| **PostHog** | Product analytics     | User behavior         | 1M events/mo |
-| **Vercel**  | Hosting               | Production deploy     | Unlimited    |
+| Service     | What It Does          | Used Where            | Free Tier    | Setup Time |
+| ----------- | --------------------- | --------------------- | ------------ | ---------- |
+| **Neon**    | Postgres database     | API + Database schema | 0.5GB        | 2 min      |
+| **Stripe**  | Subscription payments | Billing page          | No fees      | 5 min      |
+| **Resend**  | Transactional emails  | Welcome emails        | 3k emails    | 2 min      |
+| **Axiom**   | Structured logging    | API error tracking    | 500MB/month  | 2 min      |
+| **PostHog** | Product analytics     | User behavior         | 1M events/mo | 2 min      |
+| **Vercel**  | Hosting               | Production deploy     | Unlimited    | 1 min      |
 
 ## 🔐 Authentication (Custom JWT)
 
@@ -32,268 +36,150 @@ That's it! No external accounts needed.
 
 ---
 
-## 🗄️ Neon
+## 🗄️ Neon (2 minutes)
 
 Serverless Postgres database with autoscaling and generous free tier.
 
-### Setup
+### Quick Setup
 
-**1. Create Account**
+1. **Create Account:** [neon.tech](https://neon.tech) → Sign up with GitHub
+2. **Create Project:** Click "Create Project" → Copy **Pooled Connection** URL
+3. **Add to .env files:**
+   ```bash
+   # packages/database/.env
+   # apps/api/.env.local
+   # apps/studio/.env.local
+   DATABASE_URL=postgresql://user:password@host.neon.tech/neondb?sslmode=require
+   ```
+4. **Initialize:** `pnpm db:push`
+5. **Verify:** `pnpm db:studio` → Opens https://local.drizzle.studio
 
-- Go to [neon.tech](https://neon.tech)
-- Sign up with GitHub (free tier = 0.5GB storage)
-- Create new project
-
-**2. Get Connection String**
-
-- In dashboard → **Connection Details**
-- **IMPORTANT**: Select **"Pooled connection"** (required for serverless)
-- Copy connection string (starts with `postgresql://`)
-
-**3. Configure Environment Variables**
-
-Add to these files:
-
-- `packages/database/.env`
-- `apps/api/.env.local`
-- `apps/studio/.env.local`
-
-```bash
-DATABASE_URL=postgresql://user:password@host.neon.tech/neondb?sslmode=require
-```
-
-**4. Initialize Database**
-
-```bash
-pnpm db:push
-```
-
-**5. Verify Database**
-
-```bash
-pnpm db:studio
-# Opens https://local.drizzle.studio
-```
+:::tip[Important]
+Always use **"Pooled connection"** for serverless compatibility!
+:::
 
 ---
 
-## 💳 Stripe
+## 💳 Stripe (5 minutes)
 
 Handles subscription payments, billing, and customer management.
 
-### Setup
+### Quick Setup
 
-**1. Create Account**
+1. **Create Account:** [stripe.com](https://stripe.com) → Sign up → Enable **Test Mode**
+2. **Create Products:** Products → Add Product → Pro ($19/month) + Enterprise ($49/month) → Copy Price IDs
+3. **Get API Keys:** Developers → API Keys → Copy publishable + secret keys
+4. **Add to .env files:**
 
-- Go to [stripe.com](https://stripe.com)
-- Sign up (test mode = no fees)
-- Enable **Test Mode** (toggle in top-right)
+   ```bash
+   # apps/api/.env.local
+   STRIPE_SECRET_KEY=sk_test_...
+   STRIPE_PRICE_ID_PRO=price_...
+   STRIPE_PRICE_ID_ENTERPRISE=price_...
 
-**2. Create Products**
+   # apps/app/.env.local
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+   ```
 
-- **Products** → **Add Product**
-- **Pro Plan**: Name: `Pro`, Price: `$19/month` (recurring)
-- **Enterprise Plan**: Name: `Enterprise`, Price: `$49/month` (recurring)
-- Copy **Price IDs** (start with `price_`)
+5. **Setup Webhooks:** `stripe listen --forward-to localhost:3002/webhooks/stripe` → Copy webhook secret
+6. **Test:** Visit `/dashboard/billing` → Use test card `4242 4242 4242 4242`
 
-**3. Get API Keys**
-
-- **Developers** → **API Keys**
-- Copy **Publishable key** (starts with `pk_test_`)
-- Copy **Secret key** (starts with `sk_test_`)
-
-**4. Configure Environment Variables**
-
-Add to `apps/api/.env.local`:
-
-```bash
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PRICE_ID_PRO=price_...
-STRIPE_PRICE_ID_ENTERPRISE=price_...
-NEXT_PUBLIC_APP_URL=http://localhost:3001
-```
-
-Add to `apps/app/.env.local`:
-
-```bash
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-```
-
-**5. Setup Webhooks (Local Development)**
-
-```bash
-brew install stripe/stripe-cli/stripe
-stripe login
-stripe listen --forward-to localhost:3002/webhooks/stripe
-```
-
-Copy **webhook signing secret** (starts with `whsec_`) and add to `apps/api/.env.local`:
-
-```bash
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
-
-**6. Test Payment Flow**
-
-```bash
-pnpm dev
-# Visit http://localhost:3001/dashboard/billing
-# Click "Upgrade to Pro"
-# Use test card: 4242 4242 4242 4242
-```
+:::tip[Test Mode]
+Stripe test mode = no fees! Use test cards for development.
+:::
 
 ---
 
-## 📧 Resend
+## 📧 Resend (2 minutes)
 
 Transactional emails with beautiful React Email templates.
 
-### Setup
+### Quick Setup
 
-**1. Create Account**
+1. **Create Account:** [resend.com](https://resend.com) → Sign up
+2. **Get API Key:** Dashboard → API Keys → Create API Key → Copy key
+3. **Add to .env:**
+   ```bash
+   # apps/api/.env.local
+   RESEND_API_KEY=re_...
+   FROM_EMAIL=onboarding@resend.dev
+   ```
+4. **Test:** Register new user → Check email for welcome message
 
-- Go to [resend.com](https://resend.com)
-- Sign up (free tier = 3,000 emails/month)
-
-**2. Get API Key**
-
-- Dashboard → **API Keys** → **Create API Key**
-- Copy key (starts with `re_`)
-
-**3. Configure Environment Variables**
-
-Add to `apps/api/.env.local`:
-
-```bash
-RESEND_API_KEY=re_...
-FROM_EMAIL=onboarding@resend.dev  # or your domain
-```
-
-**4. Test Email**
-
-```bash
-pnpm dev
-# Register a new user
-# Check your email for welcome message
-```
+:::tip[Free Tier]
+3,000 emails/month free! Perfect for development and small apps.
+:::
 
 ---
 
-## 📈 Axiom
+## 📈 Axiom (2 minutes)
 
 Serverless logging platform for structured logs, errors, and performance metrics.
 
-### Setup
+### Quick Setup
 
-**1. Create Account**
+1. **Create Account:** [axiom.co](https://axiom.co) → Sign up
+2. **Create Dataset:** Dashboard → Datasets → Create Dataset → Name: `orion-logs`
+3. **Get API Token:** Settings → API Tokens → Create Token → Ingest Only → Copy token
+4. **Add to .env:**
+   ```bash
+   # apps/api/.env.local
+   AXIOM_TOKEN=xaat-...
+   AXIOM_DATASET=orion-logs
+   ```
+5. **Test:** Make API request → Visit axiom.co → Check logs
 
-- Go to [axiom.co](https://axiom.co)
-- Sign up (free tier = 500MB/month)
-
-**2. Create Dataset**
-
-- Dashboard → **Datasets** → **Create Dataset**
-- Name: `orion-logs`
-
-**3. Create API Token**
-
-- **Settings** → **API Tokens** → **Create Token**
-- Select **Ingest Only** permission
-- Copy token (starts with `xaat-`)
-
-**4. Configure Environment Variables**
-
-Add to `apps/api/.env.local`:
-
-```bash
-AXIOM_TOKEN=xaat-...
-AXIOM_DATASET=orion-logs
-```
-
-**5. Test Logging**
-
-```bash
-pnpm dev
-# Make any API request
-# Visit axiom.co → your dataset
-```
+:::tip[Free Tier]
+500MB/month free! Great for development and monitoring.
+:::
 
 ---
 
-## 📊 PostHog
+## 📊 PostHog (2 minutes)
 
 Open-source product analytics platform for tracking user events and page views.
 
-### Setup
+### Quick Setup
 
-**1. Create Account**
+1. **Create Account:** [posthog.com](https://posthog.com) → Sign up
+2. **Get API Keys:** Dashboard → Project Settings → Copy API Key + Host URL
+3. **Add to .env files:**
+   ```bash
+   # apps/web/.env.local + apps/app/.env.local
+   NEXT_PUBLIC_POSTHOG_KEY=phc_...
+   NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+   ```
+4. **Test:** Visit app → Navigate pages → Check posthog.com → Web Analytics
 
-- Go to [posthog.com](https://posthog.com)
-- Sign up (free tier = 1M events/month)
-
-**2. Get API Keys**
-
-- Dashboard → **Project Settings**
-- Copy **Project API Key** (starts with `phc_`)
-- Copy **Host URL** (usually `https://us.i.posthog.com`)
-
-**3. Configure Environment Variables**
-
-Add to `apps/web/.env.local` and `apps/app/.env.local`:
-
-```bash
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-```
-
-**4. Test Analytics**
-
-```bash
-pnpm dev
-# Visit http://localhost:3001
-# Navigate pages, create a task
-# Visit posthog.com → Web Analytics
-```
+:::tip[Free Tier]
+1M events/month free! Perfect for tracking user behavior.
+:::
 
 ---
 
-## ⚡ Trigger.dev
+## ⚡ Trigger.dev (Optional)
 
 Background jobs and scheduled tasks without managing infrastructure.
 
-### Setup
+### Quick Setup
 
-**1. Create Account**
+1. **Create Account:** [trigger.dev](https://trigger.dev) → Sign up → Create project
+2. **Get API Key:** Project dashboard → Environments → Copy Development API Key
+3. **Add to .env:**
+   ```bash
+   # packages/jobs/.env
+   TRIGGER_API_KEY=tr_dev_...
+   TRIGGER_API_URL=https://api.trigger.dev
+   ```
+4. **Test:** `cd packages/jobs && pnpm trigger:dev` → Check dashboard
 
-- Go to [trigger.dev](https://trigger.dev)
-- Sign up (free tier included)
-- Create project
-
-**2. Get API Key**
-
-- Project dashboard → **Environments**
-- Copy **Development API Key** (starts with `tr_dev_`)
-
-**3. Configure Environment Variables**
-
-Add to `packages/jobs/.env`:
-
-```bash
-TRIGGER_API_KEY=tr_dev_...
-TRIGGER_API_URL=https://api.trigger.dev
-```
-
-**4. Test Jobs** (optional, demo-only)
-
-```bash
-cd packages/jobs
-pnpm trigger:dev
-# Jobs appear in trigger.dev dashboard
-```
+:::tip[Optional]
+Background jobs are optional! Skip if you don't need them yet.
+:::
 
 ---
 
-## ▲ Vercel
+## ▲ Vercel (1 minute)
 
 Deployment platform for Next.js apps with serverless hosting and automatic deployments.
 
@@ -303,6 +189,18 @@ Deployment platform for Next.js apps with serverless hosting and automatic deplo
 - **Automatic deployments**: Push to `main` branch = production deploy
 - **Environment variables**: Set in Vercel dashboard for each app
 
-See the [Deployment Guide](/guide/deployment) for complete instructions.
+See the [Deployment Guide](/getting-started/deployment) for complete instructions.
+
+---
+
+## 🎉 **You're Done!**
+
+**Total setup time:** ~15 minutes for all services
+
+**Next steps:**
+
+- [Deploy to production](/getting-started/deployment)
+- [Customize your app](/getting-started/customization)
+- [Add features](/getting-started/integrations)
 
 **Troubleshooting?** Check service docs: [Neon](https://neon.tech/docs) · [Stripe](https://stripe.com/docs) · [Resend](https://resend.com/docs)

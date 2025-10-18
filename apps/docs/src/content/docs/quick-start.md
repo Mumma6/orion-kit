@@ -3,6 +3,10 @@ title: Quick Start
 description: Get up and running with Orion Kit
 ---
 
+:::tip[TL;DR]
+Clone → Install → Start → Done! Visit localhost:3001 to see your app. Add cloud services when you're ready to deploy.
+:::
+
 ## Prerequisites
 
 - Node.js 20+ + pnpm (`npm install -g pnpm`)

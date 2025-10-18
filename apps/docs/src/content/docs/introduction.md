@@ -3,6 +3,10 @@ title: Introduction
 description: Production-ready SaaS boilerplate for Next.js
 ---
 
+:::tip[What is Orion Kit?]
+A production-ready SaaS boilerplate that gets you from zero to deployed faster. Built with Next.js 15, TypeScript, and modern tools. Everything you need to launch a SaaS business.
+:::
+
 **Orion Kit** is a production-ready SaaS boilerplate that gets you from zero to deployed faster. Built with Next.js 15, TypeScript, and modern tools.
 
 ## What You Get
@@ -73,7 +77,7 @@ pnpm install
 pnpm dev
 ```
 
-**Next:** [Quick Start Guide →](/quick-start)  
+**Next:** [Getting Started →](/getting-started)  
 **Learn:** [Architecture →](/architecture) · [Packages →](/packages)
 
 **GitHub:** [github.com/orion-kit/orion](https://github.com/orion-kit/orion)

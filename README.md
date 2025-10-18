@@ -149,12 +149,14 @@ pnpm build             # Build for production
 
 Need more? We've got guides for popular integrations:
 
+- **[Auth Providers](/reference/integrations/auth/)** - Clerk, Auth0, Better Auth
 - **[AI Features](/reference/integrations/ai/)** - OpenAI, streaming, chat
 - **[Email](/reference/integrations/email/)** - Resend, already included!
 - **[File Uploads](/reference/integrations/file-uploads/)** - UploadThing, S3
 - **[i18n](/reference/integrations/i18n/)** - next-intl, translations
 - **[CMS](/reference/integrations/cms/)** - Sanity, Contentful
 - **[Real-time](/reference/integrations/realtime/)** - Pusher, WebSockets
+- **[Rate Limiting](/reference/integrations/rate-limiting/)** - Upstash Redis, API protection
 
 **[View All Integration Guides →](/reference/integrations/)**
 

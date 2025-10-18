@@ -2,6 +2,10 @@
 title: Packages
 ---
 
+:::tip[TL;DR]
+8 shared packages provide common functionality across all apps. Each package has a specific purpose and can be used independently. All packages are type-safe and follow the same patterns.
+:::
+
 Shared packages in the Orion Kit monorepo.
 
 ## Core Packages
