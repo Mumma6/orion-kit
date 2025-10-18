@@ -17,7 +17,7 @@ export default defineConfig({
 			  ],
 			title: 'Orion Kit',
 			
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/orion-kit/orion' }],
 			sidebar: [
 			{
 				label: 'Getting Started',

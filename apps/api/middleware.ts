@@ -7,7 +7,7 @@ import { getUserId } from "@workspace/auth/server";
 export async function middleware(req: NextRequest, event: NextFetchEvent) {
   // Determine allowed origin based on environment
   const allowedOrigins = [
-    "https://orion-kit-app.vercel.app",
+    process.env.NEXT_PUBLIC_APP_URL!,
     "http://localhost:3001",
     "http://localhost:3000",
   ];

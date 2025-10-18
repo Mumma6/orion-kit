@@ -260,14 +260,16 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://orion-kit.dev"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+  ),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://orion-kit.dev",
+    url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     siteName: "Orion Kit",
     title: "Orion Kit - Production-Ready SaaS Boilerplate for Next.js",
     description:

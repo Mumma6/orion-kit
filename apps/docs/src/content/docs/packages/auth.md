@@ -7,10 +7,43 @@ Orion Kit provides a **custom JWT-based authentication system** out of the box, 
 
 ## Why Custom JWT?
 
-- **No vendor lock-in** - Full control, migrate to any provider later
-- **Cost-effective** - No monthly fees while building
-- **Learning-friendly** - Understand auth fundamentals
-- **Privacy-first** - All user data stays in your database
+Orion Kit uses **custom JWT authentication** instead of third-party services like Clerk or Kinde. This gives you:
+
+### 🎯 **Full Control & Flexibility**
+
+- **No vendor lock-in** - you own all the code
+- **Customizable** - modify authentication logic exactly how you need it
+- **Transparent** - see exactly what's happening under the hood
+- **No external dependencies** - just JWT + bcrypt
+
+### 💰 **Cost-Effective**
+
+- **Free forever** - no monthly fees or user limits
+- **Predictable costs** - only pay for your infrastructure
+- **No API rate limits** - from authentication providers
+- **Scales with your business** - not your user count
+
+### 🚀 **Performance & Reliability**
+
+- **Faster** - no external API calls for authentication
+- **Lower latency** - everything runs on your servers
+- **Better caching** - you control the cache strategy
+- **No network dependencies** - works even when third-party services are down
+
+### 🔒 **Data Privacy & Security**
+
+- **All data stays with you** - no third-party data sharing
+- **GDPR compliant** - you control all user data
+- **No data leakage** - to external services
+- **Complete audit trail** - you see everything
+
+### 🛠️ **Developer Experience**
+
+- **Easy debugging** - all code is available
+- **No "magic" functions** - you understand everything
+- **Flexible data model** - customize user schema as needed
+- **No limitations** - implement any feature you need
+- **Cross-origin ready** - works with separate API and frontend domains
 
 ## How It Works
 
@@ -26,26 +59,39 @@ const token = await new SignJWT({ email: user.email })
   .sign(secret);
 ```
 
-### 2. **httpOnly Cookies (Secure)**
+### 2. **localStorage + Authorization Headers (Cross-Origin)**
 
 ```typescript
-// Token stored in httpOnly cookie (not localStorage)
-res.cookies.set("auth", token, {
-  httpOnly: true, // 👈 JavaScript can't access (XSS protection)
-  secure: true, // 👈 HTTPS only in production
-  sameSite: "lax", // 👈 CSRF protection
-  path: "/",
-  maxAge: 60 * 60 * 24 * 7, // 7 days
-});
+// Token stored in localStorage for cross-origin compatibility
+localStorage.setItem("auth_token", token);
+
+// Sent via Authorization header in API requests
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${token}`,
+};
 ```
 
 ### 3. **Automatic Verification**
 
 ```typescript
-// Every API call automatically verifies the token
+// Every API call automatically verifies the token from Authorization header
 export async function getCurrentUser(req: NextRequest) {
-  const userId = await verifyToken(req); // Extract user ID from token
+  // Try Authorization header first, then fallback to cookie
+  const authHeader = req.headers.get("authorization");
+  let token = authHeader?.replace("Bearer ", "");
 
+  if (!token) {
+    // Fallback to cookie for backward compatibility
+    const cookieHeader = req.headers.get("cookie") || "";
+    token = cookieHeader
+      .split(";")
+      .map((c: string) => c.trim())
+      .find((c: string) => c.startsWith("auth="))
+      ?.split("=")[1];
+  }
+
+  const userId = await verifyToken(token);
   if (!userId) return null;
 
   // Get user from database
@@ -249,6 +295,18 @@ const session = await getSession(req);
 
 # 4. Database stays the same!
 ```
+
+### **Alternative: Replace with TypeScript Frameworks**
+
+You can also replace the Next.js API with other TypeScript frameworks:
+
+- **Express** - Most popular Node.js framework
+- **Fastify** - High-performance alternative to Express
+- **Hono** - Lightweight, edge-first framework
+- **tRPC** - End-to-end typesafe APIs
+- **NestJS** - Enterprise-grade framework with decorators
+
+All maintain the same TypeScript types and monorepo structure!
 
 ## Setup
 

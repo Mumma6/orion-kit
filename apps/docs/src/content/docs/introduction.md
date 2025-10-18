@@ -16,57 +16,53 @@ description: Production-ready SaaS boilerplate for Next.js
 - ⚡ **Jobs** - Trigger.dev background tasks
 - 🧪 **Testing** - Vitest + Playwright E2E
 
-## Architecture
+## What's Included
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        ORION KIT MONOREPO                       │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐          │
-│  │     WEB     │    │     APP     │    │     API     │          │
-│  │  (Port 3000)│    │  (Port 3001)│    │  (Port 3002)│          │
-│  │             │    │             │    │             │          │
-│  │ • Landing   │    │ • Dashboard │    │ • Auth      │          │
-│  │ • Marketing │    │ • Tasks     │    │ • Tasks     │          │
-│  │ • Features  │    │ • Billing   │    │ • Billing   │          │
-│  │ • Pricing   │    │ • Settings  │    │ • Webhooks  │          │
-│  └─────────────┘    └─────────────┘    └─────────────┘          │
-│         │                   │                   │               │
-│         └───────────────────┼───────────────────┘               │
-│                             │                                   │
-│  ┌─────────────────────────────────────────────────────────────┐│
-│  │                    SHARED PACKAGES                          ││
-│  │                                                             ││
-│  │  @workspace/auth    @workspace/database  @workspace/email   ││
-│  │  @workspace/types   @workspace/ui       @workspace/payment  ││
-│  │  @workspace/analytics @workspace/observability @workspace/jobs││
-│  └─────────────────────────────────────────────────────────────┘ │
-│                             │                                    │
-│  ┌─────────────────────────────────────────────────────────────┐ │
-│  │                    EXTERNAL SERVICES                        │ │
-│  │                                                             │ │
-│  │  🗄️ Neon DB    💳 Stripe    📧 Resend    📊 PostHog         │  │
-│  │  📈 Axiom      ⚡ Trigger   🎨 Vercel    🧪 Playwright        ││
-│  └─────────────────────────────────────────────────────────────┘│
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+### 🎨 **Frontend Applications**
 
-Data Flow:
-User → Web/App → API → Database
-     ↓
-   Auth (JWT) → Protected Routes → TanStack Query → UI Updates
-     ↓
-   Email (Resend) → Welcome Emails → Database Tracking
-     ↓
-   Payments (Stripe) → Webhooks → Subscription Updates
-```
+- **Web** - Marketing landing page with SEO optimization
+- **App** - Complete user dashboard with tasks, billing, analytics, settings
+- **Docs** - Comprehensive documentation site
+
+### 🔧 **Backend & Infrastructure**
+
+- **API** - REST API with authentication, payments, webhooks
+- **Database** - Neon Postgres with Drizzle ORM
+- **Studio** - Database management interface
+
+### 📦 **Shared Packages**
+
+- **@workspace/ui** - shadcn/ui components with Tailwind CSS
+- **@workspace/types** - End-to-end TypeScript definitions
+- **@workspace/auth** - Custom JWT authentication system
+- **@workspace/database** - Type-safe database operations
+- **@workspace/payment** - Stripe subscriptions & billing
+- **@workspace/email** - Resend email templates
+- **@workspace/analytics** - PostHog integration
+- **@workspace/observability** - Axiom logging
+
+### 🚀 **Production Features**
+
+- **Authentication** - Custom JWT with protected routes
+- **Payments** - Stripe subscriptions with billing portal
+- **Email** - Welcome emails and notifications
+- **Analytics** - User behavior tracking and insights
+- **Monitoring** - Error tracking and performance metrics
+- **Testing** - Unit tests and E2E testing with Playwright
+
+### 🎯 **Key Benefits**
+
+- **Complete SaaS** - Everything you need to launch
+- **Type-safe** - End-to-end TypeScript from database to UI
+- **Production-ready** - Includes payments, analytics, monitoring
+- **No vendor lock-in** - You own all the code
+- **Easy to customize** - Modify any part to fit your needs
 
 ## Type-Safe Stack
 
 Database Schema → Auto-generated Types → Shared Packages → API + Frontend
 
-Everything is type-safe from database to UI with zero duplication.
+Everything is type-safe from database to UI with zero duplication. Change a database column and TypeScript will catch all the places that need updating.
 
 ## Quick Start
 

@@ -3,13 +3,70 @@ title: API Application
 description: Backend REST API with authentication, database, and payments
 ---
 
-The API application (`apps/api`) is the backend server that handles all business logic, database operations, and external service integrations.
+The API application (`apps/api`) is the backend server that handles all business logic, database operations, and external service integrations. Built with Next.js 15 App Router for serverless deployment.
 
-**Purpose**: REST API server for the main application  
-**Framework**: Serverless Next.js 15 with App Router  
+## Why Next.js for the API?
+
+While you can replace this with any TypeScript framework, we chose Next.js because:
+
+### 🚀 **Serverless-First**
+
+- **Automatic scaling** - Handle traffic spikes without configuration
+- **Edge deployment** - Deploy to Vercel, AWS, or any serverless platform
+- **Zero cold starts** - Optimized for serverless performance
+- **Built-in optimizations** - Automatic code splitting and bundling
+
+### 🔧 **Developer Experience**
+
+- **TypeScript native** - Full type safety out of the box
+- **File-based routing** - API routes match file structure
+- **Built-in middleware** - Request/response handling
+- **Hot reload** - Instant development feedback
+
+### 🏗️ **Production Ready**
+
+- **Automatic HTTPS** - SSL certificates handled automatically
+- **Built-in monitoring** - Error tracking and performance metrics
+- **Easy deployment** - One command to deploy to production
+- **Environment management** - Secure environment variable handling
+
+## Architecture
+
+**Framework**: Next.js 15 App Router (Serverless)  
 **Port**: `3002` (development)  
 **Database**: Neon PostgreSQL with Drizzle ORM  
-**Authentication**: Custom JWT-based authentication
+**Authentication**: Custom JWT-based authentication  
+**Deployment**: Vercel (or any serverless platform)
+
+## Alternative Backend Frameworks
+
+While we provide a complete Next.js API, you can replace it with any TypeScript framework:
+
+### 🚀 **High-Performance Options**
+
+- **Fastify** - High-performance alternative to Express
+- **Hono** - Lightweight, edge-first framework
+- **Bun** - Ultra-fast JavaScript runtime with built-in HTTP server
+
+### 🏗️ **Enterprise Frameworks**
+
+- **NestJS** - Enterprise-grade framework with decorators
+- **Express** - Most popular Node.js framework
+- **Koa** - Modern Express alternative
+
+### 🔗 **Type-Safe APIs**
+
+- **tRPC** - End-to-end typesafe APIs
+- **GraphQL** - Query language with strong typing
+- **gRPC** - High-performance RPC framework
+
+### 🌐 **Edge-First**
+
+- **Cloudflare Workers** - Edge computing platform
+- **Deno Deploy** - Deno's serverless platform
+- **Vercel Edge Functions** - Edge runtime for Vercel
+
+All maintain the same TypeScript types and monorepo structure!
 
 ## Structure
 

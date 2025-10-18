@@ -13,7 +13,7 @@ export function Header() {
           <OrionLogo size="sm" />
         </Link>
         <div className="flex items-center gap-3">
-          <Link href={`${linkUrl}/sign-in`}>
+          <Link href={`${linkUrl}/login`}>
             <Button size="sm">Sign In</Button>
           </Link>
           <ModeToggle />

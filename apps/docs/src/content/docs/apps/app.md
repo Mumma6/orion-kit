@@ -7,7 +7,7 @@ The main application (`apps/app`) is the user-facing dashboard for task manageme
 
 **Framework**: Next.js 15 with App Router  
 **Port**: `3001` (development)  
-**Authentication**: Custom JWT with httpOnly cookies  
+**Authentication**: Custom JWT with localStorage + Authorization headers  
 **Styling**: Tailwind CSS with shadcn/ui components
 
 ## Structure
@@ -22,8 +22,8 @@ apps/app/
 │   │   ├── tasks/page.tsx         # Task management
 │   │   ├── layout.tsx             # Dashboard layout
 │   │   └── page.tsx               # Dashboard home
-│   ├── sign-in/page.tsx           # Sign-in page
-│   ├── sign-up/page.tsx           # Sign-up page
+│   ├── login/page.tsx             # Login page
+│   ├── signup/page.tsx            # Sign-up page
 │   ├── error.tsx                  # Error boundary
 │   ├── global-error.tsx           # Global error handler
 │   ├── layout.tsx                 # Root layout
@@ -94,12 +94,47 @@ apps/app/
 ### **Dashboard Layout**
 
 ```typescript
-export function DashboardContent({ user }: DashboardContentProps) {
+export function DashboardContent() {
+  const { data: authData, isPending: userLoading } = useAuth();
+  const user = authData?.data || null;
+  const { data: tasks, isLoading: tasksLoading, error, refetch } = useTasks();
+
+  const isLoading = userLoading || tasksLoading;
+
+  if (isLoading) {
+    return <DashboardLoading />;
+  }
+
+  if (!user) {
+    return (
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Please log in</h2>
+          <p className="text-muted-foreground">
+            You need to be logged in to access the dashboard.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <DashboardWelcome firstName={user.firstName} />
-      <DashboardStats {...stats} />
-      <DashboardTasksPreview tasks={recentTasks} />
+    <div className="flex flex-1 flex-col gap-6 p-6">
+      <DashboardWelcome name={user?.name || ""} />
+
+      {error && <DashboardError error={error} onRetry={refetch} />}
+
+      {!error && tasks && (
+        <>
+          <DashboardStats
+            total={tasks.total}
+            completed={tasks.completed}
+            inProgress={tasks.inProgress}
+            todo={tasks.todo}
+          />
+          <DashboardTasksPreview tasks={tasks.data} />
+        </>
+      )}
     </div>
   );
 }
@@ -276,7 +311,10 @@ export function useRegister() {
       });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Store token in localStorage for cross-origin compatibility
+      localStorage.setItem("auth_token", data.token);
+
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
       router.push("/dashboard");
     },
@@ -309,7 +347,7 @@ Application runs on `http://localhost:3001`
 ### **Authentication Flow**
 
 1. Visit `http://localhost:3001`
-2. Redirected to `/sign-in` if not authenticated
+2. Redirected to `/login` if not authenticated
 3. Sign in with email/password or register new account
 4. Automatically redirected to `/dashboard` after authentication
 
@@ -317,17 +355,29 @@ Application runs on `http://localhost:3001`
 
 ```typescript
 const api = {
-  get: <T>(endpoint: string) =>
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`).then((res) =>
-      res.json()
-    ) as Promise<T>,
+  get: <T>(endpoint: string) => {
+    const token = localStorage.getItem("auth_token");
+    return fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      credentials: "include",
+    }).then((res) => res.json()) as Promise<T>;
+  },
 
-  post: <T>(endpoint: string, data: unknown) =>
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
+  post: <T>(endpoint: string, data: unknown) => {
+    const token = localStorage.getItem("auth_token");
+    return fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      credentials: "include",
       body: JSON.stringify(data),
-    }).then((res) => res.json()) as Promise<T>,
+    }).then((res) => res.json()) as Promise<T>;
+  },
 };
 ```
 

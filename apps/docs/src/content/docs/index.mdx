@@ -26,11 +26,11 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 
 **Development:**
 
-- 🌐 **Landing** → [localhost:3000](http://localhost:3000)
-- 📊 **Dashboard** → [localhost:3001](http://localhost:3001)
-- 🔌 **API** → [localhost:3002/health](http://localhost:3002/health)
-- 🎨 **Studio** → [https://local.drizzle.studio?port=3003](https://local.drizzle.studio?port=3003)
-- 📚 **Docs** → [localhost:3004](http://localhost:3004)
+- 🌐 **Landing** → http://localhost:3000
+- 📊 **Dashboard** → http://localhost:3001
+- 🔌 **API** → http://localhost:3002/health
+- 🎨 **Studio** → https://local.drizzle.studio?port=3003
+- 📚 **Docs** → http://localhost:3004
 
 ---
 
@@ -55,8 +55,8 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 
 <CardGrid stagger>
   <Card title="🔐 Authentication" icon="lock">
-    Custom JWT authentication with protected routes, middleware, and secure
-    httpOnly cookies.
+    Custom JWT authentication with protected routes, middleware, and
+    localStorage token storage for cross-origin compatibility.
   </Card>
   <Card title="🗄️ Database" icon="setting">
     Type-safe Drizzle ORM with Neon Postgres, automatic migrations, and Studio

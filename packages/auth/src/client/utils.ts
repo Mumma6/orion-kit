@@ -1,10 +1,18 @@
-export function getAuthToken(): string | null {
+export const getAuthToken = (): string | null => {
   if (typeof window === "undefined") return null;
+  return localStorage.getItem("auth_token");
+};
 
-  // Only use cookies - no localStorage for security
-  const cookies = document.cookie.split(";");
-  const authCookie = cookies.find((cookie) =>
-    cookie.trim().startsWith("auth=")
-  );
-  return authCookie ? authCookie.split("=")[1] || null : null;
-}
+export const setAuthToken = (token: string): void => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("auth_token", token);
+};
+
+export const clearAuthToken = (): void => {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("auth_token");
+};
+
+export const hasAuthToken = (): boolean => {
+  return getAuthToken() !== null;
+};

@@ -26,17 +26,14 @@ apps/studio/
 
 ```typescript
 // apps/studio/drizzle.config.ts
+import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  schema: "../packages/database/src/schema.ts",
-  out: "../packages/database/drizzle",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  verbose: true,
-  strict: true,
 });
 ```
 
@@ -45,12 +42,20 @@ export default defineConfig({
 ```json
 {
   "name": "studio",
+  "version": "0.0.1",
   "scripts": {
-    "dev": "drizzle-kit studio",
-    "studio": "drizzle-kit studio"
+    "dev": "drizzle-kit studio --port 3003",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "drizzle-kit": "^0.28.1"
+    "drizzle-orm": "^0.38.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.2",
+    "dotenv": "^16.4.7",
+    "@workspace/typescript-config": "workspace:*",
+    "typescript": "^5.9.2"
   }
 }
 ```
@@ -87,7 +92,7 @@ cd apps/studio
 pnpm dev
 ```
 
-Studio runs on `http://localhost:5555`
+Studio runs on `https://local.drizzle.studio?port=3003`
 
 ### **Alternative Start**
 
@@ -201,9 +206,10 @@ DELETE FROM user_preferences WHERE user_id = 'user_123';
 ### **Schema Changes**
 
 1. **Modify Schema** - Update `packages/database/src/schema.ts`
-2. **Generate Migration** - Run `pnpm db:generate`
-3. **Apply Migration** - Run `pnpm db:migrate`
-4. **View Changes** - Open Drizzle Studio to see updates
+2. **Push Schema** - Run `pnpm db:push` (for development)
+3. **Generate Migration** - Run `pnpm db:generate` (for production)
+4. **Apply Migration** - Run `pnpm db:migrate` (for production)
+5. **View Changes** - Open Drizzle Studio to see updates
 
 ### **Data Seeding**
 

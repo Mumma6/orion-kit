@@ -121,13 +121,13 @@ All applications share:
 
 ## Port Configuration
 
-| App        | Development                               | Production           |
-| ---------- | ----------------------------------------- | -------------------- |
-| **Web**    | `localhost:3000`                          | `orion-kit.dev`      |
-| **App**    | `localhost:3001`                          | `app.orion-kit.dev`  |
-| **API**    | `localhost:3002`                          | `api.orion-kit.dev`  |
-| **Docs**   | `localhost:3004`                          | `docs.orion-kit.dev` |
-| **Studio** | `https://local.drizzle.studio/?port=3003` | Local only           |
+| App        | Development                              | Production           |
+| ---------- | ---------------------------------------- | -------------------- |
+| **Web**    | `localhost:3000`                         | `orion-kit.dev`      |
+| **App**    | `localhost:3001`                         | `app.orion-kit.dev`  |
+| **API**    | `localhost:3002`                         | `api.orion-kit.dev`  |
+| **Docs**   | `localhost:3004`                         | `docs.orion-kit.dev` |
+| **Studio** | `https://local.drizzle.studio?port=3003` | Local only           |
 
 ## Environment Variables
 

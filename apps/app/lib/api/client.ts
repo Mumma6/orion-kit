@@ -1,4 +1,4 @@
-import { getAuthToken } from "@workspace/auth/client";
+import { createAuthHeaders } from "@workspace/auth/client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -6,36 +6,27 @@ interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
 }
 
-async function fetcher<T>(
-  endpoint: string,
-  options: FetchOptions = {}
-): Promise<T> {
-  const { params, ...fetchOptions } = options;
-  const token = getAuthToken();
-
-  const url = params
-    ? `${API_BASE_URL}${endpoint}?${new URLSearchParams(params).toString()}`
-    : `${API_BASE_URL}${endpoint}`;
-
-  const headers: Record<string, string> = {
+const createHeaders = (options: FetchOptions): Record<string, string> => {
+  return {
     "Content-Type": "application/json",
-    ...(fetchOptions.headers as Record<string, string>),
+    ...createAuthHeaders(),
+    ...(options.headers as Record<string, string>),
   };
+};
 
-  // Add auth token to headers if available
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
+const createUrl = (
+  endpoint: string,
+  params?: Record<string, string>
+): string => {
+  const baseUrl = `${API_BASE_URL}${endpoint}`;
+  return params
+    ? `${baseUrl}?${new URLSearchParams(params).toString()}`
+    : baseUrl;
+};
 
-  const response = await fetch(url, {
-    ...fetchOptions,
-    credentials: "include",
-    headers,
-  });
-
+const handleResponse = async <T>(response: Response): Promise<T> => {
   if (!response.ok) {
     const errorData = (await response.json()) || { error: response.statusText };
-
     const error = new Error(
       errorData?.error || `API Error: ${response.status} ${response.statusText}`
     ) as Error & { code?: string };
@@ -48,7 +39,22 @@ async function fetcher<T>(
   }
 
   return response.json();
-}
+};
+
+const fetcher = async <T>(
+  endpoint: string,
+  options: FetchOptions = {}
+): Promise<T> => {
+  const { params, ...fetchOptions } = options;
+
+  const response = await fetch(createUrl(endpoint, params), {
+    ...fetchOptions,
+    credentials: "include",
+    headers: createHeaders(options),
+  });
+
+  return handleResponse<T>(response);
+};
 
 export const api = {
   get: <T>(endpoint: string, options?: FetchOptions) =>

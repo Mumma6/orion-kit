@@ -180,7 +180,7 @@ pnpm --filter app dev
 
 **2. Test checkout:**
 
-1. Visit http://localhost:3001/sign-up → create test account
+1. Visit http://localhost:3001/signup → create test account
 2. Go to http://localhost:3001/dashboard/billing
 3. Current plan should show "Free"
 4. Click **"Upgrade to Pro"**

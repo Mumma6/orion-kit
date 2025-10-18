@@ -21,10 +21,12 @@ pnpm dev
 
 **Apps running:**
 
-- 🌐 **Landing:** https://orion-kit-web.vercel.app
-- 📊 **Dashboard:** https://orion-kit-app.vercel.app
-- 🔌 **API:** https://orion-kit-api.vercel.app
-- 📚 **Docs:** https://orion-kit-docs.vercel.app
+- 🌐 **Landing:** http://localhost:3000
+- 📊 **Dashboard:** http://localhost:3001
+- 🔌 **API:** http://localhost:3002
+- 🎨 **Studio:** https://local.drizzle.studio?port=3003
+- 📚 **Docs:** http://localhost:3004
+-
 
 ## 🔧 What You Need
 
@@ -141,20 +143,20 @@ pnpm build             # Build for production
 
 Need more? We've got guides for popular integrations:
 
-- **[AI Features](http://localhost:3004/reference/integrations/ai/)** - OpenAI, streaming, chat
-- **[Email](http://localhost:3004/reference/integrations/email/)** - Resend, already included!
-- **[File Uploads](http://localhost:3004/reference/integrations/file-uploads/)** - UploadThing, S3
-- **[i18n](http://localhost:3004/reference/integrations/i18n/)** - next-intl, translations
-- **[CMS](http://localhost:3004/reference/integrations/cms/)** - Sanity, Contentful
-- **[Real-time](http://localhost:3004/reference/integrations/realtime/)** - Pusher, WebSockets
+- **[AI Features](/reference/integrations/ai/)** - OpenAI, streaming, chat
+- **[Email](/reference/integrations/email/)** - Resend, already included!
+- **[File Uploads](/reference/integrations/file-uploads/)** - UploadThing, S3
+- **[i18n](/reference/integrations/i18n/)** - next-intl, translations
+- **[CMS](/reference/integrations/cms/)** - Sanity, Contentful
+- **[Real-time](/reference/integrations/realtime/)** - Pusher, WebSockets
 
-**[View All Integration Guides →](http://localhost:3004/reference/integrations/)**
+**[View All Integration Guides →](/reference/integrations/)**
 
 ## 🚨 Troubleshooting
 
 | Issue            | Fix                                           |
 | ---------------- | --------------------------------------------- |
-| "Unauthorized"   | Sign in at http://localhost:3001/sign-in      |
+| "Unauthorized"   | Sign in at http://localhost:3001/login        |
 | CORS errors      | Check `NEXT_PUBLIC_API_URL` in app/.env.local |
 | DB connection    | Verify `DATABASE_URL` uses pooled connection  |
 | Email not sent   | Check `RESEND_API_KEY` and `FROM_EMAIL`       |
@@ -164,11 +166,11 @@ Need more? We've got guides for popular integrations:
 
 **Complete docs:** http://localhost:3004 (when running `pnpm dev`)
 
-- 🚀 **[Quick Start](http://localhost:3004/quick-start)** - Get started in 5 minutes
-- ☁️ **[Accounts Setup](http://localhost:3004/guide/accounts-setup)** - Configure all services
-- 🏗️ **[Architecture](http://localhost:3004/architecture/overview)** - System design
-- 📦 **[Packages](http://localhost:3004/packages)** - API documentation
-- 🔌 **[Integrations](http://localhost:3004/reference/integrations)** - Add features
+- 🚀 **[Quick Start](/quick-start)** - Get started in 5 minutes
+- ☁️ **[Accounts Setup](/guide/accounts-setup)** - Configure all services
+- 🏗️ **[Architecture](/architecture/overview)** - System design
+- 📦 **[Packages](/packages)** - API documentation
+- 🔌 **[Integrations](/reference/integrations)** - Add features
 
 ## 📝 License
 

@@ -50,7 +50,7 @@ export function Hero() {
               </a>
             </Button>
             <Button size="lg" variant="outline" className="gap-2" asChild>
-              <a target="_blank" href={`https://github.com/Mumma6/orion-kit`}>
+              <a target="_blank" href="https://github.com/orion-kit/orion">
                 <Github className="h-5 w-5" />
                 View on GitHub
               </a>

@@ -102,13 +102,13 @@ DATABASE_URL=postgresql://...
 
 ## Running Apps
 
-| App        | Port | URL                   |
-| ---------- | ---- | --------------------- |
-| **Web**    | 3000 | http://localhost:3000 |
-| **App**    | 3001 | http://localhost:3001 |
-| **API**    | 3002 | http://localhost:3002 |
-| **Studio** | 3003 | http://localhost:3003 |
-| **Docs**   | 3004 | http://localhost:3004 |
+| App        | Port | URL                                    |
+| ---------- | ---- | -------------------------------------- |
+| **Web**    | 3000 | http://localhost:3000                  |
+| **App**    | 3001 | http://localhost:3001                  |
+| **API**    | 3002 | http://localhost:3002                  |
+| **Studio** | 3003 | https://local.drizzle.studio?port=3003 |
+| **Docs**   | 3004 | http://localhost:3004                  |
 
 Visit http://localhost:3001 → Sign up → Create tasks!
 
@@ -126,7 +126,7 @@ pnpm build             # Build for production
 
 | Issue            | Fix                                                     |
 | ---------------- | ------------------------------------------------------- |
-| "Unauthorized"   | Sign in at http://localhost:3001/sign-in                |
+| "Unauthorized"   | Sign in at http://localhost:3001/login                  |
 | CORS errors      | Check `NEXT_PUBLIC_API_URL` in app/.env.local           |
 | DB connection    | Verify `DATABASE_URL` uses pooled connection            |
 | Stripe webhooks  | Ensure Stripe CLI is running with `stripe listen`       |
