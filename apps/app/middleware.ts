@@ -5,11 +5,10 @@ export default function middleware(request: NextRequest) {
 
   // Protect dashboard routes
   if (pathname.startsWith("/dashboard")) {
-    const token = request.cookies.get("auth")?.value;
-
-    if (!token) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
+    // For client-side navigation, we can't check Authorization headers in middleware
+    // The client-side auth check will happen in the dashboard layout
+    // This middleware is mainly for server-side redirects
+    return NextResponse.next();
   }
 
   return NextResponse.next();
