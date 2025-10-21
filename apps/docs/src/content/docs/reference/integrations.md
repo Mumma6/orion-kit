@@ -3,8 +3,6 @@ title: Integration Guides
 description: Add features to Orion Kit
 ---
 
-# Integration Guides
-
 :::tip[TL;DR]
 Orion Kit includes 90% of what you need. Add integrations only when you have real user demand and clear business value. Start simple, scale smart.
 :::

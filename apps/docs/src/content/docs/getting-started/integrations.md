@@ -3,8 +3,6 @@ title: Feature Integration
 description: Add features to Orion Kit
 ---
 
-# Feature Integration
-
 Add powerful features to Orion Kit when you need them.
 
 ## 🎯 **When to Add Features**

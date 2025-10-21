@@ -3,8 +3,6 @@ title: Getting Started
 description: Get up and running with Orion Kit in minutes
 ---
 
-# Getting Started
-
 Welcome to Orion Kit! This guide will get you from zero to a running SaaS application in **under 10 minutes**.
 
 ## 🚀 Quick Start (5 minutes)

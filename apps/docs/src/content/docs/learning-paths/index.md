@@ -3,8 +3,6 @@ title: Learning Paths
 description: Choose your path based on your experience and goals
 ---
 
-# Learning Paths
-
 Choose the path that best fits your experience and goals with Orion Kit.
 
 ## 🚀 **I'm New to SaaS Development**

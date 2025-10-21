@@ -3,8 +3,6 @@ title: Deployment Guide
 description: Deploy Orion Kit to production
 ---
 
-# Deployment Guide
-
 Deploy your Orion Kit application to production in **15 minutes**.
 
 ## 🚀 **Quick Deploy (Vercel)**

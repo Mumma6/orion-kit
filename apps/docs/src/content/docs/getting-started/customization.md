@@ -3,8 +3,6 @@ title: Customization Guide
 description: Customize Orion Kit for your needs
 ---
 
-# Customization Guide
-
 Learn how to customize Orion Kit for your specific use case.
 
 ## 🎨 **UI & Branding**

@@ -3,8 +3,6 @@ title: Troubleshooting
 description: Common issues and solutions
 ---
 
-# Troubleshooting
-
 Quick fixes for common issues when getting started with Orion Kit.
 
 ## 🚀 **Getting Started Issues**
