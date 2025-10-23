@@ -71,8 +71,9 @@ Everything is type-safe from database to UI with zero duplication. Change a data
 ## Quick Start
 
 ```bash
-git clone https://github.com/Mumma6/orion-kit
-cd orion
+# Click "Use this template" on GitHub, then:
+git clone https://github.com/YOUR-USERNAME/your-project-name
+cd your-project-name
 pnpm install
 pnpm dev
 ```

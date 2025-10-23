@@ -22,9 +22,10 @@ Clone → Install → Start → Done! Visit localhost:3001 to see your app. Add 
 ## Setup
 
 ```bash
-# 1. Clone & install
-git clone https://github.com/Mumma6/orion-kit
-cd orion
+# 1. Use this template
+# Click "Use this template" on GitHub, then:
+git clone https://github.com/YOUR-USERNAME/your-project-name
+cd your-project-name
 pnpm install
 
 # 2. Get API keys from all services

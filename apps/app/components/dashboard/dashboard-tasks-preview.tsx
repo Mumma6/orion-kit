@@ -11,7 +11,7 @@ import { CheckCircle2, Circle, Clock } from "lucide-react";
 import type { Task } from "@workspace/types";
 
 interface DashboardTasksPreviewProps {
-  readonly tasks: readonly Task[];
+  readonly tasks: Task[];
 }
 
 const getStatusIcon = (status: Task["status"]) => {
@@ -41,6 +41,14 @@ const getStatusText = (status: Task["status"]): string => {
 };
 
 export function DashboardTasksPreview({ tasks }: DashboardTasksPreviewProps) {
+  // Show only the 5 most recent tasks
+  const recentTasks = tasks
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .slice(0, 5);
+
   if (tasks.length === 0) {
     return (
       <Card className="border-dashed">
@@ -58,12 +66,12 @@ export function DashboardTasksPreview({ tasks }: DashboardTasksPreviewProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Your Tasks</CardTitle>
-        <CardDescription>A list of tasks</CardDescription>
+        <CardTitle>Your Recent Tasks</CardTitle>
+        <CardDescription>Your 5 most recent tasks</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {tasks.map((task) => (
+          {recentTasks.map((task) => (
             <div
               key={task.id}
               className="flex items-start gap-3 rounded-lg border p-4 transition-colors hover:bg-muted/50"

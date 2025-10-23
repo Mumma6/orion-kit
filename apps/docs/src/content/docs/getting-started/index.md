@@ -10,9 +10,10 @@ Welcome to Orion Kit! This guide will get you from zero to a running SaaS applic
 **Prerequisites:** Node.js 20+ and pnpm
 
 ```bash
-# 1. Clone and install
-git clone https://github.com/Mumma6/orion-kit
-cd orion
+# 1. Use this template
+# Click "Use this template" on GitHub, then:
+git clone https://github.com/YOUR-USERNAME/your-project-name
+cd your-project-name
 pnpm install
 
 # 2. Start with minimal setup

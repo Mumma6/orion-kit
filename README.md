@@ -19,9 +19,10 @@
 ## ⚡ Quick Start
 
 ```bash
-# 1. Clone & install
-git clone https://github.com/Mumma6/orion-kit
-cd orion-kit
+# 1. Use this template
+# Click "Use this template" on GitHub, then:
+git clone https://github.com/YOUR-USERNAME/your-project-name
+cd your-project-name
 pnpm install
 
 # 2. Set up environment variables (see below)

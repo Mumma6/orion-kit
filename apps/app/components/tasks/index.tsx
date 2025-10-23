@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
 import { CreateTaskDialog } from "./create-task-dialog";
 import { EditTaskSheet } from "./edit-task-sheet";
@@ -11,6 +11,14 @@ import { TasksLoading } from "./tasks-loading";
 import { TasksError } from "./tasks-error";
 import type { StatusFilter } from "./task-status-config";
 import { Task } from "@workspace/types";
+import { TasksPagination } from "./tasks-pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
 
 export function TasksContent() {
   const { data: tasksData, isLoading, error, refetch } = useTasks();
@@ -20,6 +28,8 @@ export function TasksContent() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const filteredTasks = useMemo(() => {
     const tasks = tasksData?.data || [];
@@ -40,6 +50,15 @@ export function TasksContent() {
       return true;
     });
   }, [tasksData?.data, statusFilter, searchQuery]);
+
+  const totalPages = Math.ceil(filteredTasks.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTasks = filteredTasks.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, searchQuery, itemsPerPage]);
 
   const handleStatusChange = async (task: Task, newStatus: Task["status"]) => {
     await updateTask.mutateAsync({
@@ -87,7 +106,7 @@ export function TasksContent() {
 
       <TasksTable
         tasks={tasks}
-        filteredTasks={filteredTasks}
+        filteredTasks={paginatedTasks}
         statusFilter={statusFilter}
         searchQuery={searchQuery}
         onEditTask={setSelectedTask}
@@ -95,6 +114,33 @@ export function TasksContent() {
         onDeleteTask={handleDeleteTask}
         onCreateTask={() => setShowCreateDialog(true)}
       />
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">Show</span>
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => setItemsPerPage(Number(value))}
+            >
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-muted-foreground">per page</span>
+          </div>
+          <TasksPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
 
       <EditTaskSheet
         task={selectedTask}
