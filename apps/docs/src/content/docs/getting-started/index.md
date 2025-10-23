@@ -11,7 +11,7 @@ Welcome to Orion Kit! This guide will get you from zero to a running SaaS applic
 
 ```bash
 # 1. Clone and install
-git clone <your-repo-url>
+git clone https://github.com/Mumma6/orion-kit
 cd orion
 pnpm install
 

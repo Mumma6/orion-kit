@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://orion-kit.dev",
+    url: "https://orion-kit-web.vercel.app/",
     siteName: "Orion Kit",
     title: "Orion Kit - Production-Ready SaaS Boilerplate for Next.js",
     description:

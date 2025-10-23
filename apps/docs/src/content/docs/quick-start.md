@@ -23,7 +23,7 @@ Clone → Install → Start → Done! Visit localhost:3001 to see your app. Add 
 
 ```bash
 # 1. Clone & install
-git clone <repo-url>
+git clone https://github.com/Mumma6/orion-kit
 cd orion
 pnpm install
 

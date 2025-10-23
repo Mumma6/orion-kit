@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { AlertCircle, Loader2, GalleryVerticalEnd } from "lucide-react";
+import { AlertCircle, Loader2, GalleryVerticalEnd, Play } from "lucide-react";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -42,6 +42,11 @@ export default function LoginPage() {
     loginMutation.mutate(data);
   };
 
+  const useDemoAccount = () => {
+    form.setValue("email", "demo@orion-kit.dev");
+    form.setValue("password", "demo123");
+  };
+
   useEffect(() => {
     if (loginMutation.isError) {
       form.setError("root", {
@@ -65,7 +70,37 @@ export default function LoginPage() {
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-sm space-y-4">
+            {/* Demo Account Banner */}
+            <div className="rounded-lg border bg-gradient-to-r from-blue-50 to-indigo-50 p-4 dark:from-blue-950/20 dark:to-indigo-950/20">
+              <div className="flex items-start gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                  <Play className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    Try the demo account
+                  </h3>
+                  <p className="mt-1 text-xs text-blue-700 dark:text-blue-300">
+                    Experience the full dashboard with sample data
+                  </p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={useDemoAccount}
+                      className="h-7 text-xs"
+                    >
+                      Use Demo Account
+                    </Button>
+                    <span className="text-xs text-blue-600 dark:text-blue-400">
+                      demo@orion-kit.dev
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <Card>
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Welcome back</CardTitle>

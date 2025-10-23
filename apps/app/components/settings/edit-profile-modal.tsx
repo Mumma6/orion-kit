@@ -32,7 +32,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 import { Trash2 } from "lucide-react";
 
@@ -51,6 +50,8 @@ export function EditProfileModal({
 
   const updateProfile = useUpdateProfile();
   const deleteAccount = useDeleteAccount();
+
+  const isDemoAccount = user.email === "demo@orion-kit.dev";
 
   const form = useForm<UpdateProfileInput>({
     resolver: zodResolver(UpdateProfileInputSchema),
@@ -83,7 +84,9 @@ export function EditProfileModal({
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
             <DialogDescription>
-              Update your profile information or delete your account.
+              {isDemoAccount
+                ? "Demo account - limited editing available."
+                : "Update your profile information or delete your account."}
             </DialogDescription>
           </DialogHeader>
 
@@ -96,23 +99,39 @@ export function EditProfileModal({
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your name" {...field} />
+                      <Input
+                        placeholder="Enter your name"
+                        {...field}
+                        disabled={isDemoAccount}
+                      />
                     </FormControl>
+                    {isDemoAccount && (
+                      <p className="text-xs text-muted-foreground">
+                        You can't edit the demo account name
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
               <div className="flex justify-between pt-4">
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete Account
-                </Button>
+                {isDemoAccount ? (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Trash2 className="h-4 w-4" />
+                    <span>You can't delete the demo account</span>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete Account
+                  </Button>
+                )}
 
                 <div className="flex gap-2">
                   <Button
@@ -122,7 +141,10 @@ export function EditProfileModal({
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={updateProfile.isPending}>
+                  <Button
+                    type="submit"
+                    disabled={updateProfile.isPending || isDemoAccount}
+                  >
                     {updateProfile.isPending ? "Saving..." : "Save Changes"}
                   </Button>
                 </div>

@@ -3,7 +3,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { OrionLogo } from "@workspace/ui/components/orion-logo";
 import Link from "next/link";
 
-const linkUrl = process.env.NEXT_PUBLIC_LINK_URL;
+const linkUrl = process.env.NEXT_PUBLIC_LINK_URL!;
 
 export function Header() {
   return (
@@ -13,6 +13,9 @@ export function Header() {
           <OrionLogo size="sm" />
         </Link>
         <div className="flex items-center gap-3">
+          <Link href={linkUrl}>
+            <Button size="sm">Dashboard</Button>
+          </Link>
           <Link href={`${linkUrl}/login`}>
             <Button size="sm">Sign In</Button>
           </Link>
