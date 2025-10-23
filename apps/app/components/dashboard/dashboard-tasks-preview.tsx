@@ -41,7 +41,6 @@ const getStatusText = (status: Task["status"]): string => {
 };
 
 export function DashboardTasksPreview({ tasks }: DashboardTasksPreviewProps) {
-  // Show only the 5 most recent tasks
   const recentTasks = tasks
     .sort(
       (a, b) =>

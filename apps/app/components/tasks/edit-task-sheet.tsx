@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@workspace/ui/components/button";
@@ -22,6 +22,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
 import {
   Circle,
   Clock,
@@ -49,6 +59,7 @@ export function EditTaskSheet({
 }: EditTaskSheetProps) {
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(updateTaskInputSchema),
@@ -82,9 +93,9 @@ export function EditTaskSheet({
 
   const handleDelete = async () => {
     if (!task) return;
-    if (!confirm("Are you sure you want to delete this task?")) return;
 
     await deleteTask.mutateAsync(task.id);
+    setShowDeleteDialog(false);
     onOpenChange(false);
   };
 
@@ -184,7 +195,7 @@ export function EditTaskSheet({
           <Button
             variant="destructive"
             size="sm"
-            onClick={handleDelete}
+            onClick={() => setShowDeleteDialog(true)}
             disabled={deleteTask.isPending}
             className="w-full"
           >
@@ -205,6 +216,35 @@ export function EditTaskSheet({
           </SheetClose>
         </SheetFooter>
       </SheetContent>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Task</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{task.title}"? This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteTask.isPending}
+            >
+              {deleteTask.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Task"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }

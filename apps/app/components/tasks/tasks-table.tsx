@@ -47,7 +47,6 @@ interface TasksTableProps {
   searchQuery: string;
   onEditTask: (task: Task) => void;
   onStatusChange: (task: Task, status: Task["status"]) => void;
-  onDeleteTask: (taskId: number) => void;
   onCreateTask: () => void;
 }
 
@@ -58,7 +57,6 @@ export function TasksTable({
   searchQuery,
   onEditTask,
   onStatusChange,
-  onDeleteTask,
   onCreateTask,
 }: TasksTableProps) {
   return (
@@ -184,13 +182,6 @@ export function TasksTable({
                               Mark as Cancelled
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem
-                            onClick={() => onDeleteTask(task.id)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

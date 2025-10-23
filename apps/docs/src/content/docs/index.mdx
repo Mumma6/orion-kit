@@ -26,26 +26,67 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 
 {import.meta.env.PROD ? (
 
-  <>
-    **Production:**
-
-    - 🌐 **Landing** → https://orion-kit-web.vercel.app
-    - 📊 **Dashboard** → https://orion-kit-app.vercel.app
-    - 🔌 **API** → https://orion-kit-api.vercel.app/health
-    - 📚 **Docs** → https://orion-kit-docs.vercel.app
-
-  </>
+<div>
+  <p>
+    <strong>Production:</strong>
+  </p>
+  <ul>
+    <li>
+      🌐 <strong>Landing</strong> →{" "}
+      <a href="https://orion-kit-web.vercel.app">
+        https://orion-kit-web.vercel.app
+      </a>
+    </li>
+    <li>
+      📊 <strong>Dashboard</strong> →{" "}
+      <a href="https://orion-kit-app.vercel.app">
+        https://orion-kit-app.vercel.app
+      </a>
+    </li>
+    <li>
+      🔌 <strong>API</strong> →{" "}
+      <a href="https://orion-kit-api.vercel.app/health">
+        https://orion-kit-api.vercel.app/health
+      </a>
+    </li>
+    <li>
+      📚 <strong>Docs</strong> →{" "}
+      <a href="https://orion-kit-docs.vercel.app">
+        https://orion-kit-docs.vercel.app
+      </a>
+    </li>
+  </ul>
+</div>
 ) : (
-  <>
-    **Development:**
-
-    - 🌐 **Landing** → http://localhost:3000
-    - 📊 **Dashboard** → http://localhost:3001
-    - 🔌 **API** → http://localhost:3002/health
-    - 🎨 **Studio** → https://local.drizzle.studio?port=3003
-    - 📚 **Docs** → http://localhost:3004
-
-  </>
+<div>
+  <p>
+    <strong>Development:</strong>
+  </p>
+  <ul>
+    <li>
+      🌐 <strong>Landing</strong> →{" "}
+      <a href="http://localhost:3000">http://localhost:3000</a>
+    </li>
+    <li>
+      📊 <strong>Dashboard</strong> →{" "}
+      <a href="http://localhost:3001">http://localhost:3001</a>
+    </li>
+    <li>
+      🔌 <strong>API</strong> →{" "}
+      <a href="http://localhost:3002/health">http://localhost:3002/health</a>
+    </li>
+    <li>
+      🎨 <strong>Studio</strong> →{" "}
+      <a href="https://local.drizzle.studio?port=3003">
+        https://local.drizzle.studio?port=3003
+      </a>
+    </li>
+    <li>
+      📚 <strong>Docs</strong> →{" "}
+      <a href="http://localhost:3004">http://localhost:3004</a>
+    </li>
+  </ul>
+</div>
 )}
 
 ---

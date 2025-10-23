@@ -67,10 +67,6 @@ export function TasksContent() {
     });
   };
 
-  const handleDeleteTask = async (taskId: number) => {
-    if (!confirm("Are you sure you want to delete this task?")) return;
-  };
-
   if (isLoading) {
     return <TasksLoading />;
   }
@@ -111,36 +107,35 @@ export function TasksContent() {
         searchQuery={searchQuery}
         onEditTask={setSelectedTask}
         onStatusChange={handleStatusChange}
-        onDeleteTask={handleDeleteTask}
         onCreateTask={() => setShowCreateDialog(true)}
       />
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">Show</span>
-            <Select
-              value={itemsPerPage.toString()}
-              onValueChange={(value) => setItemsPerPage(Number(value))}
-            >
-              <SelectTrigger className="w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-            <span className="text-sm text-muted-foreground">per page</span>
-          </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">Show</span>
+          <Select
+            value={itemsPerPage.toString()}
+            onValueChange={(value) => setItemsPerPage(Number(value))}
+          >
+            <SelectTrigger className="w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+            </SelectContent>
+          </Select>
+          <span className="text-sm text-muted-foreground">per page</span>
+        </div>
+        {totalPages > 1 && (
           <TasksPagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           />
-        </div>
-      )}
+        )}
+      </div>
 
       <EditTaskSheet
         task={selectedTask}
