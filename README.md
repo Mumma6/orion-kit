@@ -1,18 +1,30 @@
 # 🚀 Orion Kit
 
-**Production-ready SaaS boilerplate** built with Next.js 15, TypeScript, and modern tools. Get from zero to deployed in minutes.
+**Production-ready SaaS boilerplate** with authentication, payments, analytics, and everything a modern project needs. Perfect for learning modern full-stack development or starting your next project.
 
 ## 🎯 What's Included
 
-- 🔐 **Authentication** - Custom JWT with protected routes
-- 🗄️ **Database** - Neon Postgres + Drizzle ORM
+**Apps:**
+
+- 🌐 **Landing Page** (`web`) - Marketing site
+- 📊 **Dashboard** (`app`) - Admin app with tasks, billing, analytics & TanStack Query
+- 🔌 **Serverless API** (`api`) - Next.js 15 API routes with Zod validation
+- 📚 **Documentation** (`docs`) - Astro-powered docs with Starlight
+
+**Features:**
+
+- ⚡ **Monorepo** - Turborepo for blazing fast builds and caching
+- 🔐 **Authentication** - Custom JWT with protected routes & bcrypt
+- 🗄️ **Database** - Neon Postgres + Drizzle ORM with drizzle-zod
+- 🔄 **Data Fetching** - TanStack Query with optimistic updates
 - 💳 **Payments** - Stripe subscriptions + webhooks
 - 📧 **Email** - Resend with React Email templates
-- 🎨 **UI** - Shadcn/ui + Tailwind CSS v4
-- 📊 **Analytics** - PostHog + Axiom logging
+- 🎨 **UI** - Shadcn/ui + Tailwind CSS v4 + Radix UI primitives
+- 📊 **Analytics** - PostHog tracking + Axiom logging
 - ⚡ **Jobs** - Trigger.dev background tasks
-- 🧪 **Testing** - Vitest + Playwright E2E
-- 📚 **Documentation** - Complete guides & API docs
+- 🧪 **Testing** - Vitest unit tests + Playwright E2E
+- 📝 **Forms** - React Hook Form + Zod validation
+- 🎨 **Theming** - Dark mode with next-themes
 
 **Type-safe stack:** Database Schema → Auto-generated Types → Shared Packages → API + Frontend
 
@@ -132,9 +144,18 @@ DATABASE_URL=postgresql://...
 | `@workspace/types`         | Shared TypeScript types              |
 | `@workspace/ui`            | Shadcn/ui + Radix UI components      |
 | `@workspace/payment`       | Stripe payments + subscriptions      |
-| `@workspace/analytics`     | PostHog + Vercel Analytics           |
+| `@workspace/analytics`     | PostHog tracking + Vercel Analytics  |
 | `@workspace/observability` | Axiom logging + Web Vitals           |
 | `@workspace/jobs`          | Trigger.dev background jobs          |
+
+## 🏗️ Architecture
+
+**Type-safe monorepo** with end-to-end type safety. Database schema generates Zod schemas, which flow through shared types to both API and frontend.
+
+- **Flow:** Database → Zod Validation → Types → API Routes → TanStack Query hooks
+- **Same source of truth:** Zod schemas validate on server and provide types on client
+- **Monorepo flexibility:** Swap API framework, ORM, or UI library without breaking changes
+- **Benefit:** Modify database schema and get compile-time errors across the entire stack
 
 ## 🚀 Commands
 
@@ -146,40 +167,9 @@ pnpm test              # Run tests
 pnpm build             # Build for production
 ```
 
-## 🔌 Adding Features
-
-Need more? We've got guides for popular integrations:
-
-- **[Auth Providers](/reference/integrations/auth/)** - Clerk, Auth0, Better Auth
-- **[AI Features](/reference/integrations/ai/)** - OpenAI, streaming, chat
-- **[Email](/reference/integrations/email/)** - Resend, already included!
-- **[File Uploads](/reference/integrations/file-uploads/)** - UploadThing, S3
-- **[i18n](/reference/integrations/i18n/)** - next-intl, translations
-- **[CMS](/reference/integrations/cms/)** - Sanity, Contentful
-- **[Real-time](/reference/integrations/realtime/)** - Pusher, WebSockets
-- **[Rate Limiting](/reference/integrations/rate-limiting/)** - Upstash Redis, API protection
-
-**[View All Integration Guides →](/reference/integrations/)**
-
-## 🚨 Troubleshooting
-
-| Issue            | Fix                                           |
-| ---------------- | --------------------------------------------- |
-| "Unauthorized"   | Sign in at http://localhost:3001/login        |
-| CORS errors      | Check `NEXT_PUBLIC_API_URL` in app/.env.local |
-| DB connection    | Verify `DATABASE_URL` uses pooled connection  |
-| Email not sent   | Check `RESEND_API_KEY` and `FROM_EMAIL`       |
-| Missing env vars | Check all services are configured             |
-
 ## 📚 Documentation
 
-**Complete docs:** http://localhost:3004 (when running `pnpm dev`)
-
-- 🚀 **[Quick Start](/quick-start)** - Get started in 5 minutes
-- ☁️ **[Accounts Setup](/guide/accounts-setup)** - Configure all services
-- 🏗️ **[Architecture](/architecture/overview)** - System design
-- 📦 **[Packages](/packages)** - API documentation
-- 🔌 **[Integrations](/reference/integrations)** - Add features
+For more in depth documentation and explanations, please look at the official documentation side: https://orion-kit-docs.vercel.app/
 
 ## 📝 License
 

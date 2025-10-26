@@ -17,7 +17,9 @@ export function Header() {
             <Button size="sm">Dashboard</Button>
           </Link>
           <Link href={`${linkUrl}/login`}>
-            <Button size="sm">Sign In</Button>
+            <Button size="sm" variant="secondary">
+              Sign In
+            </Button>
           </Link>
           <ModeToggle />
         </div>
