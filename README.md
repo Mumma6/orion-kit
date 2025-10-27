@@ -1,57 +1,66 @@
 # 🚀 Orion Kit
 
-**Production-ready SaaS boilerplate** with authentication, payments, analytics, and everything a modern project needs. Perfect for learning modern full-stack development or starting your next project.
+**Production-ready SaaS template** with authentication, payments, analytics, and everything a modern project needs. Perfect for learning modern full‑stack development or starting your next project.
+
+[Docs](https://orion-kit-docs.vercel.app/) • [Getting Started](https://orion-kit-docs.vercel.app/getting-started/) • [Architecture](https://orion-kit-docs.vercel.app/architecture/overview) • [Blog](https://dev.to/martinpersson/orion-kit-production-ready-typescript-monorepo-for-modern-saas-applications-27pj)
+
+> If this saves you time, please ⭐ the repo.
 
 ## 🎯 What's Included
 
 **Apps:**
 
-- 🌐 **Landing Page** (`web`) - Marketing site
-- 📊 **Dashboard** (`app`) - Admin app with tasks, billing, analytics & TanStack Query
-- 🔌 **Serverless API** (`api`) - Next.js 15 API routes with Zod validation
-- 📚 **Documentation** (`docs`) - Astro-powered docs with Starlight
+- 🌐 **Landing Page** (`web`) — Marketing site
+- 📊 **Dashboard** (`app`) — Admin app with tasks, billing, analytics & TanStack Query
+- 🔌 **Serverless API** (`api`) — Next.js 15 Route Handlers with Zod validation
+- 📚 **Documentation** (`docs`) — Astro‑powered docs with Starlight
 
 **Features:**
 
-- ⚡ **Monorepo** - Turborepo for blazing fast builds and caching
-- 🔐 **Authentication** - Custom JWT with protected routes & bcrypt
-- 🗄️ **Database** - Neon Postgres + Drizzle ORM with drizzle-zod
-- 🔄 **Data Fetching** - TanStack Query with optimistic updates
-- 💳 **Payments** - Stripe subscriptions + webhooks
-- 📧 **Email** - Resend with React Email templates
-- 🎨 **UI** - Shadcn/ui + Tailwind CSS v4 + Radix UI primitives
-- 📊 **Analytics** - PostHog tracking + Axiom logging
-- ⚡ **Jobs** - Trigger.dev background tasks
-- 🧪 **Testing** - Vitest unit tests + Playwright E2E
-- 📝 **Forms** - React Hook Form + Zod validation
-- 🎨 **Theming** - Dark mode with next-themes
+- ⚡ **Monorepo** — Turborepo for fast builds and caching
+- 🔐 **Authentication** — Custom JWT with protected routes & bcrypt
+- 🗄️ **Database** — Neon Postgres + Drizzle ORM with drizzle‑zod
+- 🔄 **Data Fetching** — TanStack Query with optimistic updates
+- 💳 **Payments** — Stripe subscriptions + webhooks
+- 📧 **Email** — Resend with React Email templates
+- 🎨 **UI** — shadcn/ui + Tailwind CSS v4 + Radix UI primitives
+- 📊 **Analytics** — PostHog tracking + Axiom logging
+- ⚙️ **Jobs** — Serverless cron by default; Trigger.dev background tasks
+- 🧪 **Testing** — Vitest unit tests + Playwright E2E
+- 📝 **Forms** — React Hook Form + Zod validation
+- 🌗 **Theming** — Dark mode with next‑themes
 
-**Type-safe stack:** Database Schema → Auto-generated Types → Shared Packages → API + Frontend
+**Type‑safe stack:** Database Schema → Auto‑generated Types → Shared Packages → API → Frontend
+
+### Why this structure
+
+- **Separation of concerns** — clear boundaries between UI, domain, and data reduce coupling and increase clarity.
+- **Layered & modular** — features are encapsulated in layers/modules, making refactors and tech swaps low-risk.
+- **Monorepo with shared packages** — reusable types/utilities/components drive consistency and avoid duplication.
+- **End-to-end type safety** — a single source of truth for models cuts errors and surfaces issues at compile time.
+- **Portability & future-proofing** — parts can be moved, replaced, or scaled without disrupting the rest.
+- **Developer experience & speed** — monorepo caching, one-command flows, and a predictable layout.
+- **Testability & observability** — isolated interfaces make unit/E2E testing and logging/monitoring straightforward.
+- **Team-friendly ownership** — clear package boundaries enable independent changes without blocking others.
 
 ## ⚡ Quick Start
 
 ```bash
-# 1. Use this template
-# Click "Use this template" on GitHub, then:
+# 1) Use this template or clone
 git clone https://github.com/YOUR-USERNAME/your-project-name
 cd your-project-name
 pnpm install
 
-# 2. Set up environment variables (see below)
+# 2) Set up environment variables (see below)
 
-# 3. Rename the project
-Change "orion-kit" to your own project name in:
-- `package.json` files
-- Documentation
-- Environment variables
-- GitHub repository name
-
-# 4. Initialize database
+# 3) Initialize database
 pnpm db:push
 
-# 5. Start everything
+# 4) Start everything
 pnpm dev
 ```
+
+> Optional: Rename “orion-kit” to your own project name in `package.json`, docs, env files, and the repo name.
 
 **Apps running:**
 
@@ -142,7 +151,7 @@ DATABASE_URL=postgresql://...
 | `@workspace/database`      | Drizzle ORM + Neon + Zod schemas     |
 | `@workspace/email`         | Resend + React Email templates       |
 | `@workspace/types`         | Shared TypeScript types              |
-| `@workspace/ui`            | Shadcn/ui + Radix UI components      |
+| `@workspace/ui`            | shadcn/ui + Radix UI components      |
 | `@workspace/payment`       | Stripe payments + subscriptions      |
 | `@workspace/analytics`     | PostHog tracking + Vercel Analytics  |
 | `@workspace/observability` | Axiom logging + Web Vitals           |
@@ -150,12 +159,12 @@ DATABASE_URL=postgresql://...
 
 ## 🏗️ Architecture
 
-**Type-safe monorepo** with end-to-end type safety. Database schema generates Zod schemas, which flow through shared types to both API and frontend.
+**Type‑safe monorepo** with end‑to‑end types. Database schema generates Zod schemas which flow through shared types to API and frontend.
 
 - **Flow:** Database → Zod Validation → Types → API Routes → TanStack Query hooks
-- **Same source of truth:** Zod schemas validate on server and provide types on client
-- **Monorepo flexibility:** Swap API framework, ORM, or UI library without breaking changes
-- **Benefit:** Modify database schema and get compile-time errors across the entire stack
+- **Single source of truth:** Zod/Drizzle schemas validate on server and provide types on client
+- **Flexibility:** Swap API framework/ORM/UI without breaking contracts
+- **Benefit:** Change schema → get compile‑time errors across the stack
 
 ## 🚀 Commands
 
@@ -169,7 +178,10 @@ pnpm build             # Build for production
 
 ## 📚 Documentation
 
-For more in depth documentation and explanations, please look at the official documentation side: https://orion-kit-docs.vercel.app/
+For more in‑depth documentation and explanations, please see the official documentation site: https://orion-kit-docs.vercel.app/
+
+- Getting Started: https://orion-kit-docs.vercel.app/getting-started/
+- Architecture: https://orion-kit-docs.vercel.app/architecture/overview/
 
 ## 📝 License
 
